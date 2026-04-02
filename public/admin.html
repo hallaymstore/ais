@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel | Ai's Shelf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --ink: #112132;
+      --muted: #607187;
+      --line: rgba(17,33,50,.08);
+      --card: rgba(255,255,255,.88);
+      --shadow: 0 26px 60px rgba(17,33,50,.12);
+      --danger: #b44332;
+      --success: #166d57;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Manrope", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(27, 133, 122, .14), transparent 20%),
+        linear-gradient(180deg, #f7f3eb 0%, #f8fbff 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1280px, calc(100vw - 32px)); margin: 0 auto; }
+    .topbar { position: sticky; top: 0; z-index: 10; background: rgba(247,243,235,.82); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(17,33,50,.06); }
+    .nav { display:flex; justify-content:space-between; align-items:center; gap:14px; padding: 16px 0; }
+    .brand { display:flex; align-items:center; gap:14px; font-weight:800; }
+    .mark { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,#102033,#24585b); color:#fff; font-family:"Space Grotesk",sans-serif; }
+    .button, button { border:0; border-radius:999px; padding:12px 16px; font:inherit; font-weight:800; cursor:pointer; }
+    .button.primary, button.primary { background:linear-gradient(135deg,#102033,#24585b); color:#fff; }
+    .button.secondary, button.secondary { background:rgba(255,255,255,.8); color:var(--ink); border:1px solid var(--line); }
+    .button.danger { background: rgba(180,67,50,.12); color: var(--danger); border: 1px solid rgba(180,67,50,.2); }
+    h1,h2,h3 { font-family: "Space Grotesk", sans-serif; letter-spacing: -.04em; margin: 0; }
+    .hero { padding: 34px 0 24px; display:grid; gap:18px; grid-template-columns: 1.1fr .9fr; }
+    .panel, .summary-card, .user-card, .conversation-card, .detail {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+    .hero-card, .detail, .filters { padding: 24px; }
+    .hero-card p, .summary-card p, .user-card p, .conversation-card p, .detail p { color: var(--muted); line-height: 1.75; }
+    .summary-grid, .user-grid, .content-grid { display:grid; gap:18px; }
+    .summary-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .summary-card, .user-card, .conversation-card { padding: 20px; }
+    .summary-card strong { display:block; font-size: 24px; margin-bottom: 8px; }
+    .filters { display:flex; gap:12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .filters input, .filters select {
+      border:1px solid var(--line); border-radius: 999px; padding: 12px 14px; font: inherit; background: rgba(255,255,255,.86);
+    }
+    .content-grid { grid-template-columns: .9fr 1.1fr; align-items:start; }
+    .user-grid, .conversation-list { display:grid; gap: 14px; }
+    .user-card footer, .conversation-card footer { display:flex; gap:10px; flex-wrap: wrap; margin-top: 14px; }
+    .meta { display:flex; flex-wrap:wrap; gap:10px; font-size:14px; color: var(--muted); }
+    .message {
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(17,33,50,.04);
+      margin-bottom: 12px;
+      border: 1px solid rgba(17,33,50,.06);
+    }
+    .message.user { background: rgba(45,138,128,.08); }
+    .message.assistant { background: rgba(255,188,114,.12); }
+    .message img { width: 100%; max-width: 280px; border-radius: 18px; margin-top: 12px; }
+    .empty { color: var(--muted); }
+    @media (max-width: 980px) {
+      .hero, .content-grid, .summary-grid { grid-template-columns: 1fr; }
+      .nav { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="shell nav">
+      <a class="brand" href="/dashboard.html"><span class="mark">AS</span><span>Ai's Shelf Admin</span></a>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a class="button secondary" href="/dashboard.html">Dashboard</a>
+        <a class="button secondary" href="/profile.html">Profil</a>
+        <button class="button primary" id="logoutBtn">Chiqish</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <article class="panel hero-card">
+        <h1 style="font-size:clamp(2.3rem,4vw,4rem);">Admin moderation panel</h1>
+        <p>Foydalanuvchilarni boshqarish, AI sessiyalarni ko'rish va axloqiy nazoratni ushlab turish uchun yagona joy.</p>
+      </article>
+      <article class="panel hero-card">
+        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">Tanlangan suhbat</h2>
+        <p id="detailHeadline">Chap tomondan suhbat tanlang.</p>
+      </article>
+    </section>
+
+    <section class="summary-grid" id="summaryGrid"></section>
+
+    <section style="padding: 28px 0 12px;">
+      <div class="filters panel">
+        <input id="searchInput" type="search" placeholder="User, email yoki chat ichidan qidirish" />
+        <select id="assistantFilter">
+          <option value="">Barcha AI</option>
+          <option value="agro-ai">Agro AI</option>
+          <option value="doctor-ai">Doctor AI</option>
+          <option value="lawyer-ai">Lawyer AI</option>
+          <option value="private-ai">Private AI</option>
+        </select>
+        <button class="button primary" id="applyFilters">Filtrlash</button>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <div style="display:grid;gap:18px;">
+        <article class="panel" style="padding:24px;">
+          <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:16px;">Foydalanuvchilar</h2>
+          <div class="user-grid" id="userGrid"></div>
+        </article>
+        <article class="panel" style="padding:24px;">
+          <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:16px;">Suhbatlar</h2>
+          <div class="conversation-list" id="conversationList"></div>
+        </article>
+      </div>
+
+      <aside class="detail panel" id="detailPanel">
+        <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:12px;">Chat detail</h2>
+        <p class="empty">Conversation tanlanmagan.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const summaryGrid = document.getElementById("summaryGrid");
+    const userGrid = document.getElementById("userGrid");
+    const conversationList = document.getElementById("conversationList");
+    const detailPanel = document.getElementById("detailPanel");
+    const detailHeadline = document.getElementById("detailHeadline");
+    let usersCache = [];
+
+    async function ensureAdmin() {
+      const authRes = await fetch("/api/auth/me");
+      const auth = await authRes.json();
+      if (!auth.user) {
+        location.href = "/login.html?next=/admin.html";
+        throw new Error("Unauthenticated");
+      }
+      if (auth.user.role !== "admin") {
+        location.href = "/dashboard.html";
+        throw new Error("Forbidden");
+      }
+    }
+
+    async function loadSummary() {
+      const response = await fetch("/api/admin/summary");
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Summary yuklanmadi.");
+      const summary = data.summary;
+      summaryGrid.innerHTML = `
+        <article class="summary-card"><small>Userlar</small><strong>${summary.totalUsers}</strong><p>Faol: ${summary.activeUsers} | Admin: ${summary.admins}</p></article>
+        <article class="summary-card"><small>Suhbatlar</small><strong>${summary.totalConversations}</strong><p>Moderation kuzatuvida</p></article>
+        <article class="summary-card"><small>Xabarlar</small><strong>${summary.totalMessages}</strong><p>AI va user almashinuvi</p></article>
+        <article class="summary-card"><small>Flagli chatlar</small><strong>${summary.flaggedConversations}</strong><p>Nozik yoki yo'naltirilgan chatlar</p></article>
+      `;
+    }
+
+    async function loadUsers() {
+      const response = await fetch("/api/admin/users");
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Userlar yuklanmadi.");
+      usersCache = data.users || [];
+
+      userGrid.innerHTML = usersCache.map((user) => `
+        <article class="user-card">
+          <div class="meta">
+            <span>${user.role}</span>
+            <span>${user.isActive ? "active" : "blocked"}</span>
+          </div>
+          <h3>${user.name}</h3>
+          <p>${user.email}</p>
+          <div class="meta">
+            <span>${user.stats.conversationCount} chat</span>
+            <span>${user.stats.messageCount} xabar</span>
+          </div>
+          <footer>
+            ${user.role !== "admin" ? `<button class="button ${user.isActive ? "danger" : "secondary"}" data-user-id="${user.id}" data-active="${!user.isActive}">${user.isActive ? "Bloklash" : "Faollashtirish"}</button>` : ""}
+          </footer>
+        </article>
+      `).join("");
+
+      userGrid.querySelectorAll("button[data-user-id]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          await fetch("/api/admin/user-status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: button.dataset.userId,
+              isActive: button.dataset.active === "true"
+            })
+          });
+          await Promise.all([loadSummary(), loadUsers(), loadConversations()]);
+        });
+      });
+    }
+
+    async function loadConversations() {
+      const search = document.getElementById("searchInput").value.trim();
+      const assistantId = document.getElementById("assistantFilter").value;
+      const params = new URLSearchParams();
+      if (search) params.set("search", search);
+      if (assistantId) params.set("assistantId", assistantId);
+      const response = await fetch(`/api/admin/conversations?${params.toString()}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Suhbatlar yuklanmadi.");
+      const list = data.conversations || [];
+      if (!list.length) {
+        conversationList.innerHTML = '<p class="empty">Mos suhbat topilmadi.</p>';
+        return;
+      }
+      conversationList.innerHTML = list.map((conversation) => `
+        <article class="conversation-card">
+          <div class="meta">
+            <span>${conversation.assistantName}</span>
+            <span>${conversation.user ? conversation.user.name : "Unknown user"}</span>
+          </div>
+          <h3>${conversation.title}</h3>
+          <p>${conversation.lastMessagePreview || "Preview yo'q."}</p>
+          <div class="meta">
+            <span>${conversation.messageCount} xabar</span>
+            ${conversation.flaggedCount ? `<span>${conversation.flaggedCount} flag</span>` : ""}
+          </div>
+          <footer>
+            <button class="button secondary" data-conversation-id="${conversation.id}">Ochish</button>
+          </footer>
+        </article>
+      `).join("");
+
+      conversationList.querySelectorAll("button[data-conversation-id]").forEach((button) => {
+        button.addEventListener("click", () => loadConversationDetail(button.dataset.conversationId));
+      });
+    }
+
+    async function loadConversationDetail(id) {
+      const response = await fetch(`/api/conversation?id=${encodeURIComponent(id)}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Detail yuklanmadi.");
+      const conversation = data.conversation;
+      const user = usersCache.find((item) => item.id === conversation.userId);
+      detailHeadline.textContent = `${conversation.assistantName} | ${user ? user.name : "Unknown user"}`;
+      detailPanel.innerHTML = `
+        <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:12px;">${conversation.title}</h2>
+        <div class="meta" style="margin-bottom:16px;">
+          <span>${conversation.assistantName}</span>
+          <span>${user ? user.email : "Unknown email"}</span>
+          <span>${new Date(conversation.updatedAt).toLocaleString()}</span>
+        </div>
+        ${(conversation.messages || []).map((message) => `
+          <article class="message ${message.role}">
+            <div class="meta">
+              <span>${message.role}</span>
+              <span>${new Date(message.createdAt).toLocaleString()}</span>
+            </div>
+            <p>${message.text || ""}</p>
+            ${message.imageUrl ? `<img src="${message.imageUrl}" alt="Uploaded conversation image" />` : ""}
+            ${message.handoff ? `<div class="meta"><span>Handoff: ${message.handoff.label}</span></div>` : ""}
+          </article>
+        `).join("")}
+      `;
+    }
+
+    document.getElementById("applyFilters").addEventListener("click", () => loadConversations().catch(() => {}));
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await fetch("/api/auth/logout", { method: "POST" });
+      location.href = "/";
+    });
+
+    Promise.resolve()
+      .then(ensureAdmin)
+      .then(() => Promise.all([loadSummary(), loadUsers(), loadConversations()]))
+      .catch(() => {});
+  </script>
+</body>
+</html>

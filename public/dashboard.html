@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Ai's Shelf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --ink: #112132;
+      --muted: #607187;
+      --line: rgba(17, 33, 50, .08);
+      --card: rgba(255,255,255,.84);
+      --shadow: 0 26px 60px rgba(17,33,50,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Manrope", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(38, 125, 120, .16), transparent 22%),
+        radial-gradient(circle at top right, rgba(189, 132, 76, .16), transparent 18%),
+        linear-gradient(180deg, #f7f3eb 0%, #f8fbff 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1180px, calc(100vw - 32px)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(247,243,235,.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(17,33,50,.06);
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 14px; padding: 16px 0;
+    }
+    .brand { display:flex; align-items:center; gap:14px; font-weight:800; }
+    .brand-mark {
+      width: 42px; height: 42px; border-radius: 14px; display:grid; place-items:center;
+      background: linear-gradient(135deg, #102033, #24585b); color:#fff;
+      font-family: "Space Grotesk", sans-serif;
+    }
+    .nav-actions { display:flex; gap:12px; flex-wrap: wrap; }
+    .button, button {
+      border: 0; border-radius: 999px; padding: 13px 18px; font: inherit; font-weight: 800; cursor: pointer;
+    }
+    .button.primary, button.primary { background: linear-gradient(135deg, #102033, #24585b); color: #fff; }
+    .button.secondary, button.secondary { background: rgba(255,255,255,.74); color: var(--ink); border: 1px solid var(--line); }
+    h1,h2,h3 { font-family: "Space Grotesk", sans-serif; letter-spacing: -.04em; margin: 0; }
+    .hero {
+      padding: 38px 0 24px;
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 24px;
+      align-items: center;
+    }
+    .panel, .stat, .ai-card, .conversation-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+    .hero-main { padding: 28px; }
+    .hero-main p, .stat small, .conversation-card p { color: var(--muted); line-height: 1.75; }
+    .status-grid, .stats-grid, .ai-grid, .conversation-grid {
+      display: grid;
+      gap: 18px;
+    }
+    .status-grid { grid-template-columns: repeat(3, minmax(0,1fr)); margin-top: 24px; }
+    .stat { padding: 20px; }
+    .stat strong { display:block; font-size: 22px; margin-bottom: 8px; }
+    .hero-side {
+      min-height: 100%;
+      padding: 28px;
+      display: grid;
+      gap: 14px;
+      background: linear-gradient(145deg, #102033, #174555);
+      color: #eef8ff;
+    }
+    .hero-side p { color: rgba(238,248,255,.8); line-height: 1.8; }
+    .pill {
+      display:inline-flex; width: fit-content; padding: 9px 14px; border-radius: 999px;
+      font-size: 13px; font-weight: 800; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.16);
+    }
+    section { padding: 28px 0; }
+    .section-head { display:flex; justify-content:space-between; gap:18px; align-items:end; margin-bottom: 18px; }
+    .section-head p { max-width: 56ch; color: var(--muted); line-height: 1.75; margin: 0; }
+    .ai-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .ai-card { padding: 22px; display:grid; gap: 14px; }
+    .ai-card .badge { display:inline-flex; width: fit-content; padding: 8px 12px; border-radius: 999px; font-size:12px; font-weight:800; text-transform: uppercase; letter-spacing:.08em; background: rgba(17,33,50,.06); }
+    .ai-card footer { display:flex; gap: 10px; flex-wrap: wrap; }
+    .conversation-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .conversation-card { padding: 20px; display:grid; gap: 12px; }
+    .meta { display:flex; flex-wrap:wrap; gap: 10px; color: var(--muted); font-size: 14px; }
+    .empty {
+      padding: 24px; border-radius: 28px; border: 1px dashed rgba(17,33,50,.18); color: var(--muted); background: rgba(255,255,255,.45);
+    }
+    @media (max-width: 920px) {
+      .hero, .section-head { grid-template-columns: 1fr; display: grid; }
+      .status-grid, .ai-grid, .conversation-grid { grid-template-columns: 1fr; }
+      .nav { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="shell nav">
+      <a class="brand" href="/"><span class="brand-mark">AS</span><span>Ai's Shelf</span></a>
+      <div class="nav-actions">
+        <a class="button secondary" href="/profile.html">Profil</a>
+        <a class="button secondary" id="adminLink" href="/admin.html" style="display:none;">Admin</a>
+        <button class="button primary" id="logoutBtn">Chiqish</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="panel hero-main">
+        <span class="pill" style="background:rgba(17,33,50,.06);border-color:rgba(17,33,50,.08);">Dashboard</span>
+        <h1 style="font-size:clamp(2.4rem,4vw,4rem);margin-top:16px;">Xush kelibsiz, <span id="userName">foydalanuvchi</span>.</h1>
+        <p>Bu yerda siz AIni tanlaysiz, oxirgi suhbatlarni ko'rasiz va tezda kerakli yo'nalishga o'tasiz.</p>
+        <div class="status-grid">
+          <article class="stat"><small>Engine</small><strong id="engineState">HALLAYM AI</strong><span class="mini">Chat va vision</span></article>
+          <article class="stat"><small>Media</small><strong id="mediaState">Cloud media</strong><span class="mini">Kamera va fayl upload</span></article>
+          <article class="stat"><small>Storage</small><strong id="storageState">Mongo</strong><span class="mini">Conversation history</span></article>
+        </div>
+      </div>
+      <aside class="panel hero-side">
+        <span class="pill">Quick actions</span>
+        <h2 style="font-size:clamp(2rem,4vw,3rem);">Bugun qaysi AI bilan ishlaysiz?</h2>
+        <p>Mutaxassisga to'g'ridan-to'g'ri kiring yoki oxirgi suhbatlar ichidan davom eting. Nozik mavzularda AI sizni kerakli yo'nalishga o'tkazadi.</p>
+        <a class="button secondary" href="/doctorai.html">Doctor AI</a>
+        <a class="button secondary" href="/lawyerai.html">Lawyer AI</a>
+      </aside>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">Faol AI yo'nalishlari</h2>
+        </div>
+        <p>Har bir karta o'z chat sahifasiga olib boradi. Slides AI va Website AI hozircha keyingi bosqichga qoldirilgan.</p>
+      </div>
+      <div class="ai-grid" id="aiGrid"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">Oxirgi suhbatlar</h2>
+        </div>
+        <p>Oxirgi chat sessiyalaringiz shu yerda ko'rinadi. Bir bosishda davom ettirishingiz mumkin.</p>
+      </div>
+      <div class="conversation-grid" id="conversationGrid"></div>
+      <div class="empty" id="emptyState" style="display:none;">Hali suhbat boshlanmagan. Yuqoridan istalgan AIni tanlang.</div>
+    </section>
+  </main>
+
+  <script>
+    const aiGrid = document.getElementById("aiGrid");
+    const conversationGrid = document.getElementById("conversationGrid");
+    const emptyState = document.getElementById("emptyState");
+    const userName = document.getElementById("userName");
+    const adminLink = document.getElementById("adminLink");
+    const engineState = document.getElementById("engineState");
+    const mediaState = document.getElementById("mediaState");
+    const storageState = document.getElementById("storageState");
+
+    const assistantRoute = {
+      "agro-ai": "/agroai.html",
+      "doctor-ai": "/doctorai.html",
+      "lawyer-ai": "/lawyerai.html",
+      "private-ai": "/privateai.html"
+    };
+
+    async function ensureAuth() {
+      const authRes = await fetch("/api/auth/me");
+      const auth = await authRes.json();
+      if (!auth.user) {
+        location.href = "/login.html?next=/dashboard.html";
+        throw new Error("Unauthenticated");
+      }
+      userName.textContent = auth.user.name;
+      if (auth.user.role === "admin") adminLink.style.display = "inline-flex";
+      return auth.user;
+    }
+
+    async function loadDashboard() {
+      await ensureAuth();
+      const [configRes, convRes] = await Promise.all([
+        fetch("/api/config"),
+        fetch("/api/conversations")
+      ]);
+      const config = await configRes.json();
+      const convData = await convRes.json();
+
+      engineState.textContent = config.hallaymReady ? "HALLAYM live" : "Demo mode";
+      mediaState.textContent = config.cloudinaryReady ? "Cloud ready" : "Setup needed";
+      storageState.textContent = config.storageMode === "mongodb-uri" ? "Mongo online" : "Memory mode";
+
+      aiGrid.innerHTML = config.assistants.map((assistant) => {
+        if (!assistant.enabled) {
+          return `
+            <article class="ai-card" style="opacity:.72;">
+              <span class="badge">Coming soon</span>
+              <h3>${assistant.name}</h3>
+              <p>${assistant.tagline}</p>
+              <footer><span class="button secondary">Keyinroq</span></footer>
+            </article>
+          `;
+        }
+        return `
+          <article class="ai-card">
+            <span class="badge">${assistant.shortName}</span>
+            <h3>${assistant.name}</h3>
+            <p>${assistant.intro}</p>
+            <footer>
+              <a class="button primary" href="${assistant.page}">Chatni ochish</a>
+            </footer>
+          </article>
+        `;
+      }).join("");
+
+      const conversations = convData.conversations || [];
+      if (!conversations.length) {
+        emptyState.style.display = "block";
+        conversationGrid.innerHTML = "";
+        return;
+      }
+
+      conversationGrid.innerHTML = conversations.slice(0, 8).map((conversation) => `
+        <article class="conversation-card">
+          <div class="meta">
+            <span>${conversation.assistantName}</span>
+            <span>${new Date(conversation.updatedAt).toLocaleString()}</span>
+          </div>
+          <h3>${conversation.title}</h3>
+          <p>${conversation.lastMessagePreview || "Suhbat tayyor."}</p>
+          <div class="meta">
+            <span>${conversation.messageCount} xabar</span>
+            ${conversation.flaggedCount ? `<span>${conversation.flaggedCount} flag</span>` : ""}
+          </div>
+          <a class="button secondary" href="${assistantRoute[conversation.assistantId] || "/dashboard.html"}?conversationId=${conversation.id}">Davom ettirish</a>
+        </article>
+      `).join("");
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await fetch("/api/auth/logout", { method: "POST" });
+      location.href = "/";
+    });
+
+    loadDashboard().catch((error) => {
+      if (error.message !== "Unauthenticated") {
+        emptyState.style.display = "block";
+        emptyState.textContent = error.message;
+      }
+    });
+  </script>
+</body>
+</html>

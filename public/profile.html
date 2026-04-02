@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil | Ai's Shelf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --ink: #112132;
+      --muted: #607187;
+      --line: rgba(17,33,50,.08);
+      --card: rgba(255,255,255,.84);
+      --shadow: 0 26px 60px rgba(17,33,50,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Manrope", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #f7f3eb 0%, #f8fbff 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1120px, calc(100vw - 32px)); margin: 0 auto; }
+    .topbar { position: sticky; top: 0; background: rgba(247,243,235,.82); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(17,33,50,.06); }
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 0; }
+    .brand { display: flex; align-items: center; gap: 14px; font-weight: 800; }
+    .brand-mark { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(135deg, #102033, #24585b); color:#fff; font-family:"Space Grotesk",sans-serif; }
+    .button, button { border: 0; border-radius: 999px; padding: 13px 18px; font: inherit; font-weight: 800; cursor: pointer; }
+    .button.primary, button { background: linear-gradient(135deg, #102033, #24585b); color:#fff; }
+    .button.secondary { background: rgba(255,255,255,.78); border: 1px solid var(--line); color: var(--ink); }
+    h1,h2,h3 { font-family: "Space Grotesk", sans-serif; letter-spacing: -.04em; margin: 0; }
+    .hero { padding: 34px 0; display:grid; grid-template-columns: .95fr 1.05fr; gap: 18px; }
+    .panel, .stat, .conversation { background: var(--card); border: 1px solid var(--line); border-radius: 28px; box-shadow: var(--shadow); backdrop-filter: blur(16px); }
+    .hero-card, .form-card, .conversation { padding: 24px; }
+    .hero-card p, .form-card p, .conversation p { color: var(--muted); line-height: 1.75; }
+    .stats { display:grid; gap: 14px; grid-template-columns: repeat(3, minmax(0,1fr)); margin-top: 18px; }
+    .stat { padding: 18px; }
+    .stat strong { display:block; font-size: 22px; margin-bottom: 8px; }
+    form { display:grid; gap: 14px; margin-top: 18px; }
+    label { display:grid; gap: 8px; font-weight: 700; }
+    input, textarea { border:1px solid var(--line); border-radius: 18px; padding: 14px 16px; font: inherit; background: rgba(255,255,255,.88); outline:none; }
+    textarea { resize: vertical; min-height: 120px; }
+    input:focus, textarea:focus { border-color:#2d8a80; box-shadow: 0 0 0 4px rgba(45,138,128,.12); }
+    .conversation-grid { display:grid; gap: 16px; }
+    .meta { display:flex; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 14px; }
+    #message { min-height: 24px; }
+    .success { color: #166d57; }
+    .error { color: #b44332; }
+    @media (max-width: 920px) {
+      .hero { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+      .nav { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="shell nav">
+      <a class="brand" href="/dashboard.html"><span class="brand-mark">AS</span><span>Ai's Shelf</span></a>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a class="button secondary" href="/dashboard.html">Dashboard</a>
+        <a class="button secondary" id="adminLink" href="/admin.html" style="display:none;">Admin</a>
+        <button id="logoutBtn">Chiqish</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <article class="panel hero-card">
+        <h1 style="font-size:clamp(2.2rem,4vw,3.6rem);" id="welcome">Profil</h1>
+        <p>Bu yerda hisob ma'lumotlaringiz, qisqa bio va platformadagi faoliyatingiz ko'rinadi.</p>
+        <div class="stats">
+          <div class="stat"><small>Suhbatlar</small><strong id="conversationCount">0</strong></div>
+          <div class="stat"><small>Xabarlar</small><strong id="messageCount">0</strong></div>
+          <div class="stat"><small>Flagli chatlar</small><strong id="flaggedCount">0</strong></div>
+        </div>
+      </article>
+
+      <article class="panel form-card">
+        <h2 style="font-size:clamp(1.8rem,3vw,2.6rem);">Profilni yangilash</h2>
+        <p>Ism, kompaniya yoki qisqa bio ni yangilang.</p>
+        <form id="profileForm">
+          <label>Ism<input type="text" name="name" required /></label>
+          <label>Kompaniya yoki loyiha<input type="text" name="company" /></label>
+          <label>Qisqa bio<textarea name="bio" placeholder="O'zingiz haqingizda qisqacha..."></textarea></label>
+          <button type="submit">Saqlash</button>
+        </form>
+        <p id="message"></p>
+      </article>
+    </section>
+
+    <section style="padding: 0 0 42px;">
+      <div style="display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:18px;">
+        <div><h2 style="font-size:clamp(1.8rem,3vw,2.6rem);">Oxirgi faoliyat</h2></div>
+        <p style="margin:0;color:var(--muted);">So'nggi sessiyalar shu yerda ko'rinadi.</p>
+      </div>
+      <div class="conversation-grid" id="conversationGrid"></div>
+    </section>
+  </main>
+
+  <script>
+    const adminLink = document.getElementById("adminLink");
+    const messageEl = document.getElementById("message");
+    let currentUser = null;
+
+    async function loadProfile() {
+      const authRes = await fetch("/api/auth/me");
+      const auth = await authRes.json();
+      if (!auth.user) {
+        location.href = "/login.html?next=/profile.html";
+        throw new Error("Unauthenticated");
+      }
+      currentUser = auth.user;
+      if (auth.user.role === "admin") adminLink.style.display = "inline-flex";
+
+      const response = await fetch("/api/profile");
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Profil yuklanmadi.");
+
+      document.getElementById("welcome").textContent = `${data.user.name} profili`;
+      document.querySelector('input[name="name"]').value = data.user.name || "";
+      document.querySelector('input[name="company"]').value = data.user.company || "";
+      document.querySelector('textarea[name="bio"]').value = data.user.bio || "";
+      document.getElementById("conversationCount").textContent = data.stats.conversationCount || 0;
+      document.getElementById("messageCount").textContent = data.stats.messageCount || 0;
+      document.getElementById("flaggedCount").textContent = data.stats.flaggedConversationCount || 0;
+
+      const grid = document.getElementById("conversationGrid");
+      if (!data.recentConversations.length) {
+        grid.innerHTML = '<article class="conversation"><h3>Hali faoliyat yo\'q</h3><p>Dashboard orqali birinchi AIni tanlab suhbatni boshlang.</p></article>';
+      } else {
+        const routeMap = {
+          "agro-ai": "/agroai.html",
+          "doctor-ai": "/doctorai.html",
+          "lawyer-ai": "/lawyerai.html",
+          "private-ai": "/privateai.html"
+        };
+        grid.innerHTML = data.recentConversations.map((conversation) => `
+          <article class="conversation">
+            <div class="meta">
+              <span>${conversation.assistantName}</span>
+              <span>${new Date(conversation.updatedAt).toLocaleString()}</span>
+            </div>
+            <h3>${conversation.title}</h3>
+            <p>${conversation.lastMessagePreview || "Suhbat tayyor."}</p>
+            <a class="button secondary" href="${routeMap[conversation.assistantId]}?conversationId=${conversation.id}">Davom ettirish</a>
+          </article>
+        `).join("");
+      }
+    }
+
+    document.getElementById("profileForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      messageEl.textContent = "Saqlanmoqda...";
+      messageEl.className = "";
+      const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+      try {
+        const response = await fetch("/api/profile", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Saqlashda xato.");
+        messageEl.textContent = "Profil yangilandi.";
+        messageEl.className = "success";
+        await loadProfile();
+      } catch (error) {
+        messageEl.textContent = error.message;
+        messageEl.className = "error";
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await fetch("/api/auth/logout", { method: "POST" });
+      location.href = "/";
+    });
+
+    loadProfile().catch(() => {});
+  </script>
+</body>
+</html>

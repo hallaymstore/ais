@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agro AI | Ai's Shelf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root { --accent:#76d45e; --accent-2:#4f9a3f; --ink:#102033; --muted:#607187; --line:rgba(16,32,51,.08); --card:rgba(255,255,255,.86); --shadow:0 26px 60px rgba(16,32,51,.12); }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Manrope",sans-serif; color:var(--ink); background:radial-gradient(circle at top left, rgba(118,212,94,.22), transparent 18%), linear-gradient(180deg, #f4fbf1 0%, #f7fbff 100%); }
+    a { color:inherit; text-decoration:none; } .shell { width:min(1260px, calc(100vw - 24px)); margin:0 auto; }
+    .topbar { position:sticky; top:0; z-index:12; background:rgba(244,251,241,.82); backdrop-filter:blur(18px); border-bottom:1px solid rgba(16,32,51,.06); }
+    .nav { display:flex; justify-content:space-between; gap:14px; align-items:center; padding:16px 0; } .brand { display:flex; align-items:center; gap:14px; font-weight:800; }
+    .mark { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,#102033,#4f9a3f); color:#fff; font-family:"Space Grotesk",sans-serif; }
+    .button, button { border:0; border-radius:999px; padding:12px 16px; font:inherit; font-weight:800; cursor:pointer; }
+    .button.primary, button.primary { background:linear-gradient(135deg,#102033,#4f9a3f); color:#fff; }
+    .button.secondary, button.secondary { background:rgba(255,255,255,.8); border:1px solid var(--line); color:var(--ink); }
+    h1,h2,h3 { font-family:"Space Grotesk",sans-serif; letter-spacing:-.04em; margin:0; } .layout { padding:24px 0 30px; display:grid; grid-template-columns:320px 1fr; gap:18px; }
+    .panel, .chat-shell, .sidebar-card { background:var(--card); border:1px solid var(--line); border-radius:28px; box-shadow:var(--shadow); backdrop-filter:blur(16px); }
+    .sidebar-card { padding:20px; } .sidebar { display:grid; gap:18px; align-content:start; }
+    .pill { display:inline-flex; width:fit-content; border-radius:999px; padding:8px 12px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; background:rgba(16,32,51,.06); }
+    .conversation-list { display:grid; gap:12px; margin-top:14px; }
+    .conversation-item { padding:14px; border-radius:20px; background:rgba(16,32,51,.04); border:1px solid rgba(16,32,51,.06); cursor:pointer; }
+    .conversation-item.active { outline:2px solid rgba(79,154,63,.28); } .conversation-item strong { display:block; margin-bottom:6px; } .conversation-item small { color:var(--muted); line-height:1.55; }
+    .chat-shell { min-height:calc(100vh - 120px); display:grid; grid-template-rows:auto 1fr auto; overflow:hidden; }
+    .chat-header { padding:24px; border-bottom:1px solid rgba(16,32,51,.06); display:grid; gap:14px; background:linear-gradient(145deg, rgba(118,212,94,.18), rgba(255,255,255,.74)); }
+    .chat-header p { margin:0; color:var(--muted); line-height:1.75; } .quick-prompts { display:flex; gap:10px; flex-wrap:wrap; } .quick-prompts button { background:rgba(255,255,255,.76); color:var(--ink); border:1px solid var(--line); }
+    .messages { padding:24px; display:grid; gap:14px; overflow:auto; background:linear-gradient(180deg, rgba(255,255,255,.44), rgba(255,255,255,.18)); }
+    .message { max-width:min(78%, 760px); padding:16px 18px; border-radius:24px; border:1px solid rgba(16,32,51,.06); background:rgba(255,255,255,.86); line-height:1.75; box-shadow:0 14px 30px rgba(16,32,51,.06); }
+    .message.user { margin-left:auto; background:rgba(118,212,94,.18); } .message.assistant { margin-right:auto; } .message img { width:min(100%, 320px); border-radius:18px; margin-top:12px; }
+    .meta { display:flex; gap:12px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-bottom:8px; }
+    .composer { padding:20px; border-top:1px solid rgba(16,32,51,.06); display:grid; gap:14px; background:rgba(255,255,255,.72); }
+    textarea { width:100%; min-height:110px; resize:vertical; border:1px solid var(--line); border-radius:22px; padding:16px; font:inherit; outline:none; background:rgba(255,255,255,.9); }
+    textarea:focus { border-color:var(--accent-2); box-shadow:0 0 0 4px rgba(79,154,63,.12); } .composer-row { display:flex; gap:12px; flex-wrap:wrap; justify-content:space-between; } .actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .preview { display:none; align-items:center; gap:14px; padding:14px; border-radius:22px; background:rgba(16,32,51,.04); border:1px dashed rgba(16,32,51,.14); } .preview img { width:88px; height:88px; object-fit:cover; border-radius:18px; }
+    .empty { padding:26px; border-radius:24px; border:1px dashed rgba(16,32,51,.14); color:var(--muted); background:rgba(255,255,255,.46); } .error { color:#b44332; } .success { color:#166d57; }
+    @media (max-width:980px) { .layout { grid-template-columns:1fr; } .chat-shell { min-height:auto; } .message { max-width:100%; } .nav { flex-direction:column; align-items:flex-start; } }
+  </style>
+</head>
+<body>
+  <div class="topbar"><div class="shell nav"><a class="brand" href="/dashboard.html"><span class="mark">AS</span><span>Ai's Shelf</span></a><div style="display:flex;gap:12px;flex-wrap:wrap;"><a class="button secondary" href="/dashboard.html">Dashboard</a><a class="button secondary" href="/profile.html">Profil</a><button class="button primary" id="logoutBtn">Chiqish</button></div></div></div>
+  <main class="shell layout">
+    <aside class="sidebar">
+      <article class="sidebar-card"><span class="pill">Agro AI</span><h2 style="font-size:clamp(1.8rem,3vw,2.5rem);margin-top:12px;">Fermer va hosil oqimlari uchun AI</h2><p style="color:var(--muted);line-height:1.8;">Ekin, hosil, sug'orish, zararkunanda va dala sharoiti haqida yozing yoki rasm yuboring. Huquqiy yoki tibbiy mavzu bo'lsa tegishli Aiga o'tkaziladi.</p><button class="button secondary" id="newChatBtn">Yangi chat</button></article>
+      <article class="sidebar-card"><h3 style="font-size:1.3rem;">So'nggi sessiyalar</h3><div class="conversation-list" id="conversationList"></div></article>
+    </aside>
+    <section class="chat-shell">
+      <header class="chat-header"><div class="pill">HALLAYM AI agro lane</div><h1 style="font-size:clamp(2rem,4vw,3.4rem);">Agro AI</h1><p>Agro savollari uchun amaliy, bosqichma-bosqich javob beradi. Masala boshqa soha bo'lsa, to'g'ri Aiga yo'naltiradi.</p><div class="quick-prompts"><button data-prompt="Pomidor barglarida dog' paydo bo'ldi, nima sabab bo'lishi mumkin?">Bargdagi dog'</button><button data-prompt="Bu mavsumda paxta uchun sug'orish rejasini qanday tuzsak bo'ladi?">Sug'orish rejasi</button><button data-prompt="Ushbu rasm asosida ekin holatini tahlil qilib bering.">Rasm tahlili</button></div></header>
+      <div class="messages" id="messages"><div class="empty">Chat tayyor. Savol yozing yoki rasm yuboring.</div></div>
+      <div class="composer"><div class="preview" id="previewBox"><img id="previewImage" alt="Tanlangan rasm" /><div><strong id="previewName"></strong><div style="color:var(--muted);line-height:1.6;">Rasm keyingi xabar bilan birga yuboriladi.</div><button class="button secondary" id="clearImageBtn" type="button">Olib tashlash</button></div></div><textarea id="messageInput" placeholder="Agro savolingizni yozing..."></textarea><div class="composer-row"><div class="actions"><button class="button secondary" id="cameraBtn" type="button">Kameradan</button><button class="button secondary" id="uploadBtn" type="button">Qurilmadan</button></div><button class="button primary" id="sendBtn" type="button">Yuborish</button></div><input id="cameraInput" type="file" accept="image/*" capture="environment" hidden /><input id="fileInput" type="file" accept="image/*" hidden /><div id="statusText" style="min-height:22px;color:var(--muted);"></div></div>
+    </section>
+  </main>
+  <script>
+    const ASSISTANT = { id: "agro-ai", name: "Agro AI", page: "/agroai.html" };
+    let currentConversationId = new URLSearchParams(location.search).get("conversationId") || "";
+    let selectedImage = null;
+    const messagesEl = document.getElementById("messages"); const conversationListEl = document.getElementById("conversationList"); const statusText = document.getElementById("statusText"); const messageInput = document.getElementById("messageInput"); const previewBox = document.getElementById("previewBox"); const previewImage = document.getElementById("previewImage"); const previewName = document.getElementById("previewName");
+    const escapeHtml = (value) => String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+    async function ensureAuth(){ const authRes = await fetch("/api/auth/me"); const auth = await authRes.json(); if(!auth.user){ location.href = `/login.html?next=${encodeURIComponent(location.pathname + location.search)}`; throw new Error("Unauthenticated"); } }
+    function renderMessages(conversation){ const messages = conversation?.messages || []; if(!messages.length){ messagesEl.innerHTML = '<div class="empty">Chat tayyor. Savol yozing yoki rasm yuboring.</div>'; return; } messagesEl.innerHTML = messages.map((message)=>`<article class="message ${message.role}"><div class="meta"><span>${message.role === "assistant" ? ASSISTANT.name : "Siz"}</span><span>${new Date(message.createdAt).toLocaleString()}</span></div><div>${escapeHtml(message.text || "").replaceAll("\n","<br />")}</div>${message.imageUrl ? `<img src="${message.imageUrl}" alt="Chat image" />` : ""}${message.handoff ? `<div style="margin-top:12px;"><a class="button secondary" href="${message.handoff.page}">${message.handoff.label}</a></div>` : ""}</article>`).join(""); messagesEl.scrollTop = messagesEl.scrollHeight; }
+    async function loadConversations(){ const response = await fetch(`/api/conversations?assistantId=${ASSISTANT.id}`); const data = await response.json(); const conversations = data.conversations || []; if(!conversations.length){ conversationListEl.innerHTML = '<div class="empty">Hali sessiya yo\'q.</div>'; renderMessages(null); return; } if(!currentConversationId) currentConversationId = conversations[0].id; conversationListEl.innerHTML = conversations.map((conversation)=>`<article class="conversation-item ${conversation.id === currentConversationId ? "active" : ""}" data-id="${conversation.id}"><strong>${escapeHtml(conversation.title)}</strong><small>${escapeHtml(conversation.lastMessagePreview || "Suhbat tayyor.")}</small></article>`).join(""); conversationListEl.querySelectorAll("[data-id]").forEach((item)=>item.addEventListener("click",()=>{ currentConversationId = item.dataset.id; history.replaceState({}, "", `${ASSISTANT.page}?conversationId=${currentConversationId}`); loadConversations().catch(()=>{}); loadConversationDetail().catch(()=>{}); })); await loadConversationDetail(); }
+    async function loadConversationDetail(){ if(!currentConversationId){ renderMessages(null); return; } const response = await fetch(`/api/conversation?id=${encodeURIComponent(currentConversationId)}`); const data = await response.json(); if(!response.ok) throw new Error(data.error || "Conversation yuklanmadi."); renderMessages(data.conversation); }
+    async function handleSend(){ const text = messageInput.value.trim(); if(!text && !selectedImage) return; statusText.textContent = "Yuborilmoqda..."; statusText.className = ""; try { let upload = null; if(selectedImage){ const uploadRes = await fetch("/api/upload-image",{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ assistantId: ASSISTANT.id, dataUrl: selectedImage.dataUrl, fileName: selectedImage.name }) }); const uploadData = await uploadRes.json(); if(!uploadRes.ok) throw new Error(uploadData.error || "Rasm yuklanmadi."); upload = uploadData; } const response = await fetch("/api/chat/send",{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ assistantId: ASSISTANT.id, conversationId: currentConversationId, message: text, imageUrl: upload?.imageUrl || "", imagePublicId: upload?.imagePublicId || "" }) }); const data = await response.json(); if(!response.ok) throw new Error(data.error || "Xabar yuborilmadi."); currentConversationId = data.conversationId; history.replaceState({}, "", `${ASSISTANT.page}?conversationId=${currentConversationId}`); messageInput.value = ""; clearSelectedImage(); renderMessages(data.conversation); await loadConversations(); statusText.textContent = data.handoff ? "Savol boshqa Aiga yo'naltirildi." : "Javob tayyor."; statusText.className = data.handoff ? "" : "success"; } catch (error) { statusText.textContent = error.message; statusText.className = "error"; } }
+    function setSelectedImage(file, dataUrl){ selectedImage = { name:file.name, dataUrl }; previewImage.src = dataUrl; previewName.textContent = file.name; previewBox.style.display = "flex"; }
+    function clearSelectedImage(){ selectedImage = null; previewBox.style.display = "none"; document.getElementById("cameraInput").value = ""; document.getElementById("fileInput").value = ""; }
+    function bindFileInput(input){ input.addEventListener("change", ()=>{ const file = input.files?.[0]; if(!file) return; const reader = new FileReader(); reader.onload = ()=>setSelectedImage(file, reader.result); reader.readAsDataURL(file); }); }
+    document.getElementById("cameraBtn").addEventListener("click",()=>document.getElementById("cameraInput").click()); document.getElementById("uploadBtn").addEventListener("click",()=>document.getElementById("fileInput").click()); document.getElementById("clearImageBtn").addEventListener("click", clearSelectedImage); document.getElementById("sendBtn").addEventListener("click", handleSend); document.getElementById("newChatBtn").addEventListener("click",()=>{ currentConversationId = ""; history.replaceState({}, "", ASSISTANT.page); renderMessages(null); loadConversations().catch(()=>{}); }); document.getElementById("logoutBtn").addEventListener("click", async()=>{ await fetch("/api/auth/logout",{ method:"POST" }); location.href = "/"; }); document.querySelectorAll("[data-prompt]").forEach((button)=>button.addEventListener("click",()=>{ messageInput.value = button.dataset.prompt; messageInput.focus(); })); bindFileInput(document.getElementById("cameraInput")); bindFileInput(document.getElementById("fileInput"));
+    Promise.resolve().then(ensureAuth).then(loadConversations).catch(()=>{});
+  </script>
+</body>
+</html>
