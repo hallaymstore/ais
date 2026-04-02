@@ -27,9 +27,9 @@ const APP_STATE = {
         hasRealEnv(process.env.CLOUDINARY_UPLOAD_PRESET))
   ),
   videoReady: Boolean(
-    hasRealEnv(process.env.EXPRESSTURN_HOST) &&
-      hasRealEnv(process.env.EXPRESSTURN_USERNAME) &&
-      hasRealEnv(process.env.EXPRESSTURN_PASSWORD)
+    (hasRealEnv(process.env.TURN_URL) || hasRealEnv(process.env.EXPRESSTURN_HOST)) &&
+      hasRealEnv(process.env.EXPRESSTURN_USERNAME || process.env.TURN_USERNAME) &&
+      hasRealEnv(process.env.EXPRESSTURN_PASSWORD || process.env.TURN_PASSWORD)
   ),
 };
 
@@ -1370,14 +1370,31 @@ function haversineKm(lat1, lng1, lat2, lng2) {
 function buildIceServers() {
   if (!APP_STATE.videoReady) return [];
 
+  const username =
+    process.env.EXPRESSTURN_USERNAME || process.env.TURN_USERNAME || "";
+  const credential =
+    process.env.EXPRESSTURN_PASSWORD || process.env.TURN_PASSWORD || "";
+  const rawTurnUrls = String(process.env.TURN_URL || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (rawTurnUrls.length > 0) {
+    return [
+      {
+        urls: rawTurnUrls,
+        username,
+        credential,
+      },
+    ];
+  }
+
   const hosts = String(process.env.EXPRESSTURN_HOST || "")
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
   const port = Number(process.env.EXPRESSTURN_PORT || 3478);
   const turnsPort = Number(process.env.EXPRESSTURN_TURNS_PORT || 443);
-  const username = process.env.EXPRESSTURN_USERNAME;
-  const credential = process.env.EXPRESSTURN_PASSWORD;
   const includeTurns = String(process.env.EXPRESSTURN_ENABLE_TURNS || "true") !== "false";
 
   const iceServers = [];

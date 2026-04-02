@@ -1,0 +1,5 @@
+[Ai's Shelf] Admin account ready (env): admin@aishelf.local / ChangeThisAdmin123!
+[Ai's Shelf] http://localhost:3000
+[Ai's Shelf] Storage: memory
+[Ai's Shelf] HALLAYM AI: missing HALLAYM_API_KEY or GROQ_API_KEY
+[Ai's Shelf] Cloudinary: not configured
