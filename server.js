@@ -1028,49 +1028,52 @@ async function generateHallaymReply({
 
   const hallaymKey = process.env.HALLAYM_API_KEY || process.env.GROQ_API_KEY;
 
-  const input = conversation.messages.slice(-10).map((item) => {
-    if (item.role === "assistant") {
+  const recentMessages = conversation.messages.slice(-10);
+  const hasVisionInput = recentMessages.some((item) => item.imageUrl) || Boolean(imageUrl);
+  const messages = [
+    {
+      role: "system",
+      content: assistant.systemPrompt,
+    },
+    ...recentMessages.map((item) => {
+      if (item.imageUrl) {
+        return {
+          role: item.role === "assistant" ? "assistant" : "user",
+          content: [
+            {
+              type: "text",
+              text: item.text || "Foydalanuvchi rasm yubordi.",
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: item.imageUrl,
+              },
+            },
+          ],
+        };
+      }
+
       return {
-        role: "assistant",
-        content: item.text,
+        role: item.role === "assistant" ? "assistant" : "user",
+        content: item.text || "",
       };
-    }
+    }),
+  ];
 
-    if (item.imageUrl) {
-      return {
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: item.text || "Foydalanuvchi rasm yubordi.",
-          },
-          {
-            type: "input_image",
-            detail: "auto",
-            image_url: item.imageUrl,
-          },
-        ],
-      };
-    }
-
-    return {
-      role: "user",
-      content: item.text,
-    };
-  });
-
-  const model = imageUrl
+  const model = hasVisionInput
     ? process.env.HALLAYM_VISION_MODEL ||
       "meta-llama/llama-4-scout-17b-16e-instruct"
     : process.env.HALLAYM_TEXT_MODEL || "llama-3.3-70b-versatile";
 
   const payload = {
     model,
-    instructions: assistant.systemPrompt,
-    input,
+    messages,
+    temperature: 0.4,
+    max_completion_tokens: 1024,
   };
 
-  const response = await fetch("https://api.groq.com/openai/v1/responses", {
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -1086,7 +1089,7 @@ async function generateHallaymReply({
     throw new Error(detail);
   }
 
-  const text = extractResponseText(data);
+  const text = extractChatCompletionText(data);
   return (
     text ||
     "Kechirasiz, hozircha aniq javobni shakllantira olmadim. Savolni biroz qisqartirib qayta yuboring."
@@ -1114,22 +1117,18 @@ function createLocalFallbackReply({ assistant, user, imageUrl }) {
   }${hints[assistant.id] || ""}`.trim();
 }
 
-function extractResponseText(data) {
-  if (typeof data?.output_text === "string" && data.output_text.trim()) {
-    return data.output_text.trim();
+function extractChatCompletionText(data) {
+  const content = data?.choices?.[0]?.message?.content;
+
+  if (typeof content === "string") {
+    return content.trim();
   }
 
-  if (Array.isArray(data?.output)) {
-    const chunks = [];
-    for (const item of data.output) {
-      if (Array.isArray(item?.content)) {
-        for (const contentItem of item.content) {
-          if (contentItem?.text) chunks.push(contentItem.text);
-          if (contentItem?.content?.[0]?.text) chunks.push(contentItem.content[0].text);
-        }
-      }
-    }
-    return chunks.join("\n").trim();
+  if (Array.isArray(content)) {
+    return content
+      .map((item) => item?.text || "")
+      .join("\n")
+      .trim();
   }
 
   return "";
