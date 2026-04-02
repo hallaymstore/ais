@@ -2256,7 +2256,7 @@ function createMongoAdapter() {
       const { siteSettings } = await getCollections();
       const document = await siteSettings.findOne(
         { key: "default" },
-        { projection: { _id: 0, key: 0, settings: 1 } }
+        { projection: { _id: 0, settings: 1 } }
       );
       return document?.settings ? normalizeSiteSettings(document.settings) : clone(DEFAULT_SITE_SETTINGS);
     },
