@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="day">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Threadlar | Ai's Shelf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#f7f2ea; --surface:rgba(255,255,255,.84); --surface-2:rgba(16,32,51,.05); --line:rgba(16,32,51,.08); --ink:#102033; --muted:#5f7288; --accent:#2a8a7d; --gold:#c88639; --danger:#b34a3b; --success:#176853; --shadow:0 28px 70px rgba(16,32,51,.12); }
+    :root[data-theme="night"] { --bg:#09111d; --surface:rgba(12,19,32,.84); --surface-2:rgba(255,255,255,.06); --line:rgba(255,255,255,.08); --ink:#eef6ff; --muted:#93a6bd; --accent:#62dfc6; --gold:#efb86b; --danger:#ff8c79; --success:#7ce7bc; --shadow:0 28px 80px rgba(0,0,0,.45); }
+    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:
+      radial-gradient(circle at top left, rgba(42,138,125,.16), transparent 22%),
+      radial-gradient(circle at top right, rgba(200,134,57,.14), transparent 18%),
+      linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 90%,white 10%) 100%)}
+    a{color:inherit;text-decoration:none} button,input,select{font:inherit}
+    .shell{width:min(1280px,calc(100vw - 28px));margin:0 auto}.topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+    .nav,.nav-links,.nav-actions,.hero-actions,.filters,.grid,.meta,.card-actions,.stats{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.nav{justify-content:space-between;padding:14px 0}
+    .brand{display:flex;gap:14px;align-items:center;font-weight:800}.mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#102033,#2a8a7d);box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
+    .nav-links a{color:var(--muted);font-weight:700}.button,button{border:0;border-radius:999px;padding:13px 18px;cursor:pointer;font-weight:800}
+    .button.primary,button.primary{color:#fff;background:linear-gradient(135deg,#102033,#2a8a7d);box-shadow:0 16px 34px rgba(16,32,51,.22)}
+    .button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 86%,transparent);border:1px solid var(--line)}
+    h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
+    .hero{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;padding:28px 0 22px}
+    .hero-main,.hero-side,.panel,.card,.stat{border:1px solid var(--line);border-radius:30px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)}
+    .hero-main{padding:28px;color:#eef7ff;background:linear-gradient(135deg,#102033 0%,#174555 50%,#2a8a7d 100%)} .hero-main p{color:rgba(238,247,255,.82);line-height:1.75}
+    .hero-side,.panel,.card,.stat{padding:22px}.hero-side p,.card p,.helper,.meta{color:var(--muted);line-height:1.72}
+    .pill,.status{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}
+    .pill{padding:9px 14px;font-size:13px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
+    .hero-side .pill,.panel .pill{background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+    .stats{margin-top:20px}.stat{flex:1 1 180px}.stat strong{display:block;font-size:22px;margin-top:8px}
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:18px;padding-bottom:32px;align-items:start}.filters{display:grid;gap:14px}
+    input,select{width:100%;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 92%,transparent);color:var(--ink);padding:14px 15px;outline:none}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}.card{display:grid;gap:14px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+    .status{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .status.requested{background:color-mix(in srgb,var(--gold) 16%,transparent);color:color-mix(in srgb,var(--gold) 76%,var(--ink))} .status.active{background:color-mix(in srgb,var(--accent) 16%,transparent);color:color-mix(in srgb,var(--accent) 76%,var(--ink))} .status.closed{background:color-mix(in srgb,var(--danger) 16%,transparent);color:color-mix(in srgb,var(--danger) 80%,var(--ink))}
+    .empty{padding:24px;border-radius:24px;border:1px dashed var(--line);background:color-mix(in srgb,var(--surface) 72%,transparent);color:var(--muted);line-height:1.75}
+    .success{color:var(--success)} .error{color:var(--danger)}
+    @media (max-width:1080px){.hero,.layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+    @media (max-width:720px){.nav{flex-direction:column;align-items:flex-start}}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="shell nav">
+      <a class="brand" href="/recommendations.html"><span class="mark">AS</span><span>Ai's Shelf</span></a>
+      <div class="nav-links">
+        <a href="/recommendations.html">Marketplace</a>
+        <a href="/search.html">Qidiruv</a>
+        <a href="/chats.html">Buyurtmalar</a>
+      </div>
+      <div class="nav-actions">
+        <button class="button secondary" id="themeToggle" type="button">Tun mavzu</button>
+        <a class="button secondary" href="/profile.html">Profil</a>
+        <button class="button primary" id="logoutBtn" type="button">Chiqish</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <article class="hero-main">
+        <span class="pill" id="heroPill">Service inbox</span>
+        <h1 style="font-size:clamp(2.6rem,5vw,4.5rem);margin-top:14px;">Barcha threadlar bir joyda.</h1>
+        <p id="heroText">Bu sahifa service yozishmalari uchun marketplace inbox vazifasini bajaradi. Buyer va provider ikkisi uchun ham kirish nuqtasi shu yer.</p>
+        <div class="stats">
+          <div class="stat"><small>Jami</small><strong id="totalStat">0</strong></div>
+          <div class="stat"><small>Requested</small><strong id="requestedStat">0</strong></div>
+          <div class="stat"><small>Active</small><strong id="activeStat">0</strong></div>
+        </div>
+      </article>
+      <article class="hero-side">
+        <span class="pill">Quick links</span>
+        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);margin-top:10px;">Inbox boshqaruvi</h2>
+        <p>Search sahifasidan yangi provider toping yoki shu yerdan mavjud threadni ochib davom ettiring.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="/search.html">Yangi qidiruv</a>
+          <a class="button secondary" href="/recommendations.html">Marketplace</a>
+        </div>
+        <div class="helper" id="statusText">Threadlar tayyor.</div>
+      </article>
+    </section>
+
+    <section class="layout">
+      <aside class="panel">
+        <span class="pill">Filter</span>
+        <div class="filters" style="margin-top:14px;">
+          <input id="queryInput" type="text" placeholder="Ism, preview yoki yo'nalish..." />
+          <select id="statusFilter"><option value="all">Barcha status</option><option value="requested">Requested</option><option value="active">Active</option><option value="closed">Closed</option></select>
+          <select id="typeFilter"></select>
+          <button class="button primary" id="reloadBtn" type="button">Yangilash</button>
+        </div>
+      </aside>
+
+      <div>
+        <div class="grid" id="threadGrid"></div>
+        <div class="empty" id="emptyState" style="display:none;">Hali service thread yo'q.</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const THEME_KEY = "aishelf-theme";
+    const state = { user:null, config:null, threads:[], query:"", status:"all", type:"all" };
+    const themeToggle = document.getElementById("themeToggle");
+    const threadGrid = document.getElementById("threadGrid");
+    const emptyState = document.getElementById("emptyState");
+    const statusText = document.getElementById("statusText");
+
+    function escapeHtml(value){return String(value||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
+    function getTheme(){const saved=localStorage.getItem(THEME_KEY); if(saved==="day"||saved==="night") return saved; return matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day"}
+    function applyTheme(theme){document.documentElement.dataset.theme=theme; localStorage.setItem(THEME_KEY,theme); themeToggle.textContent=theme==="night"?"Kunduz mavzu":"Tun mavzu"}
+    function setStatus(text,tone=""){statusText.textContent=text; statusText.className=tone||"helper"}
+
+    async function ensureAuth(){
+      const response = await fetch("/api/auth/me");
+      const data = await response.json();
+      if(!data.user){location.href="/login.html?next=/chats.html"; throw new Error("Unauthenticated")}
+      state.user = data.user;
+    }
+
+    async function loadBootstrap(){
+      await ensureAuth();
+      const configRes = await fetch("/api/config");
+      state.config = await configRes.json();
+      document.getElementById("typeFilter").innerHTML = `<option value="all">Barcha yo'nalish</option>${(state.config.providerTypes||[]).map((item)=>`<option value="${item.id}">${item.name}</option>`).join("")}`;
+      if(state.user.role === "provider"){
+        document.getElementById("heroPill").textContent = "Provider inbox";
+        document.getElementById("heroText").textContent = "Provider sifatida bu yerga kelgan requestlar va faol yozishmalaringiz ko'rinadi.";
+      }
+    }
+
+    async function loadThreads(){
+      const response = await fetch("/api/provider-threads");
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error || "Threadlar yuklanmadi.");
+      state.threads = data.threads || [];
+      renderStats();
+      renderThreads();
+    }
+
+    function renderStats(){
+      document.getElementById("totalStat").textContent = String(state.threads.length);
+      document.getElementById("requestedStat").textContent = String(state.threads.filter((item)=>item.status==="requested").length);
+      document.getElementById("activeStat").textContent = String(state.threads.filter((item)=>item.status==="active").length);
+    }
+
+    function filteredThreads(){
+      const q = state.query.trim().toLowerCase();
+      return state.threads.filter((thread)=>{
+        const counterpart = state.user.role === "provider" ? (thread.requester?.name || "Mijoz") : (thread.provider?.name || thread.providerTypeLabel || "Provider");
+        const haystack = [counterpart, thread.providerTypeLabel, thread.lastMessagePreview, thread.title].join(" ").toLowerCase();
+        const okQuery = !q || haystack.includes(q);
+        const okStatus = state.status === "all" || thread.status === state.status;
+        const okType = state.type === "all" || thread.providerType === state.type;
+        return okQuery && okStatus && okType;
+      });
+    }
+
+    function renderThreads(){
+      const items = filteredThreads();
+      emptyState.style.display = items.length ? "none" : "block";
+      threadGrid.innerHTML = items.map((thread)=>{
+        const counterpart = state.user.role === "provider" ? (thread.requester?.name || "Mijoz") : (thread.provider?.name || thread.providerTypeLabel || "Provider");
+        return `
+          <article class="card">
+            <div class="top">
+              <div>
+                <div class="status ${escapeHtml(thread.status || "requested")}">${escapeHtml(thread.status || "requested")}</div>
+                <h3 style="margin-top:10px;font-size:1.3rem;">${escapeHtml(counterpart)}</h3>
+              </div>
+              <div class="status">${escapeHtml(thread.providerTypeLabel || "Service")}</div>
+            </div>
+            <p>${escapeHtml(thread.lastMessagePreview || "Service thread tayyor.")}</p>
+            <div class="meta">
+              <span>${new Date(thread.updatedAt).toLocaleString()}</span>
+              <span>${thread.messageCount || 0} xabar</span>
+            </div>
+            <div class="card-actions">
+              <a class="button primary" href="/chat.html?threadId=${encodeURIComponent(thread.id)}">Ochish</a>
+              <a class="button secondary" href="/search.html?type=${encodeURIComponent(thread.providerType || "")}">O'xshashlar</a>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    document.getElementById("queryInput").addEventListener("input",(event)=>{ state.query=event.currentTarget.value; renderThreads(); });
+    document.getElementById("statusFilter").addEventListener("change",(event)=>{ state.status=event.currentTarget.value; renderThreads(); });
+    document.getElementById("typeFilter").addEventListener("change",(event)=>{ state.type=event.currentTarget.value; renderThreads(); });
+    document.getElementById("reloadBtn").addEventListener("click",()=>{ loadThreads().then(()=>setStatus("Threadlar yangilandi.","success")).catch((error)=>setStatus(error.message,"error")); });
+    document.getElementById("logoutBtn").addEventListener("click", async ()=>{ await fetch("/api/auth/logout",{ method:"POST" }); location.href="/"; });
+    themeToggle.addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="night" ? "day" : "night"));
+
+    applyTheme(getTheme());
+    Promise.resolve().then(loadBootstrap).then(loadThreads).catch((error)=>{ if(error.message!=="Unauthenticated") setStatus(error.message,"error") });
+  </script>
+</body>
+</html>

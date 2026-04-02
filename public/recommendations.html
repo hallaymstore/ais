@@ -1,91 +1,275 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" data-theme="day">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tavsiyalar | Ai's Shelf</title>
+  <title>Marketplace | Ai's Shelf</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --ink: #102033;
-      --muted: #607187;
+      --bg: #f7f2ea;
+      --surface: rgba(255,255,255,.84);
+      --surface-2: rgba(16,32,51,.05);
       --line: rgba(16,32,51,.08);
-      --card: rgba(255,255,255,.86);
-      --shadow: 0 26px 60px rgba(16,32,51,.12);
+      --ink: #102033;
+      --muted: #5f7288;
+      --accent: #2a8a7d;
+      --accent-deep: #102033;
+      --gold: #c88639;
+      --success: #176853;
+      --danger: #b34a3b;
+      --shadow: 0 28px 70px rgba(16,32,51,.12);
     }
+
+    :root[data-theme="night"] {
+      --bg: #09111d;
+      --surface: rgba(12,19,32,.84);
+      --surface-2: rgba(255,255,255,.06);
+      --line: rgba(255,255,255,.08);
+      --ink: #eef6ff;
+      --muted: #93a6bd;
+      --accent: #62dfc6;
+      --accent-deep: #dffdf6;
+      --gold: #efb86b;
+      --success: #7ce7bc;
+      --danger: #ff8c79;
+      --shadow: 0 28px 80px rgba(0,0,0,.45);
+    }
+
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: "Manrope", sans-serif;
       color: var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(45,138,128,.16), transparent 20%),
-        radial-gradient(circle at top right, rgba(217,184,255,.16), transparent 18%),
-        linear-gradient(180deg, #f6f2ea 0%, #f8fbff 100%);
+        radial-gradient(circle at top left, rgba(42,138,125,.16), transparent 22%),
+        radial-gradient(circle at top right, rgba(200,134,57,.14), transparent 18%),
+        linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 90%, white 10%) 100%);
     }
+
     a { color: inherit; text-decoration: none; }
-    .shell { width: min(1320px, calc(100vw - 24px)); margin: 0 auto; }
-    .topbar { position: sticky; top: 0; z-index: 15; background: rgba(246,242,234,.84); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(16,32,51,.06); }
-    .nav { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:16px 0; }
-    .brand { display:flex; align-items:center; gap:14px; font-weight:800; }
-    .mark { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,#102033,#24585b); color:#fff; font-family:"Space Grotesk",sans-serif; }
-    .button, button { border:0; border-radius:999px; padding:12px 16px; font:inherit; font-weight:800; cursor:pointer; }
-    .button.primary, button.primary { background:linear-gradient(135deg,#102033,#24585b); color:#fff; }
-    .button.secondary, button.secondary { background:rgba(255,255,255,.82); border:1px solid var(--line); color:var(--ink); }
-    h1,h2,h3 { font-family:"Space Grotesk",sans-serif; letter-spacing:-.04em; margin:0; }
-    .hero, .layout, .provider-grid, .thread-list, .message-list, .video-grid { display:grid; gap:18px; }
-    .hero { grid-template-columns: 1.08fr .92fr; padding: 28px 0; }
-    .panel, .provider-card, .thread-card, .message, .video-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
+    button, input, select { font: inherit; }
+    .shell { width: min(1300px, calc(100vw - 28px)); margin: 0 auto; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      border-bottom: 1px solid var(--line);
     }
-    .hero-card, .detail-card, .sidebar-card, .video-card { padding: 24px; }
-    .hero-card p, .detail-card p, .provider-card p, .thread-card p, .video-card p { color: var(--muted); line-height: 1.75; }
-    .pill { display:inline-flex; width:fit-content; padding:8px 12px; border-radius:999px; font-size:12px; font-weight:800; background: rgba(16,32,51,.06); }
-    .stats { display:grid; gap:14px; grid-template-columns: repeat(3, minmax(0,1fr)); margin-top: 18px; }
-    .stat { padding:18px; border-radius:22px; background: rgba(16,32,51,.05); }
-    .stat strong { display:block; font-size: 22px; margin-bottom: 8px; }
-    .layout { grid-template-columns: 380px 1fr; align-items:start; padding-bottom: 36px; }
-    .sidebar-card { display:grid; gap:16px; }
-    .filter-row { display:grid; gap:12px; }
-    input, select, textarea {
+    .nav, .nav-links, .nav-actions, .hero-actions, .card-actions, .filter-actions, .meta, .chips {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .nav {
+      justify-content: space-between;
+      padding: 14px 0;
+    }
+    .brand {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      font-weight: 800;
+      letter-spacing: -.03em;
+    }
+    .mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(135deg, #102033, #2a8a7d);
+      box-shadow: var(--shadow);
+      font-family: "Space Grotesk", sans-serif;
+    }
+    .nav-links a { color: var(--muted); font-weight: 700; }
+    .button, button {
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 18px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .button.primary, button.primary {
+      color: #fff;
+      background: linear-gradient(135deg, #102033, #2a8a7d);
+      box-shadow: 0 16px 34px rgba(16,32,51,.22);
+    }
+    .button.secondary, button.secondary {
+      color: var(--ink);
+      background: color-mix(in srgb, var(--surface) 86%, transparent);
+      border: 1px solid var(--line);
+    }
+    h1, h2, h3 {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      letter-spacing: -.04em;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 18px;
+      padding: 28px 0 22px;
+    }
+    .hero-main, .hero-side, .panel, .category-card, .provider-card, .thread-card, .stat {
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .hero-main {
+      padding: 28px;
+      color: #eef7ff;
+      background: linear-gradient(135deg, #102033 0%, #174555 50%, #2a8a7d 100%);
+    }
+    .hero-main p { color: rgba(238,247,255,.82); line-height: 1.75; }
+    .hero-side, .panel, .category-card, .provider-card, .thread-card, .stat {
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+    }
+    .hero-side, .panel { padding: 22px; }
+    .hero-side p, .provider-card p, .thread-card p, .helper, .meta { color: var(--muted); line-height: 1.72; }
+    .pill, .chip, .badge, .status {
+      display: inline-flex;
+      width: fit-content;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+    .pill {
+      padding: 9px 14px;
+      font-size: 13px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+    .hero-side .pill, .panel .pill {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .hero-stats, .categories, .market {
+      display: grid;
+      gap: 16px;
+    }
+    .hero-stats { grid-template-columns: repeat(4, minmax(0,1fr)); margin-top: 22px; }
+    .stat { padding: 18px; }
+    .stat strong {
+      display: block;
+      font-size: 22px;
+      margin-top: 8px;
+    }
+    section { padding: 16px 0 28px; }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+    .section-head p {
+      margin: 8px 0 0;
+      max-width: 56ch;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .categories { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .category-card {
+      padding: 20px;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease;
+    }
+    .category-card.active {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+    }
+    .category-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      color: #fff;
+      font-weight: 800;
+      background: linear-gradient(135deg, #102033, #2a8a7d);
+    }
+    .market { grid-template-columns: 280px 1fr 320px; align-items: start; }
+    .field { display: grid; gap: 8px; font-weight: 700; }
+    input, select {
       width: 100%;
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:14px 16px;
-      font: inherit;
-      background: rgba(255,255,255,.88);
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      color: var(--ink);
+      padding: 14px 15px;
       outline: none;
     }
-    textarea { min-height: 110px; resize: vertical; }
-    input:focus, select:focus, textarea:focus { border-color:#2d8a80; box-shadow:0 0 0 4px rgba(45,138,128,.12); }
-    .provider-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .provider-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
     .provider-card, .thread-card { padding: 20px; }
-    .thread-list { grid-template-columns: repeat(2, minmax(0,1fr)); }
-    .helper, .meta { color: var(--muted); font-size: 14px; line-height: 1.7; }
-    .meta { display:flex; gap:10px; flex-wrap:wrap; }
-    .detail-card { display:grid; gap:16px; }
-    .message-list { max-height: 460px; overflow:auto; padding-right: 6px; }
-    .message { padding: 16px 18px; }
-    .message.user { background: rgba(45,138,128,.1); }
-    .message.provider { background: rgba(255,210,125,.14); }
-    .composer { display:grid; gap:12px; }
-    .composer-row { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-    .video-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-    video { width: 100%; min-height: 220px; border-radius: 22px; background: #0f1d2c; object-fit: cover; }
-    .hidden { display:none !important; }
-    .empty { padding: 20px; border-radius: 22px; border: 1px dashed rgba(16,32,51,.16); background: rgba(255,255,255,.54); color: var(--muted); }
-    .success { color: #166d57; }
-    .error { color: #b44332; }
-    @media (max-width: 1040px) {
-      .hero, .layout { grid-template-columns: 1fr; }
-      .provider-grid, .thread-list, .video-grid, .stats { grid-template-columns: 1fr; }
+    .provider-top, .thread-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+    .provider-head { display: flex; gap: 14px; align-items: center; }
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      background: linear-gradient(135deg, #102033, #2a8a7d);
+    }
+    .chip {
+      padding: 7px 10px;
+      font-size: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .badge {
+      padding: 8px 12px;
+      font-size: 13px;
+      background: color-mix(in srgb, var(--gold) 16%, transparent);
+      color: color-mix(in srgb, var(--gold) 76%, var(--ink));
+    }
+    .status {
+      padding: 7px 10px;
+      font-size: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .status.requested {
+      background: color-mix(in srgb, var(--gold) 16%, transparent);
+      color: color-mix(in srgb, var(--gold) 76%, var(--ink));
+    }
+    .status.active {
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+      color: color-mix(in srgb, var(--accent) 76%, var(--ink));
+    }
+    .empty {
+      padding: 24px;
+      border-radius: 24px;
+      border: 1px dashed var(--line);
+      background: color-mix(in srgb, var(--surface) 72%, transparent);
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .success { color: var(--success); }
+    .error { color: var(--danger); }
+
+    @media (max-width: 1120px) {
+      .hero, .market { grid-template-columns: 1fr; }
+      .hero-stats, .categories, .provider-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    @media (max-width: 720px) {
       .nav { flex-direction: column; align-items: flex-start; }
+      .hero-stats, .categories, .provider-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -93,89 +277,125 @@
   <div class="topbar">
     <div class="shell nav">
       <a class="brand" href="/dashboard.html"><span class="mark">AS</span><span>Ai's Shelf</span></a>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <a class="button secondary" href="/dashboard.html">Dashboard</a>
+      <div class="nav-links">
+        <a href="/recommendations.html">Marketplace</a>
+        <a href="/search.html">Qidiruv</a>
+        <a href="/chats.html">Buyurtmalar</a>
+      </div>
+      <div class="nav-actions">
+        <button class="button secondary" id="themeToggle" type="button">Tun mavzu</button>
         <a class="button secondary" href="/profile.html">Profil</a>
-        <button class="button primary" id="logoutBtn">Chiqish</button>
+        <button class="button primary" id="logoutBtn" type="button">Chiqish</button>
       </div>
     </div>
   </div>
 
   <main class="shell">
     <section class="hero">
-      <article class="panel hero-card">
-        <span class="pill" id="modePill">Tavsiya sahifasi</span>
-        <h1 style="font-size:clamp(2.3rem,4vw,4rem);margin-top:14px;">Yaqin mutaxassislar va alohida service chat.</h1>
-        <p id="heroText">Profilingizdagi joylashuv asosida yaqin providerlar topiladi. Ularni tanlab alohida chat ochishingiz va video-call orqali bog'lanishingiz mumkin.</p>
-        <div class="stats">
-          <div class="stat"><small>Joylashuv</small><strong id="locationStat">Noma'lum</strong><span class="helper">Profil yoki shu sahifadan saqlanadi</span></div>
-          <div class="stat"><small>Providerlar</small><strong id="providerCount">0</strong><span class="helper">Filtr bo'yicha topilganlar</span></div>
-          <div class="stat"><small>Video-call</small><strong id="videoStat">Tayyor emas</strong><span class="helper">ExpressTURN ICE config bilan</span></div>
+      <article class="hero-main">
+        <span class="pill" id="heroPill">Marketplace home</span>
+        <h1 style="font-size:clamp(2.6rem,5vw,4.7rem);margin-top:14px;">Mutaxassislarni vitrinasidek tanlang.</h1>
+        <p id="heroText">Bu sahifa service marketplace bosh sahifasi. Yaqin providerlarni ko‘rasiz, filterlaysiz, so‘rov yuborasiz va alohida thread ochasiz.</p>
+        <div class="hero-actions">
+          <a class="button primary" id="primaryLink" href="/search.html">Katalogni ochish</a>
+          <a class="button secondary" href="/chats.html">Threadlarim</a>
+          <button class="button secondary" id="captureLocationBtn" type="button">Joylashuvni olish</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><small>Lokatsiya</small><strong id="locationStat">Noma'lum</strong></div>
+          <div class="stat"><small>Katalog</small><strong id="providerStat">0</strong></div>
+          <div class="stat"><small>Thread</small><strong id="threadStat">0</strong></div>
+          <div class="stat"><small>Video</small><strong id="videoStat">Off</strong></div>
         </div>
       </article>
-      <article class="panel hero-card">
-        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">Tez boshqaruv</h2>
-        <div class="filter-row">
-          <label>Yo'nalish<select id="providerTypeFilter"></select></label>
-          <label>Radius<select id="radiusFilter"><option value="25">25 km</option><option value="50" selected>50 km</option><option value="100">100 km</option><option value="200">200 km</option></select></label>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;">
-            <button class="button secondary" id="captureLocationBtn" type="button">Joylashuvni olish</button>
-            <button class="button primary" id="reloadProvidersBtn" type="button">Providerlarni yangilash</button>
-            <button class="button secondary" id="sharePageBtn" type="button">Sahifani tavsiya qilish</button>
-          </div>
-          <div id="statusText" class="helper">Sahifa tayyor.</div>
+
+      <aside class="hero-side">
+        <span class="pill">Quick status</span>
+        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);margin-top:10px;">Marketplace boshqaruvi</h2>
+        <p>Bu yerda marketplace home, qidiruv, faol threadlar va sahifa ulashish oqimi birlashtirilgan. Kunduz/tun mavzu ham shu yerdan boshqariladi.</p>
+        <div class="card-actions">
+          <a class="button primary" href="/search.html">Qidiruv</a>
+          <a class="button secondary" href="/chat.html">Oxirgi chat</a>
+          <button class="button secondary" id="sharePageBtn" type="button">Sahifani ulashish</button>
         </div>
-      </article>
+        <div class="helper" id="statusText">Marketplace tayyor.</div>
+      </aside>
     </section>
 
-    <section class="layout">
-      <aside class="sidebar-card panel">
-        <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);">Faol threadlar</h2>
-        <div id="threadList" class="thread-list"></div>
-      </aside>
+    <section>
+      <div class="section-head">
+        <div>
+          <span class="pill">Categories</span>
+          <h2 style="margin-top:12px;font-size:clamp(2rem,3vw,3rem);">Kategoriyalar</h2>
+        </div>
+        <p>Bo‘limni tanlaganingizda katalog shu yo‘nalishga moslashadi va qidiruv sahifasiga ham shu filter bilan o‘tasiz.</p>
+      </div>
+      <div class="categories" id="categoryGrid"></div>
+    </section>
 
-      <div style="display:grid;gap:18px;">
-        <article class="detail-card panel" id="discoveryPanel">
-          <div style="display:flex;justify-content:space-between;gap:12px;align-items:end;flex-wrap:wrap;">
-            <div>
-              <span class="pill">Nearby providers</span>
-              <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);margin-top:10px;">Mutaxassis tavsiyalari</h2>
-            </div>
-            <div class="helper">So'rov yuborilgach, provider profiliga tushadi va alohida chat ochiladi.</div>
+    <section>
+      <div class="section-head">
+        <div>
+          <span class="pill">Featured providers</span>
+          <h2 style="margin-top:12px;font-size:clamp(2rem,3vw,3rem);">Sizga mos takliflar</h2>
+        </div>
+        <p>Ecommerce vitrinasiga o‘xshash ko‘rinishda providerlar, narx, masofa va video imkoniyati ko‘rsatiladi.</p>
+      </div>
+
+      <div class="market">
+        <aside class="panel">
+          <span class="pill">Filter</span>
+          <div class="field" style="margin-top:14px;">
+            Qidiruv
+            <input id="queryInput" type="text" placeholder="Ism, xizmat yoki lokatsiya..." />
           </div>
-          <div class="provider-grid" id="providerGrid"></div>
-        </article>
+          <div class="field" style="margin-top:14px;">
+            Radius
+            <select id="radiusFilter">
+              <option value="25">25 km</option>
+              <option value="50" selected>50 km</option>
+              <option value="100">100 km</option>
+              <option value="200">200 km</option>
+            </select>
+          </div>
+          <div class="filter-actions" style="margin-top:16px;">
+            <button class="button primary" id="reloadBtn" type="button">Yangilash</button>
+            <a class="button secondary" id="openSearchLink" href="/search.html">To'liq qidiruv</a>
+          </div>
+        </aside>
 
-        <article class="detail-card panel" id="threadDetail">
-          <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">Thread detail</h2>
-          <div class="empty">Chap tomondan mavjud threadni tanlang yoki yuqoridan providerga so'rov yuboring.</div>
-        </article>
+        <div>
+          <div class="provider-grid" id="providerGrid"></div>
+          <div class="empty" id="providerEmpty" style="display:none;">Mos provider topilmadi. Joylashuvni yangilang yoki filterlarni yengillashtiring.</div>
+        </div>
+
+        <aside class="panel">
+          <span class="pill">Service inbox</span>
+          <h3 style="margin:14px 0 14px;font-size:1.5rem;">Faol threadlar</h3>
+          <div id="threadGrid" style="display:grid;gap:14px;"></div>
+          <a class="button secondary" style="margin-top:14px;" href="/chats.html">Barchasini ko'rish</a>
+        </aside>
       </div>
     </section>
   </main>
 
   <script>
+    const THEME_KEY = "aishelf-theme";
     const state = {
       user: null,
       profile: null,
-      providerTypes: [],
+      config: null,
       providers: [],
       threads: [],
-      selectedThreadId: new URLSearchParams(location.search).get("threadId") || "",
-      selectedType: new URLSearchParams(location.search).get("type") || "doctor",
-      videoConfig: { ready: false, iceServers: [] },
-      signalCursor: 0,
-      threadRefreshTimer: null,
-      signalTimer: null,
-      peerConnection: null,
-      localStream: null,
-      remoteStream: null,
+      selectedType: new URLSearchParams(location.search).get("type") || "all",
+      query: "",
     };
 
-    const providerTypeFilter = document.getElementById("providerTypeFilter");
+    const themeToggle = document.getElementById("themeToggle");
+    const categoryGrid = document.getElementById("categoryGrid");
     const providerGrid = document.getElementById("providerGrid");
-    const threadList = document.getElementById("threadList");
-    const threadDetail = document.getElementById("threadDetail");
+    const providerEmpty = document.getElementById("providerEmpty");
+    const threadGrid = document.getElementById("threadGrid");
     const statusText = document.getElementById("statusText");
 
     function escapeHtml(value) {
@@ -186,59 +406,219 @@
         .replaceAll('"', "&quot;");
     }
 
-    async function ensureAuth() {
-      const authRes = await fetch("/api/auth/me");
-      const auth = await authRes.json();
-      if (!auth.user) {
-        location.href = `/login.html?next=${encodeURIComponent("/recommendations.html" + location.search)}`;
-        throw new Error("Unauthenticated");
-      }
-      state.user = auth.user;
+    function initials(value) {
+      return String(value || "AS").split(/\s+/).filter(Boolean).slice(0, 2).map((item) => item[0]).join("").toUpperCase();
+    }
+
+    function getStoredTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === "day" || saved === "night") return saved;
+      return matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day";
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.dataset.theme = theme;
+      localStorage.setItem(THEME_KEY, theme);
+      themeToggle.textContent = theme === "night" ? "Kunduz mavzu" : "Tun mavzu";
     }
 
     function setStatus(text, tone = "") {
       statusText.textContent = text;
-      statusText.className = tone ? tone : "helper";
+      statusText.className = tone || "helper";
     }
 
-    function fillProviderTypes(providerTypes) {
-      providerTypeFilter.innerHTML = providerTypes.map((item) => `
-        <option value="${item.id}">${item.name}</option>
-      `).join("");
-      if (providerTypes.some((item) => item.id === state.selectedType)) {
-        providerTypeFilter.value = state.selectedType;
+    async function ensureAuth() {
+      const response = await fetch("/api/auth/me");
+      const data = await response.json();
+      if (!data.user) {
+        location.href = `/login.html?next=${encodeURIComponent("/recommendations.html" + location.search)}`;
+        throw new Error("Unauthenticated");
       }
-    }
-
-    function updateHero(profile, config) {
-      const locationReady = Number.isFinite(profile.user.latitude) && Number.isFinite(profile.user.longitude);
-      document.getElementById("locationStat").textContent = locationReady
-        ? (profile.user.locationLabel || `${Number(profile.user.latitude).toFixed(3)}, ${Number(profile.user.longitude).toFixed(3)}`)
-        : "Joylashuv kerak";
-      document.getElementById("videoStat").textContent = config.videoReady ? "Tayyor" : "Sozlash kerak";
-
-      if (state.user.role === "provider") {
-        document.getElementById("modePill").textContent = "Provider inbox";
-        document.getElementById("heroText").textContent = "Bu sahifa sizga kelgan tavsiya so'rovlarini, provider chatlarni va masofaviy video-call aloqalarini boshqarish uchun ishlaydi.";
-        document.getElementById("discoveryPanel").classList.add("hidden");
-      }
+      state.user = data.user;
     }
 
     async function loadBootstrap() {
       await ensureAuth();
-      const [configRes, profileRes, videoRes] = await Promise.all([
+      const [configRes, profileRes, threadRes] = await Promise.all([
         fetch("/api/config"),
         fetch("/api/profile"),
-        fetch("/api/video-config"),
+        fetch("/api/provider-threads"),
       ]);
-      const config = await configRes.json();
-      const profile = await profileRes.json();
-      const videoConfig = await videoRes.json();
-      state.profile = profile;
-      state.providerTypes = config.providerTypes || [];
-      state.videoConfig = videoConfig;
-      fillProviderTypes(state.providerTypes);
-      updateHero(profile, config);
+      state.config = await configRes.json();
+      state.profile = await profileRes.json();
+      state.threads = (await threadRes.json()).threads || [];
+      renderHero();
+      renderThreads();
+    }
+
+    function renderHero() {
+      const user = state.profile.user || {};
+      document.getElementById("locationStat").textContent =
+        Number.isFinite(user.latitude) && Number.isFinite(user.longitude)
+          ? (user.locationLabel || `${Number(user.latitude).toFixed(2)}, ${Number(user.longitude).toFixed(2)}`)
+          : "Joy kerak";
+      document.getElementById("threadStat").textContent = String(state.threads.length);
+      document.getElementById("videoStat").textContent = state.config.videoReady ? "On" : "Off";
+      if (state.user.role === "provider") {
+        document.getElementById("heroPill").textContent = "Provider inbox";
+        document.getElementById("heroText").textContent = "Provider rolida siz uchun bu sahifa requestlar va faol mijoz yozishmalari vitrinasiga aylanadi.";
+        document.getElementById("primaryLink").textContent = "Threadlar ro'yxati";
+        document.getElementById("primaryLink").href = "/chats.html";
+      }
+    }
+
+    function categoryItems() {
+      const counts = { doctor: 0, lawyer: 0, agro: 0, private: 0 };
+      for (const provider of state.providers) {
+        if (counts[provider.providerType] !== undefined) counts[provider.providerType] += 1;
+      }
+      return [
+        { id: "all", name: "Barchasi", desc: "Barcha aktiv providerlar", count: state.providers.length, icon: "AS" },
+        ...(state.config.providerTypes || []).map((item) => ({
+          id: item.id,
+          name: item.name,
+          desc: `${item.name} bo'yicha mos mutaxassislar`,
+          count: counts[item.id] || 0,
+          icon: item.name.slice(0, 2).toUpperCase(),
+        })),
+      ];
+    }
+
+    function renderCategories() {
+      categoryGrid.innerHTML = categoryItems().map((item) => `
+        <article class="category-card ${item.id === state.selectedType ? "active" : ""}" data-type="${item.id}">
+          <div class="category-icon">${escapeHtml(item.icon)}</div>
+          <h3 style="font-size:1.3rem;">${escapeHtml(item.name)}</h3>
+          <p style="margin:10px 0 12px;color:var(--muted);line-height:1.72;">${escapeHtml(item.desc)}</p>
+          <div class="chip">${item.count} ta profil</div>
+        </article>
+      `).join("");
+
+      categoryGrid.querySelectorAll("[data-type]").forEach((card) => {
+        card.addEventListener("click", () => {
+          state.selectedType = card.dataset.type;
+          history.replaceState({}, "", `/recommendations.html?type=${encodeURIComponent(state.selectedType)}`);
+          renderCategories();
+          renderProviders();
+          syncSearchLink();
+        });
+      });
+    }
+
+    async function loadProviders() {
+      if (state.user.role === "provider") {
+        state.providers = [];
+        renderCategories();
+        renderProviders();
+        return;
+      }
+      const params = new URLSearchParams({
+        radiusKm: document.getElementById("radiusFilter").value,
+      });
+      const response = await fetch(`/api/providers?${params.toString()}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Providerlar yuklanmadi.");
+      state.providers = data.providers || [];
+      renderCategories();
+      renderProviders();
+      syncSearchLink();
+    }
+
+    function filteredProviders() {
+      const query = state.query.trim().toLowerCase();
+      return state.providers.filter((provider) => {
+        const matchesType = state.selectedType === "all" || provider.providerType === state.selectedType;
+        const haystack = [
+          provider.name,
+          provider.providerServices,
+          provider.providerIntro,
+          provider.locationLabel,
+          provider.company,
+        ].join(" ").toLowerCase();
+        return matchesType && (!query || haystack.includes(query));
+      });
+    }
+
+    function renderProviders() {
+      const items = filteredProviders().slice(0, 6);
+      document.getElementById("providerStat").textContent = String(filteredProviders().length);
+      providerEmpty.style.display = items.length ? "none" : "block";
+      providerGrid.innerHTML = items.map((provider) => `
+        <article class="provider-card">
+          <div class="provider-top">
+            <div class="provider-head">
+              <div class="avatar">${escapeHtml(initials(provider.name))}</div>
+              <div>
+                <div class="chip">${escapeHtml(provider.providerTypeLabel || "Mutaxassis")}</div>
+                <h3 style="margin-top:10px;font-size:1.3rem;">${escapeHtml(provider.name)}</h3>
+              </div>
+            </div>
+            <div class="badge">${escapeHtml(provider.consultationFee || "Narx so'rovda")}</div>
+          </div>
+          <p style="margin:14px 0;">${escapeHtml(provider.providerIntro || provider.bio || provider.providerServices || "Profil tavsifi kiritilmagan.")}</p>
+          <div class="chips">
+            <span class="chip">${provider.distanceKm != null ? `${provider.distanceKm} km` : "Masofa noma'lum"}</span>
+            <span class="chip">${escapeHtml(provider.locationLabel || provider.company || "Lokatsiya yo'q")}</span>
+            <span class="chip">${provider.videoEnabled ? "Video bor" : "Faqat chat"}</span>
+          </div>
+          <div class="card-actions" style="margin-top:16px;">
+            <button class="button primary" data-request="${provider.id}" type="button">So'rov yuborish</button>
+            <a class="button secondary" href="/search.html?type=${encodeURIComponent(provider.providerType || "")}&q=${encodeURIComponent(provider.name || "")}">Ko'proq</a>
+          </div>
+        </article>
+      `).join("");
+
+      providerGrid.querySelectorAll("[data-request]").forEach((button) => {
+        button.addEventListener("click", () => requestProvider(button.dataset.request));
+      });
+    }
+
+    function renderThreads() {
+      if (!state.threads.length) {
+        threadGrid.innerHTML = `<div class="empty">Hali service thread yo'q. Avval provider tanlab request yuboring.</div>`;
+        return;
+      }
+
+      threadGrid.innerHTML = state.threads.slice(0, 5).map((thread) => {
+        const counterpart = state.user.role === "provider"
+          ? (thread.requester?.name || "Mijoz")
+          : (thread.provider?.name || thread.providerTypeLabel || "Provider");
+        return `
+          <article class="thread-card">
+            <div class="thread-top">
+              <div>
+                <div class="status ${escapeHtml(thread.status || "requested")}">${escapeHtml(thread.status || "requested")}</div>
+                <h3 style="margin-top:10px;font-size:1.2rem;">${escapeHtml(counterpart)}</h3>
+              </div>
+              <div class="chip">${escapeHtml(thread.providerTypeLabel || "Service")}</div>
+            </div>
+            <p style="margin:14px 0;">${escapeHtml(thread.lastMessagePreview || "Service thread tayyor.")}</p>
+            <div class="meta">
+              <span>${new Date(thread.updatedAt).toLocaleString()}</span>
+              <a class="button secondary" href="/chat.html?threadId=${encodeURIComponent(thread.id)}">Ochish</a>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function requestProvider(providerId) {
+      try {
+        setStatus("Providerga so'rov yuborilmoqda...");
+        const response = await fetch("/api/provider-threads/request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            providerId,
+            sourceAssistantId: state.selectedType !== "all" ? `${state.selectedType}-ai` : "",
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "So'rov yuborilmadi.");
+        location.href = `/chat.html?threadId=${encodeURIComponent(data.threadId)}`;
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
     }
 
     async function saveCurrentLocation(latitude, longitude) {
@@ -260,7 +640,6 @@
         availableForRecommendations: user.availableForRecommendations !== false,
         videoEnabled: Boolean(user.videoEnabled),
       };
-
       const response = await fetch("/api/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -269,13 +648,11 @@
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Joylashuv saqlanmadi.");
       state.profile.user = data.user;
+      renderHero();
     }
 
     async function requestBrowserLocation() {
-      if (!navigator.geolocation) {
-        throw new Error("Brauzer geolokatsiyani qo'llamaydi.");
-      }
-
+      if (!navigator.geolocation) throw new Error("Brauzer geolokatsiyani qo'llamaydi.");
       return new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(
           (position) => resolve(position.coords),
@@ -285,378 +662,40 @@
       });
     }
 
-    async function loadProviders() {
-      if (state.user.role === "provider") {
-        document.getElementById("providerCount").textContent = "0";
-        return;
-      }
-
-      const params = new URLSearchParams({
-        type: providerTypeFilter.value,
-        radiusKm: document.getElementById("radiusFilter").value,
-      });
-      const response = await fetch(`/api/providers?${params.toString()}`);
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Providerlar yuklanmadi.");
-
-      state.providers = data.providers || [];
-      document.getElementById("providerCount").textContent = String(state.providers.length);
-      if (!state.providers.length) {
-        providerGrid.innerHTML = `<div class="empty">Mos provider topilmadi. Joylashuvni saqlang yoki filtrni kengaytiring.</div>`;
-        return;
-      }
-
-      providerGrid.innerHTML = state.providers.map((provider) => `
-        <article class="provider-card">
-          <div class="meta">
-            <span>${provider.providerTypeLabel}</span>
-            ${provider.distanceKm != null ? `<span>${provider.distanceKm} km</span>` : `<span>Masofa noma'lum</span>`}
-          </div>
-          <h3 style="margin:6px 0 8px;">${escapeHtml(provider.name)}</h3>
-          <p>${escapeHtml(provider.providerIntro || provider.bio || provider.providerServices || "Mutaxassis profili tayyor.")}</p>
-          <div class="helper">${escapeHtml(provider.locationLabel || provider.company || "Lokatsiya ko'rsatilmagan")}</div>
-          <div class="helper">${escapeHtml(provider.consultationFee || "Narx ko'rsatilmagan")}</div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
-            <button class="button primary" data-request-provider="${provider.id}">So'rov yuborish</button>
-          </div>
-        </article>
-      `).join("");
-
-      providerGrid.querySelectorAll("[data-request-provider]").forEach((button) => {
-        button.addEventListener("click", () => requestProvider(button.dataset.requestProvider));
-      });
-    }
-
-    async function loadThreads() {
-      const response = await fetch("/api/provider-threads");
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Threadlar yuklanmadi.");
-      state.threads = data.threads || [];
-
-      if (!state.threads.length) {
-        threadList.innerHTML = `<div class="empty">Hali service thread yo'q.</div>`;
-        if (!state.selectedThreadId) {
-          threadDetail.innerHTML = `<h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">Thread detail</h2><div class="empty">Chap tomondan mavjud threadni tanlang yoki yuqoridan providerga so'rov yuboring.</div>`;
-        }
-        return;
-      }
-
-      if (!state.selectedThreadId) {
-        state.selectedThreadId = state.threads[0].id;
-      }
-
-      threadList.innerHTML = state.threads.map((thread) => {
-        const counterpart = state.user.role === "provider" ? (thread.requester?.name || "Client") : (thread.provider?.name || thread.providerTypeLabel);
-        return `
-          <article class="thread-card" data-thread-id="${thread.id}" style="${thread.id === state.selectedThreadId ? 'outline:2px solid rgba(45,138,128,.26);' : ''}">
-            <div class="meta">
-              <span>${escapeHtml(thread.providerTypeLabel)}</span>
-              <span>${new Date(thread.updatedAt).toLocaleString()}</span>
-            </div>
-            <h3 style="margin:6px 0 8px;">${escapeHtml(counterpart)}</h3>
-            <p>${escapeHtml(thread.lastMessagePreview || "Service thread tayyor.")}</p>
-          </article>
-        `;
-      }).join("");
-
-      threadList.querySelectorAll("[data-thread-id]").forEach((item) => {
-        item.addEventListener("click", () => {
-          state.selectedThreadId = item.dataset.threadId;
-          history.replaceState({}, "", `/recommendations.html?threadId=${state.selectedThreadId}&type=${providerTypeFilter.value}`);
-          loadSelectedThread().catch((error) => setStatus(error.message, "error"));
-          loadThreads().catch(() => {});
-        });
-      });
-    }
-
-    async function loadSelectedThread() {
-      if (!state.selectedThreadId) return;
-      const response = await fetch(`/api/provider-thread?id=${encodeURIComponent(state.selectedThreadId)}`);
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Thread detail yuklanmadi.");
-
-      const thread = data.thread;
-      const counterpart = state.user.role === "provider" ? thread.requester : thread.provider;
-      state.signalCursor = Math.max(0, ...(thread.callSignals || []).map((item) => item.ts || 0));
-
-      threadDetail.innerHTML = `
-        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">${escapeHtml(counterpart?.name || thread.title)}</h2>
-        <div class="meta">
-          <span>${escapeHtml(thread.providerTypeLabel || thread.providerType || "")}</span>
-          <span>${escapeHtml(counterpart?.locationLabel || counterpart?.company || "Lokatsiya noma'lum")}</span>
-          <span>${escapeHtml(counterpart?.consultationFee || "")}</span>
-        </div>
-        <p>${escapeHtml(counterpart?.providerIntro || counterpart?.bio || "Alohida service chat tayyor.")}</p>
-        <div class="message-list" id="messageList">
-          ${(thread.messages || []).map((message) => `
-            <article class="message ${message.senderRole}">
-              <div class="meta">
-                <span>${message.senderRole === "provider" ? "Provider" : "Mijoz"}</span>
-                <span>${new Date(message.createdAt).toLocaleString()}</span>
-              </div>
-              <div>${escapeHtml(message.text || "").replaceAll("\n", "<br />")}</div>
-            </article>
-          `).join("")}
-        </div>
-        <div class="composer">
-          <textarea id="threadMessageInput" placeholder="Provider bilan yozishma..."></textarea>
-          <div class="composer-row">
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="button secondary" id="startCallBtn" type="button">Video call boshlash</button>
-              <button class="button secondary" id="endCallBtn" type="button">Callni tugatish</button>
-            </div>
-            <button class="button primary" id="sendThreadMessageBtn" type="button">Xabar yuborish</button>
-          </div>
-        </div>
-        <div class="video-grid">
-          <article class="video-card">
-            <h3 style="margin-bottom:12px;">Local video</h3>
-            <video id="localVideo" playsinline autoplay muted></video>
-          </article>
-          <article class="video-card">
-            <h3 style="margin-bottom:12px;">Remote video</h3>
-            <video id="remoteVideo" playsinline autoplay></video>
-          </article>
-        </div>
-        <div id="callStatus" class="helper">${state.videoConfig.ready ? "Video-call tayyor." : "ExpressTURN sozlanmagani uchun video-call o'chirilgan."}</div>
-      `;
-
-      document.getElementById("sendThreadMessageBtn").addEventListener("click", sendThreadMessage);
-      document.getElementById("startCallBtn").addEventListener("click", startCall);
-      document.getElementById("endCallBtn").addEventListener("click", () => endCall(true));
-
-      startThreadPolling();
-    }
-
-    async function requestProvider(providerId) {
-      try {
-        setStatus("Providerga so'rov yuborilmoqda...");
-        const response = await fetch("/api/provider-threads/request", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            providerId,
-            sourceAssistantId: `${providerTypeFilter.value}-ai`,
-          }),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "So'rov yuborilmadi.");
-        state.selectedThreadId = data.threadId;
-        await loadThreads();
-        await loadSelectedThread();
-        setStatus("Providerga so'rov yuborildi.", "success");
-      } catch (error) {
-        setStatus(error.message, "error");
-      }
-    }
-
-    function currentShareUrl() {
+    function syncSearchLink() {
       const params = new URLSearchParams();
-      if (providerTypeFilter.value) params.set("type", providerTypeFilter.value);
-      if (state.selectedThreadId) params.set("threadId", state.selectedThreadId);
-      const suffix = params.toString();
-      return `${location.origin}/recommendations.html${suffix ? `?${suffix}` : ""}`;
+      if (state.selectedType !== "all") params.set("type", state.selectedType);
+      if (state.query.trim()) params.set("q", state.query.trim());
+      params.set("radiusKm", document.getElementById("radiusFilter").value);
+      document.getElementById("openSearchLink").href = `/search.html?${params.toString()}`;
     }
 
     async function sharePage() {
-      const url = currentShareUrl();
-      const title = state.user?.role === "provider"
-        ? "Ai's Shelf provider sahifasi"
-        : "Ai's Shelf tavsiya sahifasi";
-      const text = state.user?.role === "provider"
-        ? "Ai's Shelf ichida provider chat va video-call sahifasi."
-        : "Ai's Shelf ichida yaqin mutaxassislarni topish va ular bilan bog'lanish sahifasi.";
-
+      const url = `${location.origin}/recommendations.html${state.selectedType !== "all" ? `?type=${encodeURIComponent(state.selectedType)}` : ""}`;
       if (navigator.share) {
-        await navigator.share({ title, text, url });
+        await navigator.share({ title: "Ai's Shelf marketplace", text: "Ai's Shelf ichida provider marketplace sahifasi.", url });
         return;
       }
-
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(url);
         setStatus("Sahifa havolasi nusxalandi.", "success");
         return;
       }
-
-      setStatus(url, "helper");
+      setStatus(url);
     }
 
-    async function sendThreadMessage() {
-      const input = document.getElementById("threadMessageInput");
-      const message = input.value.trim();
-      if (!message || !state.selectedThreadId) return;
+    document.getElementById("queryInput").addEventListener("input", (event) => {
+      state.query = event.currentTarget.value;
+      renderProviders();
+      syncSearchLink();
+    });
 
-      try {
-        const response = await fetch("/api/provider-thread/message", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ threadId: state.selectedThreadId, message }),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Xabar yuborilmadi.");
-        input.value = "";
-        await loadThreads();
-        await loadSelectedThread();
-        setStatus("Xabar yuborildi.", "success");
-      } catch (error) {
-        setStatus(error.message, "error");
-      }
-    }
-
-    async function sendSignal(type, payload) {
-      await fetch("/api/provider-call/signal", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          threadId: state.selectedThreadId,
-          type,
-          payload,
-        }),
-      });
-    }
-
-    async function ensureLocalStream() {
-      if (state.localStream) return state.localStream;
-      state.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      const localVideo = document.getElementById("localVideo");
-      if (localVideo) localVideo.srcObject = state.localStream;
-      return state.localStream;
-    }
-
-    function closePeerOnly() {
-      if (state.peerConnection) {
-        state.peerConnection.onicecandidate = null;
-        state.peerConnection.ontrack = null;
-        state.peerConnection.close();
-        state.peerConnection = null;
-      }
-      if (state.remoteStream) {
-        state.remoteStream.getTracks().forEach((track) => track.stop());
-        state.remoteStream = null;
-      }
-      const remoteVideo = document.getElementById("remoteVideo");
-      if (remoteVideo) remoteVideo.srcObject = null;
-    }
-
-    async function ensurePeerConnection() {
-      if (state.peerConnection) return state.peerConnection;
-      const peerConnection = new RTCPeerConnection({
-        iceServers: state.videoConfig.iceServers || [],
-      });
-      const localStream = await ensureLocalStream();
-      localStream.getTracks().forEach((track) => peerConnection.addTrack(track, localStream));
-
-      state.remoteStream = new MediaStream();
-      const remoteVideo = document.getElementById("remoteVideo");
-      if (remoteVideo) remoteVideo.srcObject = state.remoteStream;
-
-      peerConnection.ontrack = (event) => {
-        event.streams[0].getTracks().forEach((track) => state.remoteStream.addTrack(track));
-      };
-
-      peerConnection.onicecandidate = (event) => {
-        if (event.candidate) {
-          sendSignal("ice-candidate", event.candidate.toJSON()).catch(() => {});
-        }
-      };
-
-      peerConnection.onconnectionstatechange = () => {
-        const el = document.getElementById("callStatus");
-        if (el) el.textContent = `Call holati: ${peerConnection.connectionState}`;
-      };
-
-      state.peerConnection = peerConnection;
-      return peerConnection;
-    }
-
-    async function processSignal(signal) {
-      const pc = await ensurePeerConnection();
-      if (signal.type === "offer") {
-        await pc.setRemoteDescription(new RTCSessionDescription(signal.payload));
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        await sendSignal("answer", pc.localDescription);
-      } else if (signal.type === "answer") {
-        await pc.setRemoteDescription(new RTCSessionDescription(signal.payload));
-      } else if (signal.type === "ice-candidate" && signal.payload) {
-        await pc.addIceCandidate(new RTCIceCandidate(signal.payload));
-      } else if (signal.type === "hangup") {
-        endCall(false);
-      }
-    }
-
-    async function pollSignals() {
-      if (!state.selectedThreadId) return;
-      const response = await fetch(`/api/provider-call/signals?threadId=${encodeURIComponent(state.selectedThreadId)}&since=${state.signalCursor}`);
-      const data = await response.json();
-      if (!response.ok) return;
-      for (const signal of data.signals || []) {
-        state.signalCursor = Math.max(state.signalCursor, signal.ts || 0);
-        await processSignal(signal);
-      }
-    }
-
-    async function startCall() {
-      if (!state.videoConfig.ready) {
-        setStatus("ExpressTURN sozlanmagan.", "error");
-        return;
-      }
-      try {
-        const pc = await ensurePeerConnection();
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        await sendSignal("offer", pc.localDescription);
-        setStatus("Video call taklifi yuborildi.", "success");
-      } catch (error) {
-        setStatus(error.message, "error");
-      }
-    }
-
-    function stopLocalStream() {
-      if (state.localStream) {
-        state.localStream.getTracks().forEach((track) => track.stop());
-        state.localStream = null;
-      }
-      const localVideo = document.getElementById("localVideo");
-      if (localVideo) localVideo.srcObject = null;
-    }
-
-    async function endCall(sendHangup) {
-      if (sendHangup && state.selectedThreadId) {
-        await sendSignal("hangup", { endedAt: new Date().toISOString() }).catch(() => {});
-      }
-      closePeerOnly();
-      stopLocalStream();
-      const el = document.getElementById("callStatus");
-      if (el) el.textContent = "Call yopildi.";
-    }
-
-    function startThreadPolling() {
-      clearInterval(state.threadRefreshTimer);
-      clearInterval(state.signalTimer);
-
-      state.threadRefreshTimer = setInterval(() => {
-        if (state.selectedThreadId) {
-          loadSelectedThread().catch(() => {});
-          loadThreads().catch(() => {});
-        }
-      }, 5000);
-
-      state.signalTimer = setInterval(() => {
-        if (state.selectedThreadId) {
-          pollSignals().catch(() => {});
-        }
-      }, 1500);
-    }
-
-    providerTypeFilter.addEventListener("change", () => {
-      state.selectedType = providerTypeFilter.value;
-      history.replaceState({}, "", `/recommendations.html?type=${state.selectedType}`);
+    document.getElementById("radiusFilter").addEventListener("change", () => {
       loadProviders().catch((error) => setStatus(error.message, "error"));
     });
 
-    document.getElementById("reloadProvidersBtn").addEventListener("click", () => {
-      Promise.all([loadProviders(), loadThreads()]).catch((error) => setStatus(error.message, "error"));
+    document.getElementById("reloadBtn").addEventListener("click", () => {
+      loadProviders().then(() => setStatus("Marketplace yangilandi.", "success")).catch((error) => setStatus(error.message, "error"));
     });
 
     document.getElementById("captureLocationBtn").addEventListener("click", async () => {
@@ -664,11 +703,10 @@
         setStatus("Joylashuv olinmoqda...");
         const coords = await requestBrowserLocation();
         await saveCurrentLocation(coords.latitude, coords.longitude);
-        document.getElementById("locationStat").textContent = `${coords.latitude.toFixed(3)}, ${coords.longitude.toFixed(3)}`;
         await loadProviders();
-        setStatus("Joylashuv saqlandi va providerlar yangilandi.", "success");
+        setStatus("Joylashuv saqlandi va katalog yangilandi.", "success");
       } catch (error) {
-        setStatus(error.message || "Joylashuv olinmadi.", "error");
+        setStatus(error.message, "error");
       }
     });
 
@@ -677,29 +715,22 @@
     });
 
     document.getElementById("logoutBtn").addEventListener("click", async () => {
-      clearInterval(state.threadRefreshTimer);
-      clearInterval(state.signalTimer);
       await fetch("/api/auth/logout", { method: "POST" });
       location.href = "/";
     });
 
-    window.addEventListener("beforeunload", () => {
-      clearInterval(state.threadRefreshTimer);
-      clearInterval(state.signalTimer);
-      closePeerOnly();
-      stopLocalStream();
+    themeToggle.addEventListener("click", () => {
+      applyTheme(document.documentElement.dataset.theme === "night" ? "day" : "night");
     });
+
+    applyTheme(getStoredTheme());
 
     Promise.resolve()
       .then(loadBootstrap)
-      .then(async () => {
-        providerTypeFilter.value = state.selectedType;
-        await Promise.all([loadProviders(), loadThreads()]);
-        if (state.selectedThreadId) {
-          await loadSelectedThread();
-        }
-      })
-      .catch((error) => setStatus(error.message, "error"));
+      .then(loadProviders)
+      .catch((error) => {
+        if (error.message !== "Unauthenticated") setStatus(error.message, "error");
+      });
   </script>
 </body>
 </html>
