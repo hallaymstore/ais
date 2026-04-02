@@ -8,352 +8,376 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#f7f2ea; --surface:rgba(255,255,255,.84); --surface-2:rgba(16,32,51,.05); --line:rgba(16,32,51,.08); --ink:#102033; --muted:#5f7288; --accent:#2a8a7d; --gold:#c88639; --danger:#b34a3b; --success:#176853; --shadow:0 28px 70px rgba(16,32,51,.12); }
-    :root[data-theme="night"] { --bg:#09111d; --surface:rgba(12,19,32,.84); --surface-2:rgba(255,255,255,.06); --line:rgba(255,255,255,.08); --ink:#eef6ff; --muted:#93a6bd; --accent:#62dfc6; --gold:#efb86b; --danger:#ff8c79; --success:#7ce7bc; --shadow:0 28px 80px rgba(0,0,0,.45); }
-    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:
-      radial-gradient(circle at top left, rgba(42,138,125,.16), transparent 22%),
-      radial-gradient(circle at top right, rgba(200,134,57,.14), transparent 18%),
-      linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 90%,white 10%) 100%)}
-    a{color:inherit;text-decoration:none} button,textarea{font:inherit}
-    .shell{width:min(1320px,calc(100vw - 28px));margin:0 auto}.topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
-    .nav,.nav-links,.nav-actions,.hero-actions,.meta,.thread-actions,.video-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.nav{justify-content:space-between;padding:14px 0}
-    .brand{display:flex;gap:14px;align-items:center;font-weight:800}.mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#102033,#2a8a7d);box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
-    .nav-links a{color:var(--muted);font-weight:700}.button,button{border:0;border-radius:999px;padding:13px 18px;cursor:pointer;font-weight:800}
-    .button.primary,button.primary{color:#fff;background:linear-gradient(135deg,#102033,#2a8a7d);box-shadow:0 16px 34px rgba(16,32,51,.22)}
-    .button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 86%,transparent);border:1px solid var(--line)}
-    h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
-    .hero{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;padding:28px 0 22px}
-    .hero-main,.hero-side,.shell-card,.message,.video-card{border:1px solid var(--line);border-radius:30px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)}
-    .hero-main{padding:28px;color:#eef7ff;background:linear-gradient(135deg,#102033 0%,#174555 50%,#2a8a7d 100%)} .hero-main p{color:rgba(238,247,255,.82);line-height:1.75}
-    .hero-side,.shell-card,.video-card{padding:22px}.hero-side p,.helper,.meta,.message p{color:var(--muted);line-height:1.72}
-    .pill,.status,.chip{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}
-    .pill{padding:9px 14px;font-size:13px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
-    .hero-side .pill,.shell-card .pill,.video-card .pill{background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
-    .layout{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;padding-bottom:32px;align-items:start}
-    .shell-card{display:grid;gap:16px}.message-list{display:grid;gap:12px;max-height:520px;overflow:auto;padding-right:4px}
-    .message{padding:16px 18px}.message.user{background:color-mix(in srgb,var(--accent) 12%,var(--surface))}.message.provider{background:color-mix(in srgb,var(--gold) 12%,var(--surface))}
-    textarea{width:100%;min-height:126px;resize:vertical;border-radius:20px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 92%,transparent);color:var(--ink);padding:16px;outline:none}
-    .status{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .status.requested{background:color-mix(in srgb,var(--gold) 16%,transparent);color:color-mix(in srgb,var(--gold) 76%,var(--ink))} .status.active{background:color-mix(in srgb,var(--accent) 16%,transparent);color:color-mix(in srgb,var(--accent) 76%,var(--ink))}
-    .chip{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
-    .video-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px} video{width:100%;min-height:240px;border-radius:24px;object-fit:cover;background:#0d1420}
-    .empty{padding:24px;border-radius:24px;border:1px dashed var(--line);background:color-mix(in srgb,var(--surface) 72%,transparent);color:var(--muted);line-height:1.75}
-    .success{color:var(--success)} .error{color:var(--danger)}
-    @media (max-width:1080px){.hero,.layout{grid-template-columns:1fr}.video-grid{grid-template-columns:1fr}}
-    @media (max-width:720px){.nav{flex-direction:column;align-items:flex-start}}
+    :root { --bg:#f7f2ea; --surface:rgba(255,255,255,.88); --surface-2:rgba(16,32,51,.05); --line:rgba(16,32,51,.08); --ink:#102033; --muted:#5f7288; --brand-primary:#2a8a7d; --brand-secondary:#102033; --assistant-accent:#c88639; --shadow:0 28px 70px rgba(16,32,51,.12); }
+    :root[data-theme="night"] { --bg:#09111d; --surface:rgba(12,19,32,.88); --surface-2:rgba(255,255,255,.06); --line:rgba(255,255,255,.08); --ink:#eef6ff; --muted:#93a6bd; --brand-primary:#62dfc6; --brand-secondary:#dffdf6; --assistant-accent:#efb86b; --shadow:0 28px 80px rgba(0,0,0,.45); }
+    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:radial-gradient(circle at top left, color-mix(in srgb,var(--brand-primary) 20%,transparent), transparent 20%),radial-gradient(circle at top right, color-mix(in srgb,var(--assistant-accent) 16%,transparent), transparent 18%),linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 92%,white 8%) 100%)}
+    a{color:inherit;text-decoration:none} button,textarea{font:inherit}.shell{width:min(1480px,calc(100vw - 24px));margin:0 auto}.topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+    .nav,.nav-actions,.sidebar-head,.chat-head,.chat-tools,.composer-actions,.meta,.profile-list,.video-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.nav{justify-content:space-between;padding:14px 0}.brand{display:flex;gap:14px;align-items:center;font-weight:800}.brand-mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--brand-secondary),var(--brand-primary));box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
+    .button,button{border:0;border-radius:999px;padding:12px 16px;cursor:pointer;font-weight:800}.button.primary,button.primary{color:#fff;background:linear-gradient(135deg,var(--brand-secondary),var(--brand-primary));box-shadow:0 16px 34px rgba(16,32,51,.22)} .button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line)}
+    h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}.layout{display:grid;grid-template-columns:300px 1fr 320px;gap:16px;padding:18px 0 24px;min-height:calc(100vh - 84px)}
+    .panel,.chat-shell,.message,.video-card{border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)} .panel,.video-card{padding:18px}.sidebar,.rail{display:grid;gap:16px;align-content:start}
+    .pill,.chip,.status{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}.pill{padding:8px 12px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .chip{padding:8px 12px;font-size:13px;background:color-mix(in srgb,var(--assistant-accent) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--assistant-accent) 40%,var(--line));color:var(--ink)} .status{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+    .status.requested{background:color-mix(in srgb,var(--assistant-accent) 16%,transparent)} .status.active{background:color-mix(in srgb,var(--brand-primary) 16%,transparent)} .status.closed{background:color-mix(in srgb,#b34a3b 16%,transparent)}
+    .sidebar-head{justify-content:space-between}.thread-list{display:grid;gap:10px;margin-top:12px}.thread-item{padding:14px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line);cursor:pointer}.thread-item.active{outline:2px solid color-mix(in srgb,var(--assistant-accent) 42%,transparent)} .thread-item strong{display:block;margin-bottom:6px}
+    .thread-item small,.helper,.meta,.profile-list{color:var(--muted);line-height:1.6}
+    .chat-shell{display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}.chat-head{justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,color-mix(in srgb,var(--assistant-accent) 16%,var(--surface)),color-mix(in srgb,var(--surface) 92%,transparent))}
+    .assistant-profile{display:flex;gap:14px;align-items:center}.assistant-logo{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,var(--brand-secondary),color-mix(in srgb,var(--assistant-accent) 55%,var(--brand-primary) 45%))}
+    .chat-tools{justify-content:flex-end}.messages{display:grid;gap:12px;padding:20px;overflow:auto;background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 82%,transparent),color-mix(in srgb,var(--surface) 95%,transparent))}
+    .message{padding:14px 16px;max-width:min(74%,760px)} .message.self{margin-left:auto;background:color-mix(in srgb,var(--brand-primary) 16%,var(--surface))} .message.peer{margin-right:auto;background:color-mix(in srgb,var(--assistant-accent) 12%,var(--surface))}.message img{width:min(100%,320px);border-radius:16px;margin-top:10px}
+    .composer{padding:16px;border-top:1px solid var(--line);display:grid;gap:12px;background:color-mix(in srgb,var(--surface) 92%,transparent)} textarea{width:100%;min-height:110px;resize:vertical;border-radius:22px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 94%,transparent);color:var(--ink);padding:16px;outline:none}
+    .composer-actions{justify-content:space-between}.preview{display:none;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--surface-2);border:1px dashed var(--line)} .preview img{width:76px;height:76px;object-fit:cover;border-radius:16px}
+    .card-copy{display:grid;gap:12px}.profile-list{display:grid;gap:8px}.video-frame{border-radius:22px;overflow:hidden;border:1px solid var(--line);background:#09111d}.video-frame video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#09111d}
+    .empty{padding:24px;border-radius:22px;border:1px dashed var(--line);background:var(--surface-2);color:var(--muted)} .success{color:#176853}.error{color:#b34a3b}
+    @media (max-width:1240px){.layout{grid-template-columns:280px 1fr}.rail{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.rail{grid-template-columns:1fr}.message{max-width:100%}.nav{flex-direction:column;align-items:flex-start}}
   </style>
 </head>
-<body>
+<body data-assistant-id="service-chat">
   <div class="topbar">
     <div class="shell nav">
-      <a class="brand" href="/recommendations.html"><span class="mark">AS</span><span>Ai's Shelf</span></a>
-      <div class="nav-links">
-        <a href="/recommendations.html">Marketplace</a>
-        <a href="/search.html">Qidiruv</a>
-        <a href="/chats.html">Buyurtmalar</a>
-      </div>
+      <a class="brand" href="/recommendations.html"><span class="brand-mark"></span><span data-site-brand-name>Ai's Shelf</span></a>
       <div class="nav-actions">
         <button class="button secondary" id="themeToggle" type="button">Tun mavzu</button>
-        <a class="button secondary" href="/profile.html">Profil</a>
+        <a class="button secondary" href="/chats.html">Threadlar</a>
         <button class="button primary" id="logoutBtn" type="button">Chiqish</button>
       </div>
     </div>
   </div>
-
-  <main class="shell">
-    <section class="hero">
-      <article class="hero-main">
-        <span class="pill">Service thread</span>
-        <h1 id="heroTitle" style="font-size:clamp(2.6rem,5vw,4.5rem);margin-top:14px;">Alohida yozishma.</h1>
-        <p id="heroText">Bu sahifa product-detail kabi ishlaydi: counterpart ma’lumoti, yozishma, video-call va keyingi harakatlar shu yerda.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="/chats.html">Threadlar ro'yxati</a>
-          <a class="button secondary" href="/search.html">Yangi qidiruv</a>
-          <button class="button secondary" id="shareBtn" type="button">Threadni ulashish</button>
+  <main class="shell layout">
+    <aside class="sidebar">
+      <article class="panel">
+        <div class="sidebar-head">
+          <div>
+            <span class="pill">Service inbox</span>
+            <h2 style="margin-top:10px;font-size:1.8rem;">Threadlar</h2>
+          </div>
+          <a class="button secondary" href="/search.html">Qidiruv</a>
         </div>
-        <div class="helper" id="statusText" style="color:rgba(238,247,255,.82);margin-top:18px;">Thread yuklanmoqda...</div>
+        <p class="helper" style="margin:12px 0 0;">Chap tomonda threadlar, markazda yozishma, o'ngda video va counterpart ma'lumoti. Admin logotip va faviconni global boshqaradi.</p>
       </article>
-      <article class="hero-side">
-        <span class="pill">Counterpart</span>
-        <div id="summaryPanel" style="margin-top:14px;"><div class="empty">Thread tanlangach, provider yoki mijoz haqidagi ma'lumot shu yerda ko'rinadi.</div></div>
+      <article class="panel">
+        <h3 style="font-size:1.2rem;">Faol yozishmalar</h3>
+        <div class="thread-list" id="threadList"></div>
       </article>
-    </section>
+    </aside>
 
-    <section class="layout">
-      <div class="shell-card" id="threadShell"><div class="empty">Thread yuklanmoqda...</div></div>
-      <article class="video-card">
-        <span class="pill">Video</span>
-        <h2 style="margin-top:12px;font-size:clamp(1.8rem,3vw,2.8rem);">Masofaviy bog'lanish</h2>
-        <p id="videoStatusText">Video holati tekshirilmoqda...</p>
-        <div class="video-actions">
-          <button class="button primary" id="startCallBtn" type="button">Video boshlash</button>
+    <section class="chat-shell">
+      <header class="chat-head">
+        <div class="assistant-profile">
+          <div class="assistant-logo" data-assistant-logo>SV</div>
+          <div>
+            <div class="pill"><span data-assistant-name>Service chat</span></div>
+            <h1 id="chatTitle" style="margin-top:8px;font-size:clamp(1.5rem,3vw,2.3rem);">Service chat</h1>
+            <div class="helper" id="chatSubtitle">Thread tanlang, yozishma shu yerda ochiladi.</div>
+          </div>
+        </div>
+        <div class="chat-tools">
+          <span class="status" id="threadStatus">idle</span>
+          <button class="button secondary" id="shareBtn" type="button">Ulashish</button>
+          <button class="button secondary" id="startCallBtn" type="button">Video call</button>
           <button class="button secondary" id="endCallBtn" type="button">Tugatish</button>
         </div>
-        <div class="video-grid">
-          <div><div class="helper" style="margin-bottom:10px;">Local</div><video id="localVideo" playsinline autoplay muted></video></div>
-          <div><div class="helper" style="margin-bottom:10px;">Remote</div><video id="remoteVideo" playsinline autoplay></video></div>
+      </header>
+      <div class="messages" id="messages"><div class="empty" data-chat-empty>Service chat tayyor. Thread tanlang yoki search sahifasidan yangisini boshlang.</div></div>
+      <div class="composer">
+        <div class="preview" id="previewBox">
+          <img id="previewImage" alt="Tanlangan rasm" />
+          <div>
+            <strong id="previewName"></strong>
+            <div class="helper">Rasm keyingi xabar bilan birga yuboriladi.</div>
+            <button class="button secondary" id="clearImageBtn" type="button">Olib tashlash</button>
+          </div>
         </div>
-      </article>
+        <textarea id="messageInput" placeholder="Xabaringizni yozing..."></textarea>
+        <div class="composer-actions">
+          <div class="nav-actions">
+            <button class="button secondary" id="cameraBtn" type="button">Kamera</button>
+            <button class="button secondary" id="uploadBtn" type="button">Media</button>
+          </div>
+          <button class="button primary" id="sendBtn" type="button">Yuborish</button>
+        </div>
+        <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
+        <input id="fileInput" type="file" accept="image/*" hidden />
+        <div id="statusText" class="helper"></div>
+      </div>
     </section>
-  </main>
 
+    <aside class="rail">
+      <article class="panel card-copy" id="counterpartCard">
+        <span class="pill">Counterpart</span>
+        <div class="empty">Thread tanlangach provider yoki mijoz ma'lumoti shu yerda ko'rinadi.</div>
+      </article>
+      <article class="video-card card-copy">
+        <span class="pill" id="siteVideoLabel">Video call</span>
+        <div class="helper" id="videoStatusText">Video holati tekshirilmoqda...</div>
+        <div class="video-actions">
+          <button class="button primary" id="startCallBtnSide" type="button">Boshlash</button>
+          <button class="button secondary" id="endCallBtnSide" type="button">Yopish</button>
+        </div>
+        <div class="video-frame"><video id="localVideo" playsinline autoplay muted></video></div>
+        <div class="video-frame"><video id="remoteVideo" playsinline autoplay></video></div>
+      </article>
+    </aside>
+  </main>
   <script>
-    const THEME_KEY = "aishelf-theme";
-    const state = {
-      user:null, threadId:new URLSearchParams(location.search).get("threadId") || "", thread:null,
-      videoConfig:{ ready:false, iceServers:[] }, signalCursor:0, draftMessage:"",
-      refreshTimer:null, signalTimer:null, peerConnection:null, localStream:null, remoteStream:null,
-    };
-    const themeToggle = document.getElementById("themeToggle");
-    const threadShell = document.getElementById("threadShell");
-    const summaryPanel = document.getElementById("summaryPanel");
-    const statusText = document.getElementById("statusText");
-    const videoStatusText = document.getElementById("videoStatusText");
+    const THEME_KEY="aishelf-theme";
+    const state={ user:null, threads:[], threadId:new URLSearchParams(location.search).get("threadId")||"", thread:null, draftMessage:"", selectedImage:null, videoConfig:{ ready:false, iceServers:[] }, signalCursor:0, refreshTimer:null, signalTimer:null, peerConnection:null, localStream:null, remoteStream:null };
+    const threadListEl=document.getElementById("threadList"), messagesEl=document.getElementById("messages"), counterpartCard=document.getElementById("counterpartCard"), statusText=document.getElementById("statusText"), videoStatusText=document.getElementById("videoStatusText"), chatTitle=document.getElementById("chatTitle"), chatSubtitle=document.getElementById("chatSubtitle"), threadStatus=document.getElementById("threadStatus"), messageInput=document.getElementById("messageInput"), previewBox=document.getElementById("previewBox"), previewImage=document.getElementById("previewImage"), previewName=document.getElementById("previewName"), themeToggle=document.getElementById("themeToggle");
 
     function escapeHtml(value){return String(value||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
     function getTheme(){const saved=localStorage.getItem(THEME_KEY); if(saved==="day"||saved==="night") return saved; return matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day"}
     function applyTheme(theme){document.documentElement.dataset.theme=theme; localStorage.setItem(THEME_KEY,theme); themeToggle.textContent=theme==="night"?"Kunduz mavzu":"Tun mavzu"}
-    function setStatus(text,tone=""){statusText.textContent=text; statusText.className=tone||"helper"}
+    function setStatus(text,tone="helper"){statusText.textContent=text; statusText.className=tone}
+    function getCounterpart(thread){ if(!thread||!state.user) return null; if(state.user.id===thread.providerId) return thread.requester||null; if(state.user.id===thread.userId) return thread.provider||null; return thread.provider||thread.requester||null; }
+    function summaryCounterpart(thread){ if(!thread||!state.user) return null; if(state.user.role==="provider"||state.user.id===thread.providerId) return thread.requester||null; return thread.provider||null; }
+    function updateThreadId(nextId){ state.threadId=nextId||""; const url=state.threadId?`/chat.html?threadId=${encodeURIComponent(state.threadId)}`:"/chat.html"; history.replaceState({}, "", url); }
 
     async function ensureAuth(){
-      const response = await fetch("/api/auth/me");
-      const data = await response.json();
-      if(!data.user){location.href=`/login.html?next=${encodeURIComponent("/chat.html"+location.search)}`; throw new Error("Unauthenticated")}
-      state.user = data.user;
+      const response=await fetch("/api/auth/me");
+      const data=await response.json();
+      if(!data.user){ location.href=`/login.html?next=${encodeURIComponent(location.pathname+location.search)}`; throw new Error("Unauthenticated"); }
+      state.user=data.user;
     }
 
-    async function ensureThreadId(){
-      if(state.threadId) return;
-      const response = await fetch("/api/provider-threads");
-      const data = await response.json();
-      const first = (data.threads || [])[0];
-      if(!first){threadShell.innerHTML=`<div class="empty">Hali service thread yo'q. <a href="/search.html">Search sahifasidan</a> yangi request boshlang.</div>`; return}
-      state.threadId = first.id;
-      history.replaceState({}, "", `/chat.html?threadId=${encodeURIComponent(state.threadId)}`);
+    async function loadVideoConfig(){
+      const response=await fetch("/api/video-config");
+      const data=await response.json();
+      state.videoConfig=data;
+      videoStatusText.textContent=data.ready?"Video call tayyor. Tugma orqali bog'lanishingiz mumkin.":"TURN yoki video sozlanmagan.";
     }
 
-    async function loadBootstrap(){
-      await ensureAuth();
-      await ensureThreadId();
-      if(!state.threadId) return;
-      const videoRes = await fetch("/api/video-config");
-      state.videoConfig = await videoRes.json();
-      videoStatusText.textContent = state.videoConfig.ready ? "Video-call yoqilgan." : "TURN sozlanmagan yoki video o'chirilgan.";
+    async function loadThreads(){
+      const response=await fetch("/api/provider-threads");
+      const data=await response.json();
+      if(!response.ok) throw new Error(data.error || "Threadlar yuklanmadi.");
+      state.threads=data.threads||[];
+      if(!state.threads.length){
+        threadListEl.innerHTML='<div class="empty">Hali service thread yo\'q. <a href="/search.html">Search sahifasidan</a> yangi yozishma boshlang.</div>';
+        state.thread=null;
+        updateThreadId("");
+        renderThread();
+        renderCounterpart();
+        return;
+      }
+      if(!state.threadId || !state.threads.some((thread)=>thread.id===state.threadId)){
+        updateThreadId(state.threads[0].id);
+      }
+      renderThreadList();
+      await loadThread();
+    }
+
+    function renderThreadList(){
+      threadListEl.innerHTML=state.threads.map((thread)=>{
+        const counterpart=summaryCounterpart(thread);
+        const name=counterpart?.name || thread.providerTypeLabel || "Service";
+        return `<article class="thread-item ${thread.id===state.threadId?"active":""}" data-id="${thread.id}"><div class="meta"><span class="status ${escapeHtml(thread.status||"requested")}">${escapeHtml(thread.status||"requested")}</span><span>${escapeHtml(thread.providerTypeLabel||"Service")}</span></div><strong>${escapeHtml(name)}</strong><small>${escapeHtml(thread.lastMessagePreview||"Yozishma tayyor.")}</small></article>`;
+      }).join("");
+      threadListEl.querySelectorAll("[data-id]").forEach((item)=>item.addEventListener("click", async()=>{ if(item.dataset.id===state.threadId) return; stopCallLocally(); updateThreadId(item.dataset.id); renderThreadList(); await loadThread(); }));
     }
 
     async function loadThread(){
-      if(!state.threadId) return;
-      const response = await fetch(`/api/provider-thread?id=${encodeURIComponent(state.threadId)}`);
-      const data = await response.json();
+      if(!state.threadId){ renderThread(); renderCounterpart(); return; }
+      const response=await fetch(`/api/provider-thread?id=${encodeURIComponent(state.threadId)}`);
+      const data=await response.json();
       if(!response.ok) throw new Error(data.error || "Thread yuklanmadi.");
-      state.thread = data.thread;
-      state.signalCursor = Math.max(0, ...(state.thread.callSignals || []).map((item)=>item.ts || 0));
-      renderSummary();
+      state.thread=data.thread;
+      state.signalCursor=Math.max(0,...(state.thread.callSignals||[]).map((item)=>item.ts||0));
+      renderThreadList();
       renderThread();
-    }
-
-    function counterpart(){ return !state.thread ? null : (state.user.role === "provider" ? state.thread.requester : state.thread.provider); }
-
-    function renderSummary(){
-      const person = counterpart();
-      if(!person) return;
-      document.getElementById("heroTitle").textContent = `${person.name || "Service"} bilan chat`;
-      summaryPanel.innerHTML = `
-        <div class="meta">
-          <span class="status ${escapeHtml(state.thread.status || "requested")}">${escapeHtml(state.thread.status || "requested")}</span>
-          <span class="chip">${escapeHtml(state.thread.providerTypeLabel || state.thread.providerType || "Service")}</span>
-        </div>
-        <h2 style="margin-top:12px;font-size:clamp(1.8rem,3vw,2.6rem);">${escapeHtml(person.name || "Counterpart")}</h2>
-        <p style="margin:12px 0 14px;">${escapeHtml(person.providerIntro || person.bio || person.providerServices || "Tavsif kiritilmagan.")}</p>
-        <div class="meta">
-          <span>${escapeHtml(person.locationLabel || person.company || "Lokatsiya yo'q")}</span>
-          <span>${escapeHtml(person.consultationFee || "Narx ko'rsatilmagan")}</span>
-        </div>
-      `;
+      renderCounterpart();
     }
 
     function renderThread(){
-      const person = counterpart();
-      const draft = state.draftMessage;
-      threadShell.innerHTML = `
-        <div>
-          <span class="pill">Conversation</span>
-          <h2 style="margin-top:12px;font-size:clamp(1.8rem,3vw,2.8rem);">${escapeHtml(person?.name || state.thread.title || "Thread detail")}</h2>
-          <div class="meta" style="margin-top:12px;">
-            <span>${escapeHtml(state.thread.providerTypeLabel || state.thread.providerType || "Service")}</span>
-            <span>${new Date(state.thread.updatedAt).toLocaleString()}</span>
-            <span>${(state.thread.messages || []).length} xabar</span>
-          </div>
-        </div>
-        <div class="message-list">
-          ${(state.thread.messages || []).map((message)=>`
-            <article class="message ${message.senderRole}">
-              <div class="meta">
-                <span>${message.senderRole === "provider" ? "Provider" : "Mijoz"}</span>
-                <span>${new Date(message.createdAt).toLocaleString()}</span>
-              </div>
-              <p>${escapeHtml(message.text || "").replaceAll("\n","<br />")}</p>
-            </article>
-          `).join("")}
-        </div>
-        <div>
-          <textarea id="messageInput" placeholder="Xabaringizni yozing..."></textarea>
-          <div class="thread-actions" style="margin-top:12px;">
-            <button class="button primary" id="sendBtn" type="button">Xabar yuborish</button>
-            <a class="button secondary" href="/chats.html">Ro'yxatga qaytish</a>
-          </div>
-        </div>
-      `;
-      const input = document.getElementById("messageInput");
-      input.value = draft;
-      input.addEventListener("input",(event)=>{ state.draftMessage = event.currentTarget.value; });
-      document.getElementById("sendBtn").addEventListener("click", sendMessage);
+      if(!state.thread){
+        chatTitle.textContent="Service chat";
+        chatSubtitle.textContent="Thread tanlang, yozishma shu yerda ochiladi.";
+        threadStatus.textContent="idle";
+        threadStatus.className="status";
+        messagesEl.innerHTML='<div class="empty" data-chat-empty>Service chat tayyor. Thread tanlang yoki search sahifasidan yangisini boshlang.</div>';
+        return;
+      }
+      const counterpart=getCounterpart(state.thread);
+      chatTitle.textContent=counterpart?.name || state.thread.title || "Service chat";
+      chatSubtitle.textContent=`${state.thread.providerTypeLabel || "Service"} bo'yicha yozishma markazi`;
+      threadStatus.textContent=state.thread.status || "active";
+      threadStatus.className=`status ${state.thread.status || "active"}`;
+      const messages=state.thread.messages||[];
+      if(!messages.length){
+        messagesEl.innerHTML='<div class="empty" data-chat-empty>Yozishma tayyor. Xabar yozing yoki rasm yuboring.</div>';
+        return;
+      }
+      messagesEl.innerHTML=messages.map((message)=>{
+        const self=message.senderId===state.user.id;
+        const speaker=self?"Siz":(message.senderRole==="provider"?"Mutaxassis":"Mijoz");
+        return `<article class="message ${self?"self":"peer"}"><div class="meta"><span>${speaker}</span><span>${new Date(message.createdAt).toLocaleString()}</span></div>${message.text?`<div>${escapeHtml(message.text).replaceAll("\n","<br />")}</div>`:""}${message.imageUrl?`<img src="${message.imageUrl}" alt="Yuborilgan media" />`:""}</article>`;
+      }).join("");
+      messagesEl.scrollTop=messagesEl.scrollHeight;
+    }
+
+    function renderCounterpart(){
+      if(!state.thread){
+        counterpartCard.innerHTML='<span class="pill">Counterpart</span><div class="empty">Thread tanlangach provider yoki mijoz ma\'lumoti shu yerda ko\'rinadi.</div>';
+        return;
+      }
+      const counterpart=getCounterpart(state.thread);
+      const location=counterpart?.locationLabel || counterpart?.company || "Lokatsiya kiritilmagan";
+      const fee=counterpart?.consultationFee || counterpart?.providerServices || "Narx va xizmatlar profilda";
+      counterpartCard.innerHTML=`<span class="pill">Counterpart</span><h2 style="font-size:1.5rem;">${escapeHtml(counterpart?.name || "Service contact")}</h2><div class="profile-list"><div><strong>Status:</strong> ${escapeHtml(state.thread.status || "active")}</div><div><strong>Yo'nalish:</strong> ${escapeHtml(state.thread.providerTypeLabel || state.thread.providerType || "Service")}</div><div><strong>Lokatsiya:</strong> ${escapeHtml(location)}</div><div><strong>Xizmat:</strong> ${escapeHtml(fee)}</div></div><div class="helper">${escapeHtml(counterpart?.providerIntro || counterpart?.bio || "Counterpart haqida qisqa ma'lumot yo'q.")}</div>`;
     }
 
     async function sendMessage(){
-      const text = state.draftMessage.trim();
-      if(!text || !state.threadId) return;
+      const text=messageInput.value.trim();
+      if(!state.threadId || (!text && !state.selectedImage)) return;
+      setStatus("Yuborilmoqda...");
       try{
-        const response = await fetch("/api/provider-thread/message", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body:JSON.stringify({ threadId:state.threadId, message:text }),
-        });
-        const data = await response.json();
+        let upload=null;
+        if(state.selectedImage){
+          const uploadRes=await fetch("/api/upload-image",{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ assistantId:"service-chat", dataUrl:state.selectedImage.dataUrl, fileName:state.selectedImage.name }) });
+          const uploadData=await uploadRes.json();
+          if(!uploadRes.ok) throw new Error(uploadData.error || "Rasm yuklanmadi.");
+          upload=uploadData;
+        }
+        const response=await fetch("/api/provider-thread/message",{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ threadId:state.threadId, message:text, imageUrl:upload?.imageUrl||"", imagePublicId:upload?.imagePublicId||"" }) });
+        const data=await response.json();
         if(!response.ok) throw new Error(data.error || "Xabar yuborilmadi.");
-        state.draftMessage = "";
-        await loadThread();
+        state.draftMessage="";
+        messageInput.value="";
+        clearSelectedImage();
+        await loadThreads();
         setStatus("Xabar yuborildi.","success");
-      }catch(error){ setStatus(error.message,"error") }
+      }catch(error){ setStatus(error.message,"error"); }
     }
 
-    async function sendSignal(type, payload){
-      await fetch("/api/provider-call/signal", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({ threadId:state.threadId, type, payload }),
-      });
+    function setSelectedImage(file,dataUrl){ state.selectedImage={ name:file.name, dataUrl }; previewImage.src=dataUrl; previewName.textContent=file.name; previewBox.style.display="flex"; }
+    function clearSelectedImage(){ state.selectedImage=null; previewBox.style.display="none"; document.getElementById("cameraInput").value=""; document.getElementById("fileInput").value=""; }
+    function bindFileInput(input){ input.addEventListener("change",()=>{ const file=input.files?.[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>setSelectedImage(file,reader.result); reader.readAsDataURL(file); }); }
+
+    async function sendSignal(type,payload){
+      const response=await fetch("/api/provider-call/signal",{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ threadId:state.threadId, type, payload }) });
+      if(!response.ok) throw new Error("Signal yuborilmadi.");
     }
 
     async function ensureLocalStream(){
       if(state.localStream) return state.localStream;
-      state.localStream = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
-      document.getElementById("localVideo").srcObject = state.localStream;
+      state.localStream=await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
+      document.getElementById("localVideo").srcObject=state.localStream;
       return state.localStream;
     }
 
     function closePeerOnly(){
       if(state.peerConnection){
-        state.peerConnection.onicecandidate = null;
-        state.peerConnection.ontrack = null;
+        state.peerConnection.onicecandidate=null;
+        state.peerConnection.ontrack=null;
         state.peerConnection.close();
-        state.peerConnection = null;
+        state.peerConnection=null;
       }
       if(state.remoteStream){
         state.remoteStream.getTracks().forEach((track)=>track.stop());
-        state.remoteStream = null;
+        state.remoteStream=null;
       }
-      document.getElementById("remoteVideo").srcObject = null;
+      document.getElementById("remoteVideo").srcObject=null;
     }
 
     function stopLocalStream(){
       if(state.localStream){
         state.localStream.getTracks().forEach((track)=>track.stop());
-        state.localStream = null;
+        state.localStream=null;
       }
-      document.getElementById("localVideo").srcObject = null;
+      document.getElementById("localVideo").srcObject=null;
+    }
+
+    function stopCallLocally(){
+      closePeerOnly();
+      stopLocalStream();
+      videoStatusText.textContent=state.videoConfig.ready?"Video call tayyor. Tugma orqali bog'lanishingiz mumkin.":"TURN yoki video sozlanmagan.";
     }
 
     async function ensurePeerConnection(){
       if(state.peerConnection) return state.peerConnection;
-      const pc = new RTCPeerConnection({ iceServers: state.videoConfig.iceServers || [] });
-      const localStream = await ensureLocalStream();
-      localStream.getTracks().forEach((track)=>pc.addTrack(track, localStream));
-      state.remoteStream = new MediaStream();
-      document.getElementById("remoteVideo").srcObject = state.remoteStream;
-      pc.ontrack = (event)=>{ event.streams[0].getTracks().forEach((track)=>state.remoteStream.addTrack(track)); };
-      pc.onicecandidate = (event)=>{ if(event.candidate) sendSignal("ice-candidate", event.candidate.toJSON()).catch(()=>{}); };
-      pc.onconnectionstatechange = ()=>{ videoStatusText.textContent = `Call holati: ${pc.connectionState}`; };
-      state.peerConnection = pc;
+      const pc=new RTCPeerConnection({ iceServers:state.videoConfig.iceServers||[] });
+      const localStream=await ensureLocalStream();
+      localStream.getTracks().forEach((track)=>pc.addTrack(track,localStream));
+      pc.ontrack=(event)=>{ const stream=event.streams?.[0]; if(stream){ state.remoteStream=stream; document.getElementById("remoteVideo").srcObject=stream; } };
+      pc.onicecandidate=(event)=>{ if(event.candidate) sendSignal("ice-candidate",event.candidate.toJSON()).catch(()=>{}); };
+      pc.onconnectionstatechange=()=>{ videoStatusText.textContent=`Call holati: ${pc.connectionState}`; };
+      state.peerConnection=pc;
       return pc;
     }
 
     async function processSignal(signal){
-      const pc = await ensurePeerConnection();
-      if(signal.type === "offer"){
+      if(!signal) return;
+      if(signal.type==="hangup"){ stopCallLocally(); return; }
+      const pc=await ensurePeerConnection();
+      if(signal.type==="offer"){
         await pc.setRemoteDescription(new RTCSessionDescription(signal.payload));
-        const answer = await pc.createAnswer();
+        const answer=await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        await sendSignal("answer", pc.localDescription);
-      }else if(signal.type === "answer"){
+        await sendSignal("answer",pc.localDescription);
+      }else if(signal.type==="answer"){
         await pc.setRemoteDescription(new RTCSessionDescription(signal.payload));
-      }else if(signal.type === "ice-candidate" && signal.payload){
-        await pc.addIceCandidate(new RTCIceCandidate(signal.payload));
-      }else if(signal.type === "hangup"){
-        endCall(false);
+      }else if(signal.type==="ice-candidate" && signal.payload){
+        try { await pc.addIceCandidate(new RTCIceCandidate(signal.payload)); } catch (_) {}
       }
     }
 
     async function pollSignals(){
-      if(!state.threadId) return;
-      const response = await fetch(`/api/provider-call/signals?threadId=${encodeURIComponent(state.threadId)}&since=${state.signalCursor}`);
-      const data = await response.json();
+      if(!state.threadId || !state.videoConfig.ready) return;
+      const response=await fetch(`/api/provider-call/signals?threadId=${encodeURIComponent(state.threadId)}&since=${state.signalCursor}`);
+      const data=await response.json();
       if(!response.ok) return;
-      for(const signal of data.signals || []){
-        state.signalCursor = Math.max(state.signalCursor, signal.ts || 0);
+      for(const signal of data.signals||[]){
+        state.signalCursor=Math.max(state.signalCursor,signal.ts||0);
         await processSignal(signal);
       }
     }
 
     async function startCall(){
-      if(!state.videoConfig.ready){ setStatus("Video-call hozir tayyor emas.","error"); return; }
+      if(!state.threadId){ setStatus("Avval thread tanlang.","error"); return; }
+      if(!state.videoConfig.ready){ setStatus("Video call hozir tayyor emas.","error"); return; }
       try{
-        const pc = await ensurePeerConnection();
-        const offer = await pc.createOffer();
+        const pc=await ensurePeerConnection();
+        const offer=await pc.createOffer();
         await pc.setLocalDescription(offer);
-        await sendSignal("offer", pc.localDescription);
+        await sendSignal("offer",pc.localDescription);
         setStatus("Video taklif yuborildi.","success");
-      }catch(error){ setStatus(error.message,"error") }
+      }catch(error){ setStatus(error.message,"error"); }
     }
 
-    async function endCall(sendHangup){
-      if(sendHangup && state.threadId){
-        await sendSignal("hangup", { endedAt:new Date().toISOString() }).catch(()=>{});
-      }
-      closePeerOnly();
-      stopLocalStream();
-      videoStatusText.textContent = "Call yopildi.";
+    async function endCall(sendHangup=true){
+      try{
+        if(sendHangup && state.threadId){ await sendSignal("hangup",{ endedAt:new Date().toISOString() }); }
+      }catch(_){}
+      stopCallLocally();
     }
 
-    function startPolling(){
-      clearInterval(state.refreshTimer);
-      clearInterval(state.signalTimer);
-      state.refreshTimer = setInterval(()=>{ loadThread().catch(()=>{}); }, 5000);
-      state.signalTimer = setInterval(()=>{ pollSignals().catch(()=>{}); }, 1500);
+    async function refreshActiveThread(){
+      if(!state.threadId) return;
+      try { await loadThread(); } catch (_) {}
     }
 
-    async function shareThread(){
-      const url = `${location.origin}/chat.html?threadId=${encodeURIComponent(state.threadId)}`;
-      if(navigator.share){
-        await navigator.share({ title:"Ai's Shelf thread", text:"Ai's Shelf ichidagi service thread sahifasi.", url });
-        return;
-      }
-      if(navigator.clipboard?.writeText){
-        await navigator.clipboard.writeText(url);
-        setStatus("Thread havolasi nusxalandi.","success");
-        return;
-      }
-      setStatus(url);
-    }
-
-    document.getElementById("shareBtn").addEventListener("click",()=>{ shareThread().catch((error)=>setStatus(error.message,"error")); });
-    document.getElementById("startCallBtn").addEventListener("click",()=>{ startCall().catch((error)=>setStatus(error.message,"error")); });
-    document.getElementById("endCallBtn").addEventListener("click",()=>{ endCall(true).catch((error)=>setStatus(error.message,"error")); });
-    document.getElementById("logoutBtn").addEventListener("click", async ()=>{ clearInterval(state.refreshTimer); clearInterval(state.signalTimer); await fetch("/api/auth/logout",{ method:"POST" }); location.href="/"; });
-    themeToggle.addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="night" ? "day" : "night"));
-    window.addEventListener("beforeunload",()=>{ clearInterval(state.refreshTimer); clearInterval(state.signalTimer); closePeerOnly(); stopLocalStream(); });
-
+    document.getElementById("cameraBtn").addEventListener("click",()=>document.getElementById("cameraInput").click());
+    document.getElementById("uploadBtn").addEventListener("click",()=>document.getElementById("fileInput").click());
+    document.getElementById("clearImageBtn").addEventListener("click",clearSelectedImage);
+    document.getElementById("sendBtn").addEventListener("click",sendMessage);
+    document.getElementById("logoutBtn").addEventListener("click",async()=>{ await fetch("/api/auth/logout",{ method:"POST" }); location.href="/"; });
+    document.getElementById("shareBtn").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(location.href); setStatus("Thread havolasi nusxalandi.","success"); }catch(_){ setStatus("Havolani nusxalab bo'lmadi.","error"); } });
+    document.getElementById("startCallBtn").addEventListener("click",startCall);
+    document.getElementById("endCallBtn").addEventListener("click",()=>endCall(true));
+    document.getElementById("startCallBtnSide").addEventListener("click",startCall);
+    document.getElementById("endCallBtnSide").addEventListener("click",()=>endCall(true));
+    themeToggle.addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="night"?"day":"night"));
+    messageInput.addEventListener("input",(event)=>{ state.draftMessage=event.currentTarget.value; });
+    bindFileInput(document.getElementById("cameraInput")); bindFileInput(document.getElementById("fileInput"));
     applyTheme(getTheme());
-    Promise.resolve().then(loadBootstrap).then(loadThread).then(startPolling).catch((error)=>{ if(error.message!=="Unauthenticated") setStatus(error.message,"error") });
+
+    Promise.resolve()
+      .then(ensureAuth)
+      .then(loadVideoConfig)
+      .then(loadThreads)
+      .then(()=>{ if(state.draftMessage) messageInput.value=state.draftMessage; state.refreshTimer=setInterval(refreshActiveThread,5000); state.signalTimer=setInterval(()=>pollSignals().catch(()=>{}),2000); })
+      .catch((error)=>{ if(error.message!=="Unauthenticated") setStatus(error.message,"error"); });
+
+    window.addEventListener("beforeunload",()=>{ stopCallLocally(); if(state.refreshTimer) clearInterval(state.refreshTimer); if(state.signalTimer) clearInterval(state.signalTimer); });
   </script>
 </body>
 </html>

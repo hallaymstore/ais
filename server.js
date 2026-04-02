@@ -299,10 +299,83 @@ const providerTypeMap = new Map(PROVIDER_TYPES.map((item) => [item.id, item]));
 
 const assistantMap = new Map(ASSISTANTS.map((assistant) => [assistant.id, assistant]));
 
+const DEFAULT_SITE_SETTINGS = {
+  updatedAt: "",
+  brand: {
+    siteName: APP_NAME,
+    shortName: "AS",
+    tagline: "Premium multi-agent platform",
+    logoUrl: "",
+    faviconUrl: "",
+    primaryColor: "#2a8a7d",
+    secondaryColor: "#102033",
+    goldColor: "#c88639",
+  },
+  landing: {
+    heroBadge: "Premium multi-agent platform",
+    heroTitle: "Bir shelf ichida bir nechta real AI yo'nalishlari.",
+    heroDescription:
+      "Ai's Shelf foydalanuvchiga kerakli mutaxassis AIni tanlab suhbat boshlash, rasm yuborish, kameradan analiz qildirish va kerak bo'lsa boshqa Aiga axloqiy tarzda o'tish imkonini beradi.",
+    heroPrimaryLabel: "Platformani ochish",
+    heroSecondaryLabel: "Dashboard",
+    sectionTitle: "Ham vizual, ham nazorat qilinadigan AI platforma",
+    sectionDescription:
+      "Foydalanuvchi oqimi, media analiz, provider tavsiyasi va admin moderation bitta premium sayt ichida ishlaydi.",
+    heroImages: {
+      agro:
+        "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1200&q=80",
+      doctor:
+        "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80",
+      lawyer:
+        "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=80",
+      private:
+        "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80",
+    },
+  },
+  chat: {
+    aiWelcome: "Chat tayyor. Savol yozing yoki rasm yuboring.",
+    serviceWelcome: "Service thread tayyor. Xabar yozishingiz mumkin.",
+    videoLabel: "Masofaviy video aloqa",
+  },
+  assistantBranding: {
+    "agro-ai": {
+      name: "Agro AI",
+      shortName: "AG",
+      logoUrl: "",
+      accent: "#76d45e",
+    },
+    "doctor-ai": {
+      name: "Doctor AI",
+      shortName: "DR",
+      logoUrl: "",
+      accent: "#7ce7ff",
+    },
+    "lawyer-ai": {
+      name: "Lawyer AI",
+      shortName: "LW",
+      logoUrl: "",
+      accent: "#ffd27d",
+    },
+    "private-ai": {
+      name: "Private AI",
+      shortName: "PR",
+      logoUrl: "",
+      accent: "#d9b8ff",
+    },
+    "service-chat": {
+      name: "Service Chat",
+      shortName: "SV",
+      logoUrl: "",
+      accent: "#2a8a7d",
+    },
+  },
+};
+
 const memoryStore = {
   users: [],
   conversations: [],
   providerThreads: [],
+  siteSettings: clone(DEFAULT_SITE_SETTINGS),
 };
 
 let storage = createMemoryAdapter();
@@ -312,6 +385,20 @@ const server = http.createServer(async (req, res) => {
     setSecurityHeaders(res);
 
     if (req.url === "/favicon.ico") {
+      const settings = await storage.getSiteSettings();
+      if (settings.brand.faviconUrl.startsWith("data:image/")) {
+        const match = settings.brand.faviconUrl.match(/^data:(image\/[^;]+);base64,(.+)$/);
+        if (match) {
+          res.writeHead(200, { "Content-Type": match[1] });
+          res.end(Buffer.from(match[2], "base64"));
+          return;
+        }
+      }
+      if (/^https?:\/\//i.test(settings.brand.faviconUrl)) {
+        res.writeHead(302, { Location: settings.brand.faviconUrl });
+        res.end();
+        return;
+      }
       res.writeHead(204);
       res.end();
       return;
@@ -332,7 +419,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (pathname === "/") {
-      await sendStaticFile(res, path.join(PUBLIC_DIR, "index.html"));
+      await sendStaticFile(req, res, path.join(PUBLIC_DIR, "index.html"));
       return;
     }
 
@@ -343,7 +430,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-      await sendStaticFile(res, filePath);
+      await sendStaticFile(req, res, filePath);
       return;
     }
 
@@ -409,6 +496,14 @@ async function initializeStorage() {
 }
 
 async function routeApi(req, res, url, pathname, method) {
+  if (pathname === "/api/site-kit.js" && method === "GET") {
+    res.writeHead(200, {
+      "Content-Type": "text/javascript; charset=utf-8",
+    });
+    res.end(renderSiteKitScript());
+    return;
+  }
+
   if (pathname === "/api/config" && method === "GET") {
     sendJson(res, 200, {
       appName: APP_NAME,
@@ -429,6 +524,34 @@ async function routeApi(req, res, url, pathname, method) {
         intro: assistant.intro,
         accent: assistant.accent,
       })),
+    });
+    return;
+  }
+
+  if (pathname === "/api/site-settings" && method === "GET") {
+    const currentUser = await getAuthenticatedUser(req);
+    sendJson(res, 200, {
+      settings: await storage.getSiteSettings(),
+      canEdit: currentUser?.role === "admin",
+    });
+    return;
+  }
+
+  if (pathname === "/api/site-settings" && method === "PATCH") {
+    const admin = await requireAdmin(req, res);
+    if (!admin) return;
+
+    const body = await readJsonBody(req);
+    const existing = await storage.getSiteSettings();
+    const nextSettings = normalizeSiteSettings(
+      deepMerge(existing, body.settings || body || {})
+    );
+    nextSettings.updatedAt = nowIso();
+    const saved = await storage.updateSiteSettings(nextSettings);
+
+    sendJson(res, 200, {
+      message: "Sayt sozlamalari yangilandi.",
+      settings: saved,
     });
     return;
   }
@@ -805,9 +928,11 @@ async function routeApi(req, res, url, pathname, method) {
     const body = await readJsonBody(req);
     const threadId = String(body.threadId || "").trim();
     const text = String(body.message || "").trim().slice(0, 2000);
+    const imageUrl = String(body.imageUrl || "").trim();
+    const imagePublicId = String(body.imagePublicId || "").trim();
 
-    if (!threadId || !text) {
-      sendJson(res, 400, { error: "Thread va xabar matni kerak." });
+    if (!threadId || (!text && !imageUrl)) {
+      sendJson(res, 400, { error: "Thread va xabar yoki rasm kerak." });
       return;
     }
 
@@ -822,12 +947,14 @@ async function routeApi(req, res, url, pathname, method) {
       senderId: user.id,
       senderRole,
       text,
+      imageUrl,
+      imagePublicId,
     });
 
     const updatedThread = await storage.appendProviderThreadMessages(threadId, [message], {
       updatedAt: nowIso(),
       lastMessageAt: message.createdAt,
-      lastMessagePreview: truncate(text, 180),
+      lastMessagePreview: truncate(text || "Rasm yuborildi.", 180),
       messageCount: (thread.messageCount || thread.messages.length || 0) + 1,
       status: "active",
     });
@@ -936,7 +1063,9 @@ async function routeApi(req, res, url, pathname, method) {
       return;
     }
 
-    const assistant = assistantMap.get(assistantId) || { slug: "shared" };
+    const assistant =
+      assistantMap.get(assistantId) ||
+      (assistantId === "service-chat" ? { slug: "service-chat" } : { slug: "shared" });
     const upload = await uploadImageToCloudinary({
       dataUrl,
       fileName,
@@ -1298,12 +1427,20 @@ function buildAdminSummary(users, conversations) {
   };
 }
 
-function createProviderThreadMessage({ senderId, senderRole, text }) {
+function createProviderThreadMessage({
+  senderId,
+  senderRole,
+  text,
+  imageUrl = "",
+  imagePublicId = "",
+}) {
   return {
     id: crypto.randomUUID(),
     senderId,
     senderRole,
     text,
+    imageUrl,
+    imagePublicId,
     createdAt: nowIso(),
   };
 }
@@ -1907,6 +2044,16 @@ function createMemoryAdapter() {
       Object.assign(thread, clone(metadata));
       return clone(thread);
     },
+    async getSiteSettings() {
+      if (!memoryStore.siteSettings) {
+        memoryStore.siteSettings = clone(DEFAULT_SITE_SETTINGS);
+      }
+      return clone(memoryStore.siteSettings);
+    },
+    async updateSiteSettings(settings) {
+      memoryStore.siteSettings = normalizeSiteSettings(settings);
+      return clone(memoryStore.siteSettings);
+    },
   };
 }
 
@@ -1926,6 +2073,7 @@ function createMongoAdapter() {
         const users = db.collection("users");
         const conversations = db.collection("conversations");
         const providerThreads = db.collection("providerThreads");
+        const siteSettings = db.collection("siteSettings");
 
         try {
           await Promise.all([
@@ -1938,12 +2086,13 @@ function createMongoAdapter() {
             providerThreads.createIndex({ id: 1 }, { unique: true }),
             providerThreads.createIndex({ userId: 1, updatedAt: -1 }),
             providerThreads.createIndex({ providerId: 1, updatedAt: -1 }),
+            siteSettings.createIndex({ key: 1 }, { unique: true }),
           ]);
         } catch (error) {
           console.warn("[Ai's Shelf] Mongo index warning:", error.message);
         }
 
-        return { users, conversations, providerThreads };
+        return { users, conversations, providerThreads, siteSettings };
       })();
     }
 
@@ -2103,6 +2252,29 @@ function createMongoAdapter() {
       );
       return this.findProviderThreadById(threadId);
     },
+    async getSiteSettings() {
+      const { siteSettings } = await getCollections();
+      const document = await siteSettings.findOne(
+        { key: "default" },
+        { projection: { _id: 0, key: 0, settings: 1 } }
+      );
+      return document?.settings ? normalizeSiteSettings(document.settings) : clone(DEFAULT_SITE_SETTINGS);
+    },
+    async updateSiteSettings(settings) {
+      const { siteSettings } = await getCollections();
+      const normalized = normalizeSiteSettings(settings);
+      await siteSettings.updateOne(
+        { key: "default" },
+        {
+          $set: {
+            key: "default",
+            settings: normalized,
+          },
+        },
+        { upsert: true }
+      );
+      return normalized;
+    },
   };
 }
 
@@ -2142,7 +2314,7 @@ function sendHtml(res, html, statusCode = 200) {
   res.end(html);
 }
 
-async function sendStaticFile(res, filePath) {
+async function sendStaticFile(req, res, filePath) {
   const ext = path.extname(filePath).toLowerCase();
   const mimeTypes = {
     ".html": "text/html; charset=utf-8",
@@ -2155,7 +2327,28 @@ async function sendStaticFile(res, filePath) {
     ".jpeg": "image/jpeg",
   };
 
-  const content = await fs.promises.readFile(filePath);
+  let content = await fs.promises.readFile(filePath);
+
+  if (ext === ".html") {
+    const settings = await storage.getSiteSettings();
+    const headInjection = [
+      settings.brand.faviconUrl
+        ? `<link rel="icon" href="${escapeAttribute(settings.brand.faviconUrl)}" />`
+        : "",
+      '<script src="/api/site-kit.js" defer></script>',
+    ]
+      .filter(Boolean)
+      .join("");
+
+    let html = content.toString("utf8");
+    if (html.includes("</head>")) {
+      html = html.replace("</head>", `${headInjection}</head>`);
+    } else {
+      html = `${headInjection}${html}`;
+    }
+    content = Buffer.from(html, "utf8");
+  }
+
   res.writeHead(200, {
     "Content-Type": mimeTypes[ext] || "application/octet-stream",
   });
@@ -2273,6 +2466,501 @@ function extractDbNameFromMongoUri(uri) {
 function hasRealEnv(value) {
   const normalized = String(value || "").trim();
   return Boolean(normalized) && !normalized.startsWith("PASTE_");
+}
+
+function sanitizeText(value, maxLength = 160) {
+  return String(value || "").trim().slice(0, maxLength);
+}
+
+function sanitizeColor(value, fallback) {
+  const normalized = String(value || "").trim();
+  return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(normalized) ? normalized : fallback;
+}
+
+function sanitizeAsset(value) {
+  const normalized = String(value || "").trim();
+  if (!normalized) return "";
+  if (normalized.startsWith("data:image/")) {
+    return normalized.slice(0, 5_000_000);
+  }
+  if (/^https?:\/\//i.test(normalized) || normalized.startsWith("/")) {
+    return normalized.slice(0, 4000);
+  }
+  return "";
+}
+
+function deepMerge(base, updates) {
+  if (Array.isArray(base) || Array.isArray(updates)) {
+    return clone(updates ?? base);
+  }
+  const output = { ...(base || {}) };
+  for (const [key, value] of Object.entries(updates || {})) {
+    if (
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      base &&
+      typeof base[key] === "object" &&
+      !Array.isArray(base[key])
+    ) {
+      output[key] = deepMerge(base[key], value);
+    } else {
+      output[key] = clone(value);
+    }
+  }
+  return output;
+}
+
+function normalizeSiteSettings(input = {}) {
+  const merged = deepMerge(DEFAULT_SITE_SETTINGS, input);
+  return {
+    updatedAt: sanitizeText(merged.updatedAt, 48) || nowIso(),
+    brand: {
+      siteName: sanitizeText(merged.brand?.siteName || APP_NAME, 80) || APP_NAME,
+      shortName: sanitizeText(merged.brand?.shortName || "AS", 8) || "AS",
+      tagline: sanitizeText(merged.brand?.tagline || "", 140),
+      logoUrl: sanitizeAsset(merged.brand?.logoUrl),
+      faviconUrl: sanitizeAsset(merged.brand?.faviconUrl),
+      primaryColor: sanitizeColor(merged.brand?.primaryColor, "#2a8a7d"),
+      secondaryColor: sanitizeColor(merged.brand?.secondaryColor, "#102033"),
+      goldColor: sanitizeColor(merged.brand?.goldColor, "#c88639"),
+    },
+    landing: {
+      heroBadge: sanitizeText(merged.landing?.heroBadge, 90),
+      heroTitle: sanitizeText(merged.landing?.heroTitle, 180),
+      heroDescription: sanitizeText(merged.landing?.heroDescription, 520),
+      heroPrimaryLabel: sanitizeText(merged.landing?.heroPrimaryLabel, 40) || "Platformani ochish",
+      heroSecondaryLabel: sanitizeText(merged.landing?.heroSecondaryLabel, 40) || "Dashboard",
+      sectionTitle: sanitizeText(merged.landing?.sectionTitle, 120),
+      sectionDescription: sanitizeText(merged.landing?.sectionDescription, 320),
+      heroImages: {
+        agro: sanitizeAsset(merged.landing?.heroImages?.agro),
+        doctor: sanitizeAsset(merged.landing?.heroImages?.doctor),
+        lawyer: sanitizeAsset(merged.landing?.heroImages?.lawyer),
+        private: sanitizeAsset(merged.landing?.heroImages?.private),
+      },
+    },
+    chat: {
+      aiWelcome: sanitizeText(merged.chat?.aiWelcome, 140),
+      serviceWelcome: sanitizeText(merged.chat?.serviceWelcome, 140),
+      videoLabel: sanitizeText(merged.chat?.videoLabel, 80),
+    },
+    assistantBranding: {
+      "agro-ai": normalizeAssistantBranding(
+        merged.assistantBranding?.["agro-ai"],
+        DEFAULT_SITE_SETTINGS.assistantBranding["agro-ai"]
+      ),
+      "doctor-ai": normalizeAssistantBranding(
+        merged.assistantBranding?.["doctor-ai"],
+        DEFAULT_SITE_SETTINGS.assistantBranding["doctor-ai"]
+      ),
+      "lawyer-ai": normalizeAssistantBranding(
+        merged.assistantBranding?.["lawyer-ai"],
+        DEFAULT_SITE_SETTINGS.assistantBranding["lawyer-ai"]
+      ),
+      "private-ai": normalizeAssistantBranding(
+        merged.assistantBranding?.["private-ai"],
+        DEFAULT_SITE_SETTINGS.assistantBranding["private-ai"]
+      ),
+      "service-chat": normalizeAssistantBranding(
+        merged.assistantBranding?.["service-chat"],
+        DEFAULT_SITE_SETTINGS.assistantBranding["service-chat"]
+      ),
+    },
+  };
+}
+
+function normalizeAssistantBranding(input = {}, fallback = {}) {
+  return {
+    name: sanitizeText(input?.name || fallback.name || "AI", 48),
+    shortName: sanitizeText(input?.shortName || fallback.shortName || "AI", 4),
+    logoUrl: sanitizeAsset(input?.logoUrl),
+    accent: sanitizeColor(input?.accent, fallback.accent || "#2a8a7d"),
+  };
+}
+
+function escapeAttribute(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function renderSiteKitScript() {
+  return `(() => {
+  if (window.__AIS_SITEKIT__) return;
+  window.__AIS_SITEKIT__ = true;
+
+  const THEME_KEY = "aishelf-theme";
+  const state = {
+    settings: null,
+    user: null,
+    styleEl: null,
+  };
+
+  const assistantId =
+    document.body?.dataset?.assistantId || (location.pathname === "/chat.html" ? "service-chat" : "");
+
+  const escapeHtml = (value) =>
+    String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+
+  const getTheme = () => {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === "day" || saved === "night") return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day";
+  };
+
+  const setFavicon = (url) => {
+    if (!url) return;
+    let link = document.querySelector('link[rel="icon"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = url;
+  };
+
+  const renderMark = (element, logoUrl, fallback) => {
+    if (!element) return;
+    if (logoUrl) {
+      element.innerHTML = '<img alt="logo" src="' + escapeHtml(logoUrl) + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" />';
+    } else {
+      element.textContent = fallback || "AS";
+    }
+  };
+
+  const applyBranding = () => {
+    const settings = state.settings;
+    if (!settings) return;
+
+    document.querySelectorAll(".brand-mark,.mark").forEach((node) => {
+      renderMark(node, settings.brand.logoUrl, settings.brand.shortName || "AS");
+    });
+
+    document.querySelectorAll("[data-site-brand-name]").forEach((node) => {
+      node.textContent = settings.brand.siteName;
+    });
+
+    document.querySelectorAll("[data-site-tagline]").forEach((node) => {
+      node.textContent = settings.brand.tagline;
+    });
+
+    if (document.getElementById("landingHeroBadge")) {
+      document.getElementById("landingHeroBadge").textContent = settings.landing.heroBadge;
+    }
+    if (document.getElementById("landingHeroTitle")) {
+      document.getElementById("landingHeroTitle").textContent = settings.landing.heroTitle;
+    }
+    if (document.getElementById("landingHeroDescription")) {
+      document.getElementById("landingHeroDescription").textContent = settings.landing.heroDescription;
+    }
+    if (document.getElementById("landingSectionTitle")) {
+      document.getElementById("landingSectionTitle").textContent = settings.landing.sectionTitle;
+    }
+    if (document.getElementById("landingSectionDescription")) {
+      document.getElementById("landingSectionDescription").textContent = settings.landing.sectionDescription;
+    }
+
+    const imageMap = {
+      landingHeroImageAgro: settings.landing.heroImages.agro,
+      landingHeroImageDoctor: settings.landing.heroImages.doctor,
+      landingHeroImageLawyer: settings.landing.heroImages.lawyer,
+      landingHeroImagePrivate: settings.landing.heroImages.private,
+    };
+
+    Object.entries(imageMap).forEach(([id, src]) => {
+      const node = document.getElementById(id);
+      if (node && src) node.src = src;
+    });
+
+    if (assistantId && settings.assistantBranding[assistantId]) {
+      const branding = settings.assistantBranding[assistantId];
+      document.documentElement.style.setProperty("--assistant-accent", branding.accent || settings.brand.primaryColor);
+      document.querySelectorAll("[data-assistant-logo]").forEach((node) => {
+        renderMark(node, branding.logoUrl, branding.shortName || branding.name?.slice(0, 2));
+      });
+      document.querySelectorAll("[data-assistant-name]").forEach((node) => {
+        node.textContent = branding.name;
+      });
+      const chatEmpty = document.querySelector("[data-chat-empty]");
+      if (chatEmpty) {
+        chatEmpty.textContent =
+          assistantId === "service-chat" ? settings.chat.serviceWelcome : settings.chat.aiWelcome;
+      }
+      const videoLabel = document.getElementById("siteVideoLabel");
+      if (videoLabel) {
+        videoLabel.textContent = settings.chat.videoLabel;
+      }
+    }
+
+    setFavicon(settings.brand.faviconUrl);
+  };
+
+  const ensureRuntimeStyle = () => {
+    if (!state.styleEl) {
+      state.styleEl = document.createElement("style");
+      state.styleEl.id = "ais-runtime-style";
+      document.head.appendChild(state.styleEl);
+    }
+    return state.styleEl;
+  };
+
+  const applyThemePalette = () => {
+    const settings = state.settings;
+    if (!settings) return;
+    const theme = getTheme();
+    document.documentElement.dataset.theme = theme;
+    const base = settings.brand;
+    const isNight = theme === "night";
+    ensureRuntimeStyle().textContent = [
+      ":root{",
+      "--brand-primary:" + base.primaryColor + ";",
+      "--brand-secondary:" + base.secondaryColor + ";",
+      "--brand-gold:" + base.goldColor + ";",
+      "}",
+      "html[data-theme='night'] body{background:radial-gradient(circle at top left, color-mix(in srgb, " + base.primaryColor + " 22%, transparent), transparent 22%),radial-gradient(circle at top right, color-mix(in srgb, " + base.goldColor + " 18%, transparent), transparent 18%),linear-gradient(180deg,#09111d 0%,#10182a 100%);}",
+      "html[data-theme='day'] body{background:radial-gradient(circle at top left, color-mix(in srgb, " + base.primaryColor + " 16%, transparent), transparent 22%),radial-gradient(circle at top right, color-mix(in srgb, " + base.goldColor + " 14%, transparent), transparent 18%),linear-gradient(180deg,#f7f2ea 0%,#fffdf9 100%);}",
+      ".brand-mark,.mark{background:linear-gradient(135deg," + base.secondaryColor + "," + base.primaryColor + ") !important;}",
+      ".button.primary,button.primary{background:linear-gradient(135deg," + base.secondaryColor + "," + base.primaryColor + ") !important;}",
+      ".badge{background:color-mix(in srgb," + base.goldColor + " 16%, transparent) !important;}",
+      ".success{color:" + (isNight ? "#7ce7bc" : "#176853") + " !important;}",
+      ".error{color:" + (isNight ? "#ff8c79" : "#b34a3b") + " !important;}",
+      "#aisCmsFab{background:linear-gradient(135deg," + base.secondaryColor + "," + base.primaryColor + ") !important;}",
+    ].join("");
+  };
+
+  const fileToDataUrl = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  const ensureAdminUi = () => {
+    if (state.user?.role !== "admin" || document.getElementById("aisCmsFab")) return;
+
+    const style = document.createElement("style");
+    style.textContent = \`
+      #aisCmsFab{position:fixed;right:18px;bottom:18px;z-index:80;border:0;border-radius:999px;padding:14px 18px;color:#fff;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 24px 50px rgba(0,0,0,.22)}
+      #aisCmsPanel{position:fixed;top:18px;right:18px;width:min(420px,calc(100vw - 24px));max-height:calc(100vh - 36px);overflow:auto;z-index:90;padding:18px;border-radius:24px;border:1px solid rgba(16,32,51,.12);background:rgba(255,255,255,.96);box-shadow:0 32px 80px rgba(0,0,0,.18);display:none;backdrop-filter:blur(16px)}
+      html[data-theme='night'] #aisCmsPanel{background:rgba(12,19,32,.96);border-color:rgba(255,255,255,.12);color:#eef6ff}
+      #aisCmsPanel h3{margin:0 0 6px;font:700 1.1rem "Space Grotesk",sans-serif}
+      #aisCmsPanel .cms-grid{display:grid;gap:14px}
+      #aisCmsPanel .cms-group{padding:14px;border-radius:18px;background:rgba(16,32,51,.04);border:1px solid rgba(16,32,51,.08)}
+      html[data-theme='night'] #aisCmsPanel .cms-group{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+      #aisCmsPanel label{display:grid;gap:6px;margin-bottom:10px;font-size:13px;font-weight:700}
+      #aisCmsPanel input,#aisCmsPanel textarea{width:100%;border:1px solid rgba(16,32,51,.12);border-radius:14px;padding:10px 12px;font:inherit;background:#fff;color:#102033}
+      html[data-theme='night'] #aisCmsPanel input,html[data-theme='night'] #aisCmsPanel textarea{background:#0f1726;color:#eef6ff;border-color:rgba(255,255,255,.14)}
+      #aisCmsPanel textarea{min-height:92px;resize:vertical}
+      #aisCmsPanel .cms-actions{display:flex;gap:10px;flex-wrap:wrap}
+      #aisCmsPanel .cms-button{border:0;border-radius:999px;padding:11px 14px;font:inherit;font-weight:800;cursor:pointer}
+      #aisCmsPanel .cms-primary{color:#fff}
+      #aisCmsPanel .cms-secondary{background:rgba(16,32,51,.06);color:inherit;border:1px solid rgba(16,32,51,.08)}
+      #aisCmsPanel .cms-note{font-size:12px;line-height:1.6;opacity:.78}
+    \`;
+    document.head.appendChild(style);
+
+    const fab = document.createElement("button");
+    fab.id = "aisCmsFab";
+    fab.type = "button";
+    fab.textContent = "Site edit";
+
+    const panel = document.createElement("aside");
+    panel.id = "aisCmsPanel";
+    panel.innerHTML = \`
+      <div class="cms-grid">
+        <div class="cms-actions" style="justify-content:space-between;align-items:center;">
+          <div>
+            <h3>Site editor</h3>
+            <div class="cms-note">Admin sifatida logo, favicon, landing matnlari va AI logolarini shu yerdan saqlaysiz.</div>
+          </div>
+          <button class="cms-button cms-secondary" type="button" id="aisCmsClose">Yopish</button>
+        </div>
+        <div class="cms-group">
+          <h3>Brand</h3>
+          <label>Site nomi<input name="brand.siteName" /></label>
+          <label>Qisqa nom<input name="brand.shortName" /></label>
+          <label>Tagline<input name="brand.tagline" /></label>
+          <label>Primary color<input type="color" name="brand.primaryColor" /></label>
+          <label>Secondary color<input type="color" name="brand.secondaryColor" /></label>
+          <label>Gold color<input type="color" name="brand.goldColor" /></label>
+          <label>Logo URL / Data URL<input name="brand.logoUrl" /></label>
+          <div class="cms-actions"><input type="file" accept="image/*" id="aisLogoPicker" /></div>
+          <label>Favicon URL / Data URL<input name="brand.faviconUrl" /></label>
+          <div class="cms-actions"><input type="file" accept="image/*" id="aisFaviconPicker" /></div>
+        </div>
+        <div class="cms-group">
+          <h3>Landing</h3>
+          <label>Hero badge<input name="landing.heroBadge" /></label>
+          <label>Hero title<textarea name="landing.heroTitle"></textarea></label>
+          <label>Hero description<textarea name="landing.heroDescription"></textarea></label>
+          <label>Section title<input name="landing.sectionTitle" /></label>
+          <label>Section description<textarea name="landing.sectionDescription"></textarea></label>
+          <label>Agro image<input name="landing.heroImages.agro" /></label>
+          <input type="file" accept="image/*" id="landingAgroPicker" />
+          <label>Doctor image<input name="landing.heroImages.doctor" /></label>
+          <input type="file" accept="image/*" id="landingDoctorPicker" />
+          <label>Lawyer image<input name="landing.heroImages.lawyer" /></label>
+          <input type="file" accept="image/*" id="landingLawyerPicker" />
+          <label>Private image<input name="landing.heroImages.private" /></label>
+          <input type="file" accept="image/*" id="landingPrivatePicker" />
+        </div>
+        <div class="cms-group">
+          <h3>Assistant logos</h3>
+          <label>Agro AI logo<input name="assistantBranding.agro-ai.logoUrl" /></label>
+          <input type="file" accept="image/*" id="agroLogoPicker" />
+          <label>Doctor AI logo<input name="assistantBranding.doctor-ai.logoUrl" /></label>
+          <input type="file" accept="image/*" id="doctorLogoPicker" />
+          <label>Lawyer AI logo<input name="assistantBranding.lawyer-ai.logoUrl" /></label>
+          <input type="file" accept="image/*" id="lawyerLogoPicker" />
+          <label>Private AI logo<input name="assistantBranding.private-ai.logoUrl" /></label>
+          <input type="file" accept="image/*" id="privateLogoPicker" />
+          <label>Service chat logo<input name="assistantBranding.service-chat.logoUrl" /></label>
+          <input type="file" accept="image/*" id="serviceLogoPicker" />
+        </div>
+        <div class="cms-actions">
+          <button class="cms-button cms-primary" id="aisCmsSave" type="button">Saqlash</button>
+          <div id="aisCmsStatus" class="cms-note"></div>
+        </div>
+      </div>
+    \`;
+
+    document.body.appendChild(fab);
+    document.body.appendChild(panel);
+
+    const fillForm = () => {
+      const settings = state.settings;
+      if (!settings) return;
+      panel.querySelector('[name="brand.siteName"]').value = settings.brand.siteName || "";
+      panel.querySelector('[name="brand.shortName"]').value = settings.brand.shortName || "";
+      panel.querySelector('[name="brand.tagline"]').value = settings.brand.tagline || "";
+      panel.querySelector('[name="brand.primaryColor"]').value = settings.brand.primaryColor || "#2a8a7d";
+      panel.querySelector('[name="brand.secondaryColor"]').value = settings.brand.secondaryColor || "#102033";
+      panel.querySelector('[name="brand.goldColor"]').value = settings.brand.goldColor || "#c88639";
+      panel.querySelector('[name="brand.logoUrl"]').value = settings.brand.logoUrl || "";
+      panel.querySelector('[name="brand.faviconUrl"]').value = settings.brand.faviconUrl || "";
+      panel.querySelector('[name="landing.heroBadge"]').value = settings.landing.heroBadge || "";
+      panel.querySelector('[name="landing.heroTitle"]').value = settings.landing.heroTitle || "";
+      panel.querySelector('[name="landing.heroDescription"]').value = settings.landing.heroDescription || "";
+      panel.querySelector('[name="landing.sectionTitle"]').value = settings.landing.sectionTitle || "";
+      panel.querySelector('[name="landing.sectionDescription"]').value = settings.landing.sectionDescription || "";
+      panel.querySelector('[name="landing.heroImages.agro"]').value = settings.landing.heroImages.agro || "";
+      panel.querySelector('[name="landing.heroImages.doctor"]').value = settings.landing.heroImages.doctor || "";
+      panel.querySelector('[name="landing.heroImages.lawyer"]').value = settings.landing.heroImages.lawyer || "";
+      panel.querySelector('[name="landing.heroImages.private"]').value = settings.landing.heroImages.private || "";
+      panel.querySelector('[name="assistantBranding.agro-ai.logoUrl"]').value = settings.assistantBranding["agro-ai"].logoUrl || "";
+      panel.querySelector('[name="assistantBranding.doctor-ai.logoUrl"]').value = settings.assistantBranding["doctor-ai"].logoUrl || "";
+      panel.querySelector('[name="assistantBranding.lawyer-ai.logoUrl"]').value = settings.assistantBranding["lawyer-ai"].logoUrl || "";
+      panel.querySelector('[name="assistantBranding.private-ai.logoUrl"]').value = settings.assistantBranding["private-ai"].logoUrl || "";
+      panel.querySelector('[name="assistantBranding.service-chat.logoUrl"]').value = settings.assistantBranding["service-chat"].logoUrl || "";
+    };
+
+    const bindFileInput = (inputId, targetName) => {
+      const picker = panel.querySelector("#" + inputId);
+      const target = panel.querySelector('[name="' + targetName + '"]');
+      picker.addEventListener("change", async () => {
+        const file = picker.files && picker.files[0];
+        if (!file || !target) return;
+        target.value = await fileToDataUrl(file);
+      });
+    };
+
+    [
+      ["aisLogoPicker", "brand.logoUrl"],
+      ["aisFaviconPicker", "brand.faviconUrl"],
+      ["landingAgroPicker", "landing.heroImages.agro"],
+      ["landingDoctorPicker", "landing.heroImages.doctor"],
+      ["landingLawyerPicker", "landing.heroImages.lawyer"],
+      ["landingPrivatePicker", "landing.heroImages.private"],
+      ["agroLogoPicker", "assistantBranding.agro-ai.logoUrl"],
+      ["doctorLogoPicker", "assistantBranding.doctor-ai.logoUrl"],
+      ["lawyerLogoPicker", "assistantBranding.lawyer-ai.logoUrl"],
+      ["privateLogoPicker", "assistantBranding.private-ai.logoUrl"],
+      ["serviceLogoPicker", "assistantBranding.service-chat.logoUrl"],
+    ].forEach(([pickerId, targetName]) => bindFileInput(pickerId, targetName));
+
+    fab.addEventListener("click", () => {
+      fillForm();
+      panel.style.display = panel.style.display === "block" ? "none" : "block";
+    });
+    panel.querySelector("#aisCmsClose").addEventListener("click", () => {
+      panel.style.display = "none";
+    });
+
+    panel.querySelector("#aisCmsSave").addEventListener("click", async () => {
+      const status = panel.querySelector("#aisCmsStatus");
+      const next = JSON.parse(JSON.stringify(state.settings));
+      next.brand.siteName = panel.querySelector('[name="brand.siteName"]').value;
+      next.brand.shortName = panel.querySelector('[name="brand.shortName"]').value;
+      next.brand.tagline = panel.querySelector('[name="brand.tagline"]').value;
+      next.brand.primaryColor = panel.querySelector('[name="brand.primaryColor"]').value;
+      next.brand.secondaryColor = panel.querySelector('[name="brand.secondaryColor"]').value;
+      next.brand.goldColor = panel.querySelector('[name="brand.goldColor"]').value;
+      next.brand.logoUrl = panel.querySelector('[name="brand.logoUrl"]').value;
+      next.brand.faviconUrl = panel.querySelector('[name="brand.faviconUrl"]').value;
+      next.landing.heroBadge = panel.querySelector('[name="landing.heroBadge"]').value;
+      next.landing.heroTitle = panel.querySelector('[name="landing.heroTitle"]').value;
+      next.landing.heroDescription = panel.querySelector('[name="landing.heroDescription"]').value;
+      next.landing.sectionTitle = panel.querySelector('[name="landing.sectionTitle"]').value;
+      next.landing.sectionDescription = panel.querySelector('[name="landing.sectionDescription"]').value;
+      next.landing.heroImages.agro = panel.querySelector('[name="landing.heroImages.agro"]').value;
+      next.landing.heroImages.doctor = panel.querySelector('[name="landing.heroImages.doctor"]').value;
+      next.landing.heroImages.lawyer = panel.querySelector('[name="landing.heroImages.lawyer"]').value;
+      next.landing.heroImages.private = panel.querySelector('[name="landing.heroImages.private"]').value;
+      next.assistantBranding["agro-ai"].logoUrl = panel.querySelector('[name="assistantBranding.agro-ai.logoUrl"]').value;
+      next.assistantBranding["doctor-ai"].logoUrl = panel.querySelector('[name="assistantBranding.doctor-ai.logoUrl"]').value;
+      next.assistantBranding["lawyer-ai"].logoUrl = panel.querySelector('[name="assistantBranding.lawyer-ai.logoUrl"]').value;
+      next.assistantBranding["private-ai"].logoUrl = panel.querySelector('[name="assistantBranding.private-ai.logoUrl"]').value;
+      next.assistantBranding["service-chat"].logoUrl = panel.querySelector('[name="assistantBranding.service-chat.logoUrl"]').value;
+
+      status.textContent = "Saqlanmoqda...";
+      try {
+        const response = await fetch("/api/site-settings", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ settings: next }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Saqlab bo'lmadi.");
+        state.settings = data.settings;
+        applyThemePalette();
+        applyBranding();
+        fillForm();
+        status.textContent = "Saqlandi. Endi barcha sahifalarda bir xil ko'rinadi.";
+      } catch (error) {
+        status.textContent = error.message;
+      }
+    });
+  };
+
+  const boot = async () => {
+    try {
+      const [authRes, siteRes] = await Promise.all([
+        fetch("/api/auth/me"),
+        fetch("/api/site-settings"),
+      ]);
+      const auth = await authRes.json();
+      const site = await siteRes.json();
+      state.user = auth.user || null;
+      state.settings = site.settings || null;
+      if (!state.settings) return;
+      applyThemePalette();
+      applyBranding();
+      ensureAdminUi();
+    } catch (error) {
+      console.error("Site kit xatosi:", error);
+    }
+  };
+
+  boot();
+})();`;
 }
 
 function clone(value) {

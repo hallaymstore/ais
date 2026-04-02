@@ -1,209 +1,123 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" data-theme="day">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Doctor AI | Ai's Shelf</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --accent: #7ce7ff;
-      --accent-2: #2f9cb4;
-      --ink: #102033;
-      --muted: #607187;
-      --line: rgba(16,32,51,.08);
-      --card: rgba(255,255,255,.86);
-      --shadow: 0 26px 60px rgba(16,32,51,.12);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Manrope", sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(124, 231, 255, .24), transparent 18%),
-        linear-gradient(180deg, #f3fbfe 0%, #f7fbff 100%);
-    }
-    a { color: inherit; text-decoration: none; }
-    .shell { width: min(1260px, calc(100vw - 24px)); margin: 0 auto; }
-    .topbar { position: sticky; top: 0; z-index: 12; background: rgba(243,251,254,.82); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(16,32,51,.06); }
-    .nav { display:flex; justify-content:space-between; gap:14px; align-items:center; padding: 16px 0; }
-    .brand { display:flex; align-items:center; gap:14px; font-weight:800; }
-    .mark { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,#102033,#2f9cb4); color:#fff; font-family:"Space Grotesk",sans-serif; }
-    .button, button { border:0; border-radius:999px; padding:12px 16px; font:inherit; font-weight:800; cursor:pointer; }
-    .button.primary, button.primary { background:linear-gradient(135deg,#102033,#2f9cb4); color:#fff; }
-    .button.secondary, button.secondary { background:rgba(255,255,255,.8); border:1px solid var(--line); color:var(--ink); }
-    h1,h2,h3 { font-family:"Space Grotesk",sans-serif; letter-spacing:-.04em; margin:0; }
-    .layout { padding: 24px 0 30px; display:grid; grid-template-columns: 320px 1fr; gap: 18px; }
-    .panel, .chat-shell, .sidebar-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-    }
-    .sidebar-card { padding: 20px; }
-    .sidebar { display:grid; gap:18px; align-content:start; }
-    .pill {
-      display:inline-flex; width: fit-content; border-radius:999px; padding: 8px 12px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
-      background: rgba(16,32,51,.06);
-    }
-    .conversation-list { display:grid; gap:12px; margin-top: 14px; }
-    .conversation-item {
-      padding: 14px;
-      border-radius: 20px;
-      background: rgba(16,32,51,.04);
-      border: 1px solid rgba(16,32,51,.06);
-      cursor: pointer;
-    }
-    .conversation-item.active { outline: 2px solid rgba(47,156,180,.28); }
-    .conversation-item strong { display:block; margin-bottom: 6px; }
-    .conversation-item small { color: var(--muted); line-height: 1.55; }
-    .chat-shell {
-      min-height: calc(100vh - 120px);
-      display:grid;
-      grid-template-rows: auto 1fr auto;
-      overflow: hidden;
-    }
-    .chat-header { padding: 24px; border-bottom: 1px solid rgba(16,32,51,.06); display:grid; gap: 14px; background: linear-gradient(145deg, rgba(124,231,255,.18), rgba(255,255,255,.74)); }
-    .chat-header p { margin:0; color: var(--muted); line-height: 1.75; }
-    .quick-prompts { display:flex; gap:10px; flex-wrap:wrap; }
-    .quick-prompts button { background: rgba(255,255,255,.76); color: var(--ink); border: 1px solid var(--line); }
-    .messages { padding: 24px; display:grid; gap:14px; overflow:auto; background: linear-gradient(180deg, rgba(255,255,255,.44), rgba(255,255,255,.18)); }
-    .message {
-      max-width: min(78%, 760px);
-      padding: 16px 18px;
-      border-radius: 24px;
-      border: 1px solid rgba(16,32,51,.06);
-      background: rgba(255,255,255,.86);
-      line-height: 1.75;
-      box-shadow: 0 14px 30px rgba(16,32,51,.06);
-    }
-    .message.user { margin-left: auto; background: rgba(124,231,255,.18); }
-    .message.assistant { margin-right: auto; }
-    .message img { width: min(100%, 320px); border-radius: 18px; margin-top: 12px; }
-    .meta { display:flex; gap: 12px; flex-wrap:wrap; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-    .composer { padding: 20px; border-top: 1px solid rgba(16,32,51,.06); display:grid; gap: 14px; background: rgba(255,255,255,.72); }
-    textarea {
-      width: 100%;
-      min-height: 110px;
-      resize: vertical;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 16px;
-      font: inherit;
-      outline: none;
-      background: rgba(255,255,255,.9);
-    }
-    textarea:focus { border-color: var(--accent-2); box-shadow: 0 0 0 4px rgba(47,156,180,.12); }
-    .composer-row { display:flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; }
-    .actions { display:flex; gap: 10px; flex-wrap: wrap; }
-    .preview {
-      display:none;
-      align-items:center;
-      gap: 14px;
-      padding: 14px;
-      border-radius: 22px;
-      background: rgba(16,32,51,.04);
-      border: 1px dashed rgba(16,32,51,.14);
-    }
-    .preview img { width: 88px; height: 88px; object-fit: cover; border-radius: 18px; }
-    .empty {
-      padding: 26px;
-      border-radius: 24px;
-      border: 1px dashed rgba(16,32,51,.14);
-      color: var(--muted);
-      background: rgba(255,255,255,.46);
-    }
-    .error { color: #b44332; }
-    .success { color: #166d57; }
-    @media (max-width: 980px) {
-      .layout { grid-template-columns: 1fr; }
-      .chat-shell { min-height: auto; }
-      .message { max-width: 100%; }
-      .nav { flex-direction: column; align-items: flex-start; }
-    }
+    :root { --bg:#f3fbfe; --surface:rgba(255,255,255,.88); --surface-2:rgba(16,32,51,.05); --line:rgba(16,32,51,.08); --ink:#102033; --muted:#5f7288; --brand-primary:#2a8a7d; --brand-secondary:#102033; --assistant-accent:#7ce7ff; --shadow:0 28px 70px rgba(16,32,51,.12); }
+    :root[data-theme="night"] { --bg:#09111d; --surface:rgba(12,19,32,.88); --surface-2:rgba(255,255,255,.06); --line:rgba(255,255,255,.08); --ink:#eef6ff; --muted:#93a6bd; --brand-primary:#62dfc6; --brand-secondary:#dffdf6; --assistant-accent:#7ce7ff; --shadow:0 28px 80px rgba(0,0,0,.45); }
+    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:
+      radial-gradient(circle at top left, color-mix(in srgb,var(--assistant-accent) 28%,transparent), transparent 18%),
+      linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 92%,white 8%) 100%)}
+    a{color:inherit;text-decoration:none} button,textarea{font:inherit}
+    .shell{width:min(1360px,calc(100vw - 24px));margin:0 auto}.topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+    .nav,.nav-actions,.sidebar-head,.chat-head,.prompt-row,.composer-actions,.meta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.nav{justify-content:space-between;padding:14px 0}
+    .brand{display:flex;gap:14px;align-items:center;font-weight:800}.brand-mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--brand-secondary),var(--brand-primary));box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
+    .button,button{border:0;border-radius:999px;padding:12px 16px;cursor:pointer;font-weight:800}.button.primary,button.primary{color:#fff;background:linear-gradient(135deg,var(--brand-secondary),color-mix(in srgb,var(--assistant-accent) 45%,var(--brand-primary) 55%));box-shadow:0 16px 34px rgba(16,32,51,.22)} .button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line)}
+    h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
+    .layout{display:grid;grid-template-columns:320px 1fr;gap:16px;padding:18px 0 24px;min-height:calc(100vh - 84px)}
+    .panel,.chat-shell,.message{border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)}
+    .panel{padding:18px}.sidebar{display:grid;gap:16px;align-content:start}
+    .pill,.chip{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}.pill{padding:8px 12px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .chip{padding:8px 12px;font-size:13px;background:color-mix(in srgb,var(--assistant-accent) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--assistant-accent) 40%,var(--line));color:var(--ink)}
+    .sidebar-head{justify-content:space-between}.conversation-list{display:grid;gap:10px;margin-top:12px}
+    .conversation-item{padding:14px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line);cursor:pointer}.conversation-item.active{outline:2px solid color-mix(in srgb,var(--assistant-accent) 42%,transparent)} .conversation-item strong{display:block;margin-bottom:6px}
+    .conversation-item small,.helper,.meta{color:var(--muted);line-height:1.6}
+    .chat-shell{display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}
+    .chat-head{justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,color-mix(in srgb,var(--assistant-accent) 18%,var(--surface)),color-mix(in srgb,var(--surface) 92%,transparent))}
+    .assistant-profile{display:flex;gap:14px;align-items:center}.assistant-logo{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,var(--brand-secondary),color-mix(in srgb,var(--assistant-accent) 55%,var(--brand-primary) 45%))}
+    .prompt-row{padding:12px 20px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--surface) 92%,transparent)}
+    .messages{display:grid;gap:12px;padding:20px;overflow:auto;background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 82%,transparent),color-mix(in srgb,var(--surface) 95%,transparent))}
+    .message{padding:14px 16px;max-width:min(72%,760px)} .message.user{margin-left:auto;background:color-mix(in srgb,var(--assistant-accent) 18%,var(--surface))} .message.assistant{margin-right:auto}
+    .message img{width:min(100%,320px);border-radius:16px;margin-top:10px}
+    .composer{padding:16px;border-top:1px solid var(--line);display:grid;gap:12px;background:color-mix(in srgb,var(--surface) 92%,transparent)}
+    textarea{width:100%;min-height:110px;resize:vertical;border-radius:22px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 94%,transparent);color:var(--ink);padding:16px;outline:none}
+    .composer-actions{justify-content:space-between}.preview{display:none;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--surface-2);border:1px dashed var(--line)} .preview img{width:76px;height:76px;object-fit:cover;border-radius:16px}
+    .empty{padding:24px;border-radius:22px;border:1px dashed var(--line);background:var(--surface-2);color:var(--muted)} .success{color:#176853}.error{color:#b34a3b}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.message{max-width:100%}.nav{flex-direction:column;align-items:flex-start}}
   </style>
 </head>
-<body>
+<body data-assistant-id="doctor-ai">
   <div class="topbar">
     <div class="shell nav">
-      <a class="brand" href="/dashboard.html"><span class="mark">AS</span><span>Ai's Shelf</span></a>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <a class="button secondary" href="/dashboard.html">Dashboard</a>
-        <a class="button secondary" href="/profile.html">Profil</a>
-        <button class="button primary" id="logoutBtn">Chiqish</button>
+      <a class="brand" href="/dashboard.html"><span class="brand-mark"></span><span data-site-brand-name>Ai's Shelf</span></a>
+      <div class="nav-actions">
+        <button class="button secondary" id="themeToggle" type="button">Tun mavzu</button>
+        <a class="button secondary" href="/recommendations.html?type=doctor">Mutaxassislar</a>
+        <button class="button primary" id="logoutBtn" type="button">Chiqish</button>
       </div>
     </div>
   </div>
 
   <main class="shell layout">
     <aside class="sidebar">
-      <article class="sidebar-card">
-        <span class="pill">Doctor AI</span>
-        <h2 style="font-size:clamp(1.8rem,3vw,2.5rem);margin-top:12px;">Sog'liq va simptom bo'yicha ehtiyotkor suhbat</h2>
-        <p style="color:var(--muted);line-height:1.8;">Tibbiy savollar, simptomlar, tahlillar va rasmli holatlar bo'yicha umumiy yo'l-yo'riq beradi. Favqulodda holatda mahalliy shifokorga murojaat qiling.</p>
-        <button class="button secondary" id="newChatBtn">Yangi chat</button>
+      <article class="panel">
+        <div class="sidebar-head">
+          <div>
+            <span class="pill">Doctor AI</span>
+            <h2 style="margin-top:10px;font-size:1.8rem;">Medical lane</h2>
+          </div>
+          <button class="button secondary" id="newChatBtn" type="button">Yangi chat</button>
+        </div>
+        <p class="helper" style="margin:12px 0 0;">Tibbiy savollar, simptomlar va rasmli holatlar bo‘yicha ehtiyotkor suhbat. Favqulodda holatda mahalliy shifokorga murojaat qiling.</p>
       </article>
-      <article class="sidebar-card">
-        <h3 style="font-size:1.3rem;">So'nggi sessiyalar</h3>
+      <article class="panel">
+        <h3 style="font-size:1.2rem;">Sessiyalar</h3>
         <div class="conversation-list" id="conversationList"></div>
       </article>
     </aside>
 
     <section class="chat-shell">
-      <header class="chat-header">
-        <div class="pill">HALLAYM AI medical lane</div>
-        <h1 style="font-size:clamp(2rem,4vw,3.4rem);">Doctor AI</h1>
-        <p>Mutaxassislikdan tashqari savol bo'lsa, masalan huquqiy mavzu, Lawyer AI ga o'tish tugmasi ko'rsatiladi.</p>
-        <div class="quick-prompts">
-          <button data-prompt="Menda 3 kundan beri bosh og'rig'i va holsizlik bor, nimalarga e'tibor beray?">Bosh og'rig'i</button>
-          <button data-prompt="Qon tahlilimdagi natijalarni oddiy tilda tushuntirib bering.">Tahlil izohi</button>
-          <button data-prompt="Ushbu rasm asosida ko'rinayotgan holat haqida ehtiyotkor tahlil qiling.">Rasm tahlili</button>
+      <header class="chat-head">
+        <div class="assistant-profile">
+          <div class="assistant-logo" data-assistant-logo>DR</div>
+          <div>
+            <div class="pill">HALLAYM AI medical lane</div>
+            <h1 data-assistant-name style="margin-top:8px;font-size:clamp(1.6rem,3vw,2.4rem);">Doctor AI</h1>
+            <div class="helper">Bot chap tomonda, sizning xabarlaringiz o'ng tomonda ko'rinadi.</div>
+          </div>
         </div>
-        <div><a class="button secondary" href="/recommendations.html?type=doctor">Yaqin shifokorlarni tavsiya qilish</a></div>
+        <a class="button secondary" href="/recommendations.html?type=doctor">Yaqin shifokorlar</a>
       </header>
 
-      <div class="messages" id="messages">
-        <div class="empty">Chat tayyor. Savol yozing yoki rasm yuboring.</div>
+      <div class="prompt-row">
+        <button class="chip" data-prompt="Menda 3 kundan beri bosh og'rig'i va holsizlik bor, nimalarga e'tibor beray?">Bosh og'rig'i</button>
+        <button class="chip" data-prompt="Qon tahlilimdagi natijalarni oddiy tilda tushuntirib bering.">Tahlil izohi</button>
+        <button class="chip" data-prompt="Ushbu rasm asosida ko'rinayotgan holat haqida ehtiyotkor tahlil qiling.">Rasm tahlili</button>
       </div>
+
+      <div class="messages" id="messages"><div class="empty" data-chat-empty>Chat tayyor. Savol yozing yoki rasm yuboring.</div></div>
 
       <div class="composer">
         <div class="preview" id="previewBox">
           <img id="previewImage" alt="Tanlangan rasm" />
           <div>
             <strong id="previewName"></strong>
-            <div style="color:var(--muted);line-height:1.6;">Rasm keyingi xabar bilan birga yuboriladi.</div>
+            <div class="helper">Rasm keyingi xabar bilan birga yuboriladi.</div>
             <button class="button secondary" id="clearImageBtn" type="button">Olib tashlash</button>
           </div>
         </div>
         <textarea id="messageInput" placeholder="Savolingizni yozing..."></textarea>
-        <div class="composer-row">
-          <div class="actions">
-            <button class="button secondary" id="cameraBtn" type="button">Kameradan</button>
-            <button class="button secondary" id="uploadBtn" type="button">Qurilmadan</button>
+        <div class="composer-actions">
+          <div class="nav-actions">
+            <button class="button secondary" id="cameraBtn" type="button">Kamera</button>
+            <button class="button secondary" id="uploadBtn" type="button">Media</button>
           </div>
           <button class="button primary" id="sendBtn" type="button">Yuborish</button>
         </div>
         <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
         <input id="fileInput" type="file" accept="image/*" hidden />
-        <div id="statusText" style="min-height:22px;color:var(--muted);"></div>
+        <div id="statusText" class="helper"></div>
       </div>
     </section>
   </main>
 
   <script>
-    const ASSISTANT = {
-      id: "doctor-ai",
-      name: "Doctor AI",
-      page: "/doctorai.html"
-    };
-
+    const THEME_KEY = "aishelf-theme";
+    const ASSISTANT = { id: "doctor-ai", name: "Doctor AI", page: "/doctorai.html" };
     let currentConversationId = new URLSearchParams(location.search).get("conversationId") || "";
     let selectedImage = null;
 
@@ -214,13 +128,22 @@
     const previewBox = document.getElementById("previewBox");
     const previewImage = document.getElementById("previewImage");
     const previewName = document.getElementById("previewName");
+    const themeToggle = document.getElementById("themeToggle");
 
     function escapeHtml(value) {
-      return String(value || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;");
+      return String(value || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+    }
+
+    function getTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved === "day" || saved === "night") return saved;
+      return matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day";
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.dataset.theme = theme;
+      localStorage.setItem(THEME_KEY, theme);
+      themeToggle.textContent = theme === "night" ? "Kunduz mavzu" : "Tun mavzu";
     }
 
     async function ensureAuth() {
@@ -235,10 +158,9 @@
     function renderMessages(conversation) {
       const messages = conversation?.messages || [];
       if (!messages.length) {
-        messagesEl.innerHTML = '<div class="empty">Chat tayyor. Savol yozing yoki rasm yuboring.</div>';
+        messagesEl.innerHTML = '<div class="empty" data-chat-empty>Chat tayyor. Savol yozing yoki rasm yuboring.</div>';
         return;
       }
-
       messagesEl.innerHTML = messages.map((message) => `
         <article class="message ${message.role}">
           <div class="meta">
@@ -295,7 +217,7 @@
       const text = messageInput.value.trim();
       if (!text && !selectedImage) return;
       statusText.textContent = "Yuborilmoqda...";
-      statusText.className = "";
+      statusText.className = "helper";
 
       try {
         let upload = null;
@@ -327,6 +249,7 @@
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Xabar yuborilmadi.");
+
         currentConversationId = data.conversationId;
         history.replaceState({}, "", `${ASSISTANT.page}?conversationId=${currentConversationId}`);
         messageInput.value = "";
@@ -334,7 +257,7 @@
         renderMessages(data.conversation);
         await loadConversations();
         statusText.textContent = data.handoff ? "Savol boshqa Aiga yo'naltirildi." : "Javob tayyor.";
-        statusText.className = data.handoff ? "" : "success";
+        statusText.className = data.handoff ? "helper" : "success";
       } catch (error) {
         statusText.textContent = error.message;
         statusText.className = "error";
@@ -385,13 +308,13 @@
         messageInput.focus();
       });
     });
+    themeToggle.addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "night" ? "day" : "night"));
+
     bindFileInput(document.getElementById("cameraInput"));
     bindFileInput(document.getElementById("fileInput"));
+    applyTheme(getTheme());
 
-    Promise.resolve()
-      .then(ensureAuth)
-      .then(loadConversations)
-      .catch(() => {});
+    Promise.resolve().then(ensureAuth).then(loadConversations).catch(() => {});
   </script>
 </body>
 </html>
