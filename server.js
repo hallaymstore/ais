@@ -16,12 +16,20 @@ const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const MAX_BODY_BYTES = 12 * 1024 * 1024;
 
 const APP_STATE = {
-  storageMode: process.env.MONGODB_URI ? "mongodb-uri" : "memory",
-  hallaymReady: Boolean(process.env.HALLAYM_API_KEY || process.env.GROQ_API_KEY),
+  storageMode: hasRealEnv(process.env.MONGODB_URI) ? "mongodb-uri" : "memory",
+  hallaymReady: Boolean(
+    hasRealEnv(process.env.HALLAYM_API_KEY) || hasRealEnv(process.env.GROQ_API_KEY)
+  ),
   cloudinaryReady: Boolean(
-    process.env.CLOUDINARY_CLOUD_NAME &&
-      ((process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) ||
-        process.env.CLOUDINARY_UPLOAD_PRESET)
+    hasRealEnv(process.env.CLOUDINARY_CLOUD_NAME) &&
+      ((hasRealEnv(process.env.CLOUDINARY_API_KEY) &&
+        hasRealEnv(process.env.CLOUDINARY_API_SECRET)) ||
+        hasRealEnv(process.env.CLOUDINARY_UPLOAD_PRESET))
+  ),
+  videoReady: Boolean(
+    hasRealEnv(process.env.EXPRESSTURN_HOST) &&
+      hasRealEnv(process.env.EXPRESSTURN_USERNAME) &&
+      hasRealEnv(process.env.EXPRESSTURN_PASSWORD)
   ),
 };
 
@@ -260,17 +268,44 @@ ASSISTANTS.push(
   }
 );
 
+const PROVIDER_TYPES = [
+  {
+    id: "doctor",
+    name: "Shifokor",
+    assistantId: "doctor-ai",
+    page: "/doctorai.html",
+  },
+  {
+    id: "lawyer",
+    name: "Advokat",
+    assistantId: "lawyer-ai",
+    page: "/lawyerai.html",
+  },
+  {
+    id: "agro",
+    name: "Agro mutaxassisi",
+    assistantId: "agro-ai",
+    page: "/agroai.html",
+  },
+  {
+    id: "private",
+    name: "Private consultant",
+    assistantId: "private-ai",
+    page: "/privateai.html",
+  },
+];
+
+const providerTypeMap = new Map(PROVIDER_TYPES.map((item) => [item.id, item]));
+
 const assistantMap = new Map(ASSISTANTS.map((assistant) => [assistant.id, assistant]));
 
 const memoryStore = {
   users: [],
   conversations: [],
+  providerThreads: [],
 };
 
-const storage =
-  APP_STATE.storageMode === "mongodb-uri"
-    ? createMongoAdapter()
-    : createMemoryAdapter();
+let storage = createMemoryAdapter();
 
 const server = http.createServer(async (req, res) => {
   try {
@@ -347,8 +382,30 @@ bootstrap()
   });
 
 async function bootstrap() {
+  await initializeStorage();
   await ensureAdminAccount();
   setInterval(cleanupSessions, 1000 * 60 * 10).unref();
+}
+
+async function initializeStorage() {
+  if (APP_STATE.storageMode !== "mongodb-uri") {
+    storage = createMemoryAdapter();
+    return;
+  }
+
+  const mongoStorage = createMongoAdapter();
+
+  try {
+    await mongoStorage.ping();
+    storage = mongoStorage;
+  } catch (error) {
+    APP_STATE.storageMode = "memory";
+    storage = createMemoryAdapter();
+    console.warn(
+      "[Ai's Shelf] Mongo ulanib bo'lmadi, memory rejimga o'tildi:",
+      error.message
+    );
+  }
 }
 
 async function routeApi(req, res, url, pathname, method) {
@@ -359,6 +416,8 @@ async function routeApi(req, res, url, pathname, method) {
       storageMode: APP_STATE.storageMode,
       hallaymReady: APP_STATE.hallaymReady,
       cloudinaryReady: APP_STATE.cloudinaryReady,
+      videoReady: APP_STATE.videoReady,
+      providerTypes: PROVIDER_TYPES,
       assistants: ASSISTANTS.map((assistant) => ({
         id: assistant.id,
         slug: assistant.slug,
@@ -379,10 +438,20 @@ async function routeApi(req, res, url, pathname, method) {
     const name = String(body.name || "").trim();
     const email = String(body.email || "").trim().toLowerCase();
     const password = String(body.password || "");
+    const accountType = String(body.accountType || "user").trim().toLowerCase();
+    const providerType = normalizeProviderType(body.providerType);
+    const providerServices = String(body.providerServices || "").trim().slice(0, 220);
 
     if (name.length < 2 || !isValidEmail(email) || password.length < 6) {
       sendJson(res, 400, {
         error: "Ism, email va kamida 6 belgili parol kerak.",
+      });
+      return;
+    }
+
+    if (accountType === "provider" && !providerType) {
+      sendJson(res, 400, {
+        error: "Mutaxassis hisobi uchun yo'nalish tanlang.",
       });
       return;
     }
@@ -399,10 +468,21 @@ async function routeApi(req, res, url, pathname, method) {
       email,
       emailLower: email,
       passwordHash: hashPassword(password),
-      role: "user",
+      role: accountType === "provider" ? "provider" : "user",
       isActive: true,
       company: "",
       bio: "",
+      locationLabel: "",
+      latitude: null,
+      longitude: null,
+      geoConsent: false,
+      providerType: providerType || "",
+      providerServices,
+      providerIntro: "",
+      providerLicense: "",
+      consultationFee: "",
+      availableForRecommendations: accountType === "provider",
+      videoEnabled: false,
       createdAt: nowIso(),
       updatedAt: nowIso(),
       lastSeenAt: nowIso(),
@@ -477,10 +557,12 @@ async function routeApi(req, res, url, pathname, method) {
     if (!user) return;
 
     const conversations = await storage.listUserConversations(user.id);
+    const providerThreads = await storage.listProviderThreadsForUser(user);
     sendJson(res, 200, {
       user: sanitizeUser(user),
       stats: buildUserStats(conversations),
       recentConversations: conversations.slice(0, 5).map(toConversationSummary),
+      recentProviderThreads: providerThreads.slice(0, 5).map(toProviderThreadSummary),
     });
     return;
   }
@@ -490,10 +572,25 @@ async function routeApi(req, res, url, pathname, method) {
     if (!user) return;
 
     const body = await readJsonBody(req);
+    const requestedProviderType = normalizeProviderType(body.providerType || user.providerType);
+    const wantsProviderMode = Boolean(body.asProvider) || user.role === "provider";
+    const latitude = body.latitude === null || body.latitude === "" ? null : Number(body.latitude);
+    const longitude = body.longitude === null || body.longitude === "" ? null : Number(body.longitude);
     const updates = {
       name: String(body.name || user.name).trim().slice(0, 80),
       company: String(body.company || "").trim().slice(0, 120),
       bio: String(body.bio || "").trim().slice(0, 400),
+      locationLabel: String(body.locationLabel || "").trim().slice(0, 160),
+      latitude: Number.isFinite(latitude) ? latitude : null,
+      longitude: Number.isFinite(longitude) ? longitude : null,
+      geoConsent: Boolean(body.geoConsent) || (Number.isFinite(latitude) && Number.isFinite(longitude)),
+      providerType: wantsProviderMode ? requestedProviderType || "" : "",
+      providerServices: String(body.providerServices || "").trim().slice(0, 220),
+      providerIntro: String(body.providerIntro || "").trim().slice(0, 500),
+      providerLicense: String(body.providerLicense || "").trim().slice(0, 120),
+      consultationFee: String(body.consultationFee || "").trim().slice(0, 80),
+      availableForRecommendations: wantsProviderMode ? Boolean(body.availableForRecommendations ?? true) : false,
+      videoEnabled: wantsProviderMode ? Boolean(body.videoEnabled) : false,
       updatedAt: nowIso(),
     };
 
@@ -502,10 +599,317 @@ async function routeApi(req, res, url, pathname, method) {
       return;
     }
 
+    if (wantsProviderMode && !updates.providerType) {
+      sendJson(res, 400, { error: "Provider profil uchun yo'nalish tanlang." });
+      return;
+    }
+
+    if (user.role !== "admin" && user.role !== "provider" && wantsProviderMode) {
+      updates.role = "provider";
+    }
+
     await storage.updateUser(user.id, updates);
     sendJson(res, 200, {
       message: "Profil yangilandi.",
       user: sanitizeUser(await storage.findUserById(user.id)),
+    });
+    return;
+  }
+
+  if (pathname === "/api/provider-types" && method === "GET") {
+    sendJson(res, 200, { providerTypes: PROVIDER_TYPES });
+    return;
+  }
+
+  if (pathname === "/api/providers" && method === "GET") {
+    const user = await requireAuth(req, res);
+    if (!user) return;
+
+    const providerType = normalizeProviderType(url.searchParams.get("type"));
+    const radiusKm = Math.max(1, Math.min(300, Number(url.searchParams.get("radiusKm") || 100)));
+    const latitude = Number(url.searchParams.get("lat") || user.latitude);
+    const longitude = Number(url.searchParams.get("lng") || user.longitude);
+    const requesterHasCoords = Number.isFinite(latitude) && Number.isFinite(longitude);
+
+    let providers = await storage.listProviders({
+      providerType,
+      excludeUserId: user.id,
+    });
+
+    providers = providers
+      .map((provider) => {
+        const distanceKm =
+          requesterHasCoords &&
+          Number.isFinite(provider.latitude) &&
+          Number.isFinite(provider.longitude)
+            ? haversineKm(latitude, longitude, provider.latitude, provider.longitude)
+            : null;
+
+        return {
+          ...sanitizeUser(provider),
+          distanceKm,
+          providerTypeLabel: getProviderTypeLabel(provider.providerType),
+        };
+      })
+      .filter((provider) => provider.distanceKm == null || provider.distanceKm <= radiusKm)
+      .sort((a, b) => {
+        if (a.distanceKm == null && b.distanceKm == null) return 0;
+        if (a.distanceKm == null) return 1;
+        if (b.distanceKm == null) return -1;
+        return a.distanceKm - b.distanceKm;
+      });
+
+    sendJson(res, 200, {
+      providers,
+      locationUsed: requesterHasCoords ? { latitude, longitude } : null,
+    });
+    return;
+  }
+
+  if (pathname === "/api/provider-threads" && method === "GET") {
+    const user = await requireAuth(req, res);
+    if (!user) return;
+
+    const threads = await storage.listProviderThreadsForUser(user);
+    const users = await storage.listUsers();
+    const userMap = new Map(users.map((item) => [item.id, item]));
+
+    sendJson(res, 200, {
+      threads: threads.map((thread) =>
+        toProviderThreadSummary(thread, {
+          requester: userMap.get(thread.userId),
+          provider: userMap.get(thread.providerId),
+        })
+      ),
+    });
+    return;
+  }
+
+  if (pathname === "/api/provider-threads/request" && method === "POST") {
+    const user = await requireAuth(req, res);
+    if (!user) return;
+
+    const body = await readJsonBody(req);
+    const providerId = String(body.providerId || "").trim();
+    const note = String(body.note || "").trim().slice(0, 1000);
+    const sourceAssistantId = String(body.sourceAssistantId || "").trim();
+    const provider = await storage.findUserById(providerId);
+
+    if (!provider || provider.role !== "provider" || !provider.isActive) {
+      sendJson(res, 404, { error: "Provider topilmadi." });
+      return;
+    }
+
+    const providerDistanceKm =
+      Number.isFinite(user.latitude) &&
+      Number.isFinite(user.longitude) &&
+      Number.isFinite(provider.latitude) &&
+      Number.isFinite(provider.longitude)
+        ? haversineKm(user.latitude, user.longitude, provider.latitude, provider.longitude)
+        : null;
+
+    const existingThreads = await storage.listProviderThreadsForUser(user);
+    const existing = existingThreads.find(
+      (thread) => thread.providerId === providerId && thread.status !== "closed"
+    );
+
+    if (existing) {
+      sendJson(res, 200, {
+        message: "Mavjud provider chat topildi.",
+        threadId: existing.id,
+      });
+      return;
+    }
+
+    const now = nowIso();
+    const initialText =
+      note ||
+      `Salom, men ${getProviderTypeLabel(provider.providerType).toLowerCase()} bilan bog'lanmoqchiman.`;
+    const initialMessage = createProviderThreadMessage({
+      senderId: user.id,
+      senderRole: "user",
+      text: initialText,
+    });
+
+    const thread = {
+      id: crypto.randomUUID(),
+      userId: user.id,
+      providerId: provider.id,
+      providerType: provider.providerType,
+      title: `${provider.name} bilan bog'lanish`,
+      status: "requested",
+      sourceAssistantId,
+      recommendation: {
+        locationLabel: user.locationLabel || "",
+        latitude: user.latitude ?? null,
+        longitude: user.longitude ?? null,
+        distanceKm: providerDistanceKm,
+      },
+      createdAt: now,
+      updatedAt: now,
+      lastMessageAt: initialMessage.createdAt,
+      lastMessagePreview: truncate(initialText, 180),
+      messageCount: 1,
+      messages: [initialMessage],
+      callSignals: [],
+    };
+
+    await storage.createProviderThread(thread);
+    sendJson(res, 201, {
+      message: "Providerga so'rov yuborildi.",
+      threadId: thread.id,
+      thread: toProviderThreadSummary(thread, {
+        requester: user,
+        provider,
+      }),
+    });
+    return;
+  }
+
+  if (pathname === "/api/provider-thread" && method === "GET") {
+    const user = await requireAuth(req, res);
+    if (!user) return;
+
+    const threadId = String(url.searchParams.get("id") || "").trim();
+    if (!threadId) {
+      sendJson(res, 400, { error: "Thread ID kerak." });
+      return;
+    }
+
+    const thread = await storage.findProviderThreadById(threadId);
+    if (!thread || !canAccessProviderThread(user, thread)) {
+      sendJson(res, 404, { error: "Provider chat topilmadi." });
+      return;
+    }
+
+    const [requester, provider] = await Promise.all([
+      storage.findUserById(thread.userId),
+      storage.findUserById(thread.providerId),
+    ]);
+
+    sendJson(res, 200, {
+      thread: {
+        ...thread,
+        providerTypeLabel: getProviderTypeLabel(thread.providerType),
+        requester: sanitizeUser(requester),
+        provider: sanitizeUser(provider),
+      },
+    });
+    return;
+  }
+
+  if (pathname === "/api/provider-thread/message" && method === "POST") {
+    const user = await requireAuth(req, res);
+    if (!user) return;
+
+    const body = await readJsonBody(req);
+    const threadId = String(body.threadId || "").trim();
+    const text = String(body.message || "").trim().slice(0, 2000);
+
+    if (!threadId || !text) {
+      sendJson(res, 400, { error: "Thread va xabar matni kerak." });
+      return;
+    }
+
+    const thread = await storage.findProviderThreadById(threadId);
+    if (!thread || !canAccessProviderThread(user, thread)) {
+      sendJson(res, 404, { error: "Provider chat topilmadi." });
+      return;
+    }
+
+    const senderRole = user.id === thread.providerId ? "provider" : "user";
+    const message = createProviderThreadMessage({
+      senderId: user.id,
+      senderRole,
+      text,
+    });
+
+    const updatedThread = await storage.appendProviderThreadMessages(threadId, [message], {
+      updatedAt: nowIso(),
+      lastMessageAt: message.createdAt,
+      lastMessagePreview: truncate(text, 180),
+      messageCount: (thread.messageCount || thread.messages.length || 0) + 1,
+      status: "active",
+    });
+
+    sendJson(res, 200, {
+      message: "Xabar yuborildi.",
+      thread: updatedThread,
+    });
+    return;
+  }
+
+  if (pathname === "/api/video-config" && method === "GET") {
+    const user = await requireAuth(req, res);
+    if (!user) return;
+
+    sendJson(res, 200, {
+      ready: APP_STATE.videoReady,
+      iceServers: buildIceServers(),
+    });
+    return;
+  }
+
+  if (pathname === "/api/provider-call/signal" && method === "POST") {
+    const user = await requireAuth(req, res);
+    if (!user) return;
+
+    const body = await readJsonBody(req);
+    const threadId = String(body.threadId || "").trim();
+    const type = String(body.type || "").trim();
+    const payload = body.payload ?? null;
+
+    if (!threadId || !type) {
+      sendJson(res, 400, { error: "Signal uchun thread va type kerak." });
+      return;
+    }
+
+    const thread = await storage.findProviderThreadById(threadId);
+    if (!thread || !canAccessProviderThread(user, thread)) {
+      sendJson(res, 404, { error: "Provider chat topilmadi." });
+      return;
+    }
+
+    const signal = {
+      id: crypto.randomUUID(),
+      senderId: user.id,
+      type,
+      payload,
+      createdAt: nowIso(),
+      ts: Date.now(),
+    };
+
+    await storage.appendProviderThreadSignals(threadId, [signal], {
+      updatedAt: nowIso(),
+    });
+    sendJson(res, 200, { ok: true, signalId: signal.id });
+    return;
+  }
+
+  if (pathname === "/api/provider-call/signals" && method === "GET") {
+    const user = await requireAuth(req, res);
+    if (!user) return;
+
+    const threadId = String(url.searchParams.get("threadId") || "").trim();
+    const since = Number(url.searchParams.get("since") || 0);
+
+    if (!threadId) {
+      sendJson(res, 400, { error: "Thread ID kerak." });
+      return;
+    }
+
+    const thread = await storage.findProviderThreadById(threadId);
+    if (!thread || !canAccessProviderThread(user, thread)) {
+      sendJson(res, 404, { error: "Provider chat topilmadi." });
+      return;
+    }
+
+    const signals = (thread.callSignals || []).filter(
+      (signal) => signal.ts > since && signal.senderId !== user.id
+    );
+    sendJson(res, 200, {
+      signals,
+      now: Date.now(),
     });
     return;
   }
@@ -892,6 +1296,108 @@ function buildAdminSummary(users, conversations) {
     assistantBreakdown,
     recentConversations: conversations.slice(0, 8).map(toConversationSummary),
   };
+}
+
+function createProviderThreadMessage({ senderId, senderRole, text }) {
+  return {
+    id: crypto.randomUUID(),
+    senderId,
+    senderRole,
+    text,
+    createdAt: nowIso(),
+  };
+}
+
+function toProviderThreadSummary(thread, related = {}) {
+  const requester = related.requester ? sanitizeUser(related.requester) : null;
+  const provider = related.provider ? sanitizeUser(related.provider) : null;
+
+  return {
+    id: thread.id,
+    userId: thread.userId,
+    providerId: thread.providerId,
+    providerType: thread.providerType,
+    providerTypeLabel: getProviderTypeLabel(thread.providerType),
+    title: thread.title,
+    status: thread.status,
+    sourceAssistantId: thread.sourceAssistantId || "",
+    recommendation: thread.recommendation || null,
+    createdAt: thread.createdAt,
+    updatedAt: thread.updatedAt,
+    lastMessageAt: thread.lastMessageAt,
+    lastMessagePreview: thread.lastMessagePreview,
+    messageCount: thread.messageCount || (thread.messages || []).length,
+    requester,
+    provider,
+  };
+}
+
+function canAccessProviderThread(user, thread) {
+  return (
+    user.role === "admin" ||
+    thread.userId === user.id ||
+    thread.providerId === user.id
+  );
+}
+
+function normalizeProviderType(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  return providerTypeMap.has(normalized) ? normalized : "";
+}
+
+function getProviderTypeLabel(providerType) {
+  return providerTypeMap.get(providerType)?.name || "Mutaxassis";
+}
+
+function providerTypeFromAssistantId(assistantId) {
+  return PROVIDER_TYPES.find((item) => item.assistantId === assistantId)?.id || "";
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const toRadians = (value) => (value * Math.PI) / 180;
+  const earthRadiusKm = 6371;
+  const dLat = toRadians(lat2 - lat1);
+  const dLng = toRadians(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRadians(lat1)) *
+      Math.cos(toRadians(lat2)) *
+      Math.sin(dLng / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Number((earthRadiusKm * c).toFixed(1));
+}
+
+function buildIceServers() {
+  if (!APP_STATE.videoReady) return [];
+
+  const hosts = String(process.env.EXPRESSTURN_HOST || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const port = Number(process.env.EXPRESSTURN_PORT || 3478);
+  const turnsPort = Number(process.env.EXPRESSTURN_TURNS_PORT || 443);
+  const username = process.env.EXPRESSTURN_USERNAME;
+  const credential = process.env.EXPRESSTURN_PASSWORD;
+  const includeTurns = String(process.env.EXPRESSTURN_ENABLE_TURNS || "true") !== "false";
+
+  const iceServers = [];
+  for (const host of hosts) {
+    iceServers.push({ urls: [`stun:${host}:${port}`] });
+    iceServers.push({
+      urls: [`turn:${host}:${port}?transport=udp`, `turn:${host}:${port}?transport=tcp`],
+      username,
+      credential,
+    });
+    if (includeTurns) {
+      iceServers.push({
+        urls: [`turns:${host}:${turnsPort}?transport=tcp`],
+        username,
+        credential,
+      });
+    }
+  }
+
+  return iceServers;
 }
 
 function detectHandoff(assistant, rawText) {
@@ -1296,6 +1802,21 @@ function createMemoryAdapter() {
     async listUsers() {
       return clone([...memoryStore.users].sort(sortByCreatedDesc));
     },
+    async listProviders(filters = {}) {
+      let users = memoryStore.users.filter(
+        (user) =>
+          user.role === "provider" &&
+          user.isActive &&
+          user.availableForRecommendations !== false
+      );
+      if (filters.providerType) {
+        users = users.filter((user) => user.providerType === filters.providerType);
+      }
+      if (filters.excludeUserId) {
+        users = users.filter((user) => user.id !== filters.excludeUserId);
+      }
+      return clone(users.sort(sortByCreatedDesc));
+    },
     async createConversation(conversation) {
       memoryStore.conversations.push(clone(conversation));
       return clone(conversation);
@@ -1338,6 +1859,37 @@ function createMemoryAdapter() {
       Object.assign(conversation, clone(metadata));
       return clone(conversation);
     },
+    async createProviderThread(thread) {
+      memoryStore.providerThreads.push(clone(thread));
+      return clone(thread);
+    },
+    async findProviderThreadById(id) {
+      return clone(memoryStore.providerThreads.find((thread) => thread.id === id) || null);
+    },
+    async listProviderThreadsForUser(user) {
+      let threads = [...memoryStore.providerThreads];
+      if (user.role === "provider") {
+        threads = threads.filter((thread) => thread.providerId === user.id);
+      } else if (user.role !== "admin") {
+        threads = threads.filter((thread) => thread.userId === user.id);
+      }
+      threads.sort(sortByUpdatedDesc);
+      return clone(threads);
+    },
+    async appendProviderThreadMessages(threadId, newMessages, metadata) {
+      const thread = memoryStore.providerThreads.find((item) => item.id === threadId);
+      if (!thread) return null;
+      thread.messages.push(...clone(newMessages));
+      Object.assign(thread, clone(metadata));
+      return clone(thread);
+    },
+    async appendProviderThreadSignals(threadId, newSignals, metadata) {
+      const thread = memoryStore.providerThreads.find((item) => item.id === threadId);
+      if (!thread) return null;
+      thread.callSignals = [...(thread.callSignals || []), ...clone(newSignals)].slice(-120);
+      Object.assign(thread, clone(metadata));
+      return clone(thread);
+    },
   };
 }
 
@@ -1356,20 +1908,25 @@ function createMongoAdapter() {
         const db = client.db(dbName);
         const users = db.collection("users");
         const conversations = db.collection("conversations");
+        const providerThreads = db.collection("providerThreads");
 
         try {
           await Promise.all([
             users.createIndex({ id: 1 }, { unique: true }),
             users.createIndex({ emailLower: 1 }, { unique: true }),
+            users.createIndex({ role: 1, providerType: 1, availableForRecommendations: 1 }),
             conversations.createIndex({ id: 1 }, { unique: true }),
             conversations.createIndex({ userId: 1, updatedAt: -1 }),
             conversations.createIndex({ assistantId: 1, updatedAt: -1 }),
+            providerThreads.createIndex({ id: 1 }, { unique: true }),
+            providerThreads.createIndex({ userId: 1, updatedAt: -1 }),
+            providerThreads.createIndex({ providerId: 1, updatedAt: -1 }),
           ]);
         } catch (error) {
           console.warn("[Ai's Shelf] Mongo index warning:", error.message);
         }
 
-        return { users, conversations };
+        return { users, conversations, providerThreads };
       })();
     }
 
@@ -1379,6 +1936,11 @@ function createMongoAdapter() {
   const noInternalId = { projection: { _id: 0 } };
 
   return {
+    async ping() {
+      await client.connect();
+      await client.db(dbName).command({ ping: 1 });
+      return true;
+    },
     async findUserByEmail(emailLower) {
       const { users } = await getCollections();
       return users.findOne({ emailLower }, noInternalId);
@@ -1405,6 +1967,17 @@ function createMongoAdapter() {
     async listUsers() {
       const { users } = await getCollections();
       return users.find({}, noInternalId).sort({ createdAt: -1 }).limit(500).toArray();
+    },
+    async listProviders(filters = {}) {
+      const { users } = await getCollections();
+      const query = {
+        role: "provider",
+        isActive: true,
+        availableForRecommendations: { $ne: false },
+      };
+      if (filters.providerType) query.providerType = filters.providerType;
+      if (filters.excludeUserId) query.id = { $ne: filters.excludeUserId };
+      return users.find(query, noInternalId).sort({ createdAt: -1 }).limit(500).toArray();
     },
     async createConversation(conversation) {
       const { conversations } = await getCollections();
@@ -1458,6 +2031,60 @@ function createMongoAdapter() {
         }
       );
       return this.findConversationById(conversationId);
+    },
+    async createProviderThread(thread) {
+      const { providerThreads } = await getCollections();
+      await providerThreads.insertOne(thread);
+      return thread;
+    },
+    async findProviderThreadById(id) {
+      const { providerThreads } = await getCollections();
+      return providerThreads.findOne({ id }, noInternalId);
+    },
+    async listProviderThreadsForUser(user) {
+      const { providerThreads } = await getCollections();
+      const filter =
+        user.role === "admin"
+          ? {}
+          : user.role === "provider"
+            ? { providerId: user.id }
+            : { userId: user.id };
+      return providerThreads
+        .find(filter, noInternalId)
+        .sort({ updatedAt: -1 })
+        .limit(300)
+        .toArray();
+    },
+    async appendProviderThreadMessages(threadId, newMessages, metadata) {
+      const { providerThreads } = await getCollections();
+      await providerThreads.updateOne(
+        { id: threadId },
+        {
+          $push: {
+            messages: {
+              $each: newMessages,
+            },
+          },
+          $set: metadata,
+        }
+      );
+      return this.findProviderThreadById(threadId);
+    },
+    async appendProviderThreadSignals(threadId, newSignals, metadata) {
+      const { providerThreads } = await getCollections();
+      await providerThreads.updateOne(
+        { id: threadId },
+        {
+          $push: {
+            callSignals: {
+              $each: newSignals,
+              $slice: -120,
+            },
+          },
+          $set: metadata,
+        }
+      );
+      return this.findProviderThreadById(threadId);
     },
   };
 }
@@ -1624,6 +2251,11 @@ function slugify(value) {
 function extractDbNameFromMongoUri(uri) {
   const match = String(uri || "").match(/^[^/]+\/\/[^/]+\/([^?]+)/);
   return match?.[1] ? decodeURIComponent(match[1]) : "";
+}
+
+function hasRealEnv(value) {
+  const normalized = String(value || "").trim();
+  return Boolean(normalized) && !normalized.startsWith("PASTE_");
 }
 
 function clone(value) {

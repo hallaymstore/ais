@@ -23,38 +23,44 @@
       margin: 0;
       font-family: "Manrope", sans-serif;
       color: var(--ink);
-      background: linear-gradient(180deg, #f7f3eb 0%, #f8fbff 100%);
+      background:
+        radial-gradient(circle at top left, rgba(45,138,128,.12), transparent 20%),
+        linear-gradient(180deg, #f7f3eb 0%, #f8fbff 100%);
     }
     a { color: inherit; text-decoration: none; }
-    .shell { width: min(1120px, calc(100vw - 32px)); margin: 0 auto; }
-    .topbar { position: sticky; top: 0; background: rgba(247,243,235,.82); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(17,33,50,.06); }
-    .nav { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 0; }
-    .brand { display: flex; align-items: center; gap: 14px; font-weight: 800; }
-    .brand-mark { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(135deg, #102033, #24585b); color:#fff; font-family:"Space Grotesk",sans-serif; }
-    .button, button { border: 0; border-radius: 999px; padding: 13px 18px; font: inherit; font-weight: 800; cursor: pointer; }
-    .button.primary, button { background: linear-gradient(135deg, #102033, #24585b); color:#fff; }
-    .button.secondary { background: rgba(255,255,255,.78); border: 1px solid var(--line); color: var(--ink); }
-    h1,h2,h3 { font-family: "Space Grotesk", sans-serif; letter-spacing: -.04em; margin: 0; }
-    .hero { padding: 34px 0; display:grid; grid-template-columns: .95fr 1.05fr; gap: 18px; }
-    .panel, .stat, .conversation { background: var(--card); border: 1px solid var(--line); border-radius: 28px; box-shadow: var(--shadow); backdrop-filter: blur(16px); }
-    .hero-card, .form-card, .conversation { padding: 24px; }
-    .hero-card p, .form-card p, .conversation p { color: var(--muted); line-height: 1.75; }
-    .stats { display:grid; gap: 14px; grid-template-columns: repeat(3, minmax(0,1fr)); margin-top: 18px; }
-    .stat { padding: 18px; }
+    .shell { width: min(1180px, calc(100vw - 32px)); margin: 0 auto; }
+    .topbar { position: sticky; top: 0; background: rgba(247,243,235,.82); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(17,33,50,.06); z-index: 10; }
+    .nav { display:flex; align-items:center; justify-content:space-between; gap:14px; padding: 16px 0; }
+    .brand { display:flex; align-items:center; gap:14px; font-weight:800; }
+    .brand-mark { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,#102033,#24585b); color:#fff; font-family:"Space Grotesk",sans-serif; }
+    .button, button { border:0; border-radius:999px; padding:13px 18px; font:inherit; font-weight:800; cursor:pointer; }
+    .button.primary, button { background:linear-gradient(135deg,#102033,#24585b); color:#fff; }
+    .button.secondary { background:rgba(255,255,255,.8); color:var(--ink); border:1px solid var(--line); }
+    h1,h2,h3 { font-family:"Space Grotesk",sans-serif; letter-spacing:-.04em; margin:0; }
+    .grid, .stats, .activity-grid { display:grid; gap:18px; }
+    .grid { padding: 34px 0; grid-template-columns: .95fr 1.05fr; }
+    .panel, .stat, .card { background: var(--card); border:1px solid var(--line); border-radius:28px; box-shadow: var(--shadow); backdrop-filter: blur(16px); }
+    .hero, .form-card, .card { padding:24px; }
+    .hero p, .form-card p, .card p { color: var(--muted); line-height: 1.75; }
+    .stats { grid-template-columns: repeat(4, minmax(0,1fr)); margin-top: 18px; }
+    .stat { padding:18px; }
     .stat strong { display:block; font-size: 22px; margin-bottom: 8px; }
-    form { display:grid; gap: 14px; margin-top: 18px; }
-    label { display:grid; gap: 8px; font-weight: 700; }
-    input, textarea { border:1px solid var(--line); border-radius: 18px; padding: 14px 16px; font: inherit; background: rgba(255,255,255,.88); outline:none; }
-    textarea { resize: vertical; min-height: 120px; }
-    input:focus, textarea:focus { border-color:#2d8a80; box-shadow: 0 0 0 4px rgba(45,138,128,.12); }
-    .conversation-grid { display:grid; gap: 16px; }
-    .meta { display:flex; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 14px; }
+    form { display:grid; gap:14px; margin-top: 18px; }
+    .row { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:14px; }
+    label { display:grid; gap:8px; font-weight:700; }
+    input, textarea, select { border:1px solid var(--line); border-radius:18px; padding:14px 16px; font:inherit; background:rgba(255,255,255,.88); outline:none; }
+    textarea { resize: vertical; min-height: 110px; }
+    input:focus, textarea:focus, select:focus { border-color:#2d8a80; box-shadow:0 0 0 4px rgba(45,138,128,.12); }
+    .helper { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .pill { display:inline-flex; width:fit-content; padding:8px 12px; border-radius:999px; font-size:12px; font-weight:800; background: rgba(17,33,50,.06); }
+    .actions { display:flex; gap:12px; flex-wrap: wrap; }
+    .activity-grid { grid-template-columns: repeat(2, minmax(0,1fr)); padding: 0 0 42px; }
     #message { min-height: 24px; }
-    .success { color: #166d57; }
-    .error { color: #b44332; }
-    @media (max-width: 920px) {
-      .hero { grid-template-columns: 1fr; }
-      .stats { grid-template-columns: 1fr; }
+    .success { color:#166d57; }
+    .error { color:#b44332; }
+    @media (max-width: 980px) {
+      .grid, .activity-grid { grid-template-columns: 1fr; }
+      .stats, .row { grid-template-columns: 1fr; }
       .nav { flex-direction: column; align-items: flex-start; }
     }
   </style>
@@ -63,8 +69,9 @@
   <div class="topbar">
     <div class="shell nav">
       <a class="brand" href="/dashboard.html"><span class="brand-mark">AS</span><span>Ai's Shelf</span></a>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div class="actions">
         <a class="button secondary" href="/dashboard.html">Dashboard</a>
+        <a class="button secondary" href="/recommendations.html">Tavsiya sahifasi</a>
         <a class="button secondary" id="adminLink" href="/admin.html" style="display:none;">Admin</a>
         <button id="logoutBtn">Chiqish</button>
       </div>
@@ -72,43 +79,112 @@
   </div>
 
   <main class="shell">
-    <section class="hero">
-      <article class="panel hero-card">
-        <h1 style="font-size:clamp(2.2rem,4vw,3.6rem);" id="welcome">Profil</h1>
-        <p>Bu yerda hisob ma'lumotlaringiz, qisqa bio va platformadagi faoliyatingiz ko'rinadi.</p>
+    <section class="grid">
+      <article class="panel hero">
+        <span class="pill">Profile & Location</span>
+        <h1 style="font-size:clamp(2.3rem,4vw,3.8rem);margin-top:14px;" id="welcome">Profil</h1>
+        <p>Joylashuvni saqlab qo'ysangiz, tavsiya sahifasi sizga yaqin shifokor, advokat, agro mutaxassisi yoki private consultantlarni ko'rsatadi.</p>
         <div class="stats">
-          <div class="stat"><small>Suhbatlar</small><strong id="conversationCount">0</strong></div>
+          <div class="stat"><small>AI chatlar</small><strong id="conversationCount">0</strong></div>
           <div class="stat"><small>Xabarlar</small><strong id="messageCount">0</strong></div>
-          <div class="stat"><small>Flagli chatlar</small><strong id="flaggedCount">0</strong></div>
+          <div class="stat"><small>Service threadlar</small><strong id="serviceCount">0</strong></div>
+          <div class="stat"><small>Status</small><strong id="roleLabel">user</strong></div>
         </div>
       </article>
 
       <article class="panel form-card">
-        <h2 style="font-size:clamp(1.8rem,3vw,2.6rem);">Profilni yangilash</h2>
-        <p>Ism, kompaniya yoki qisqa bio ni yangilang.</p>
+        <h2 style="font-size:clamp(1.8rem,3vw,2.7rem);">Profil, joylashuv va xizmat profili</h2>
+        <p>Oddiy foydalanuvchi sifatida joylashuv saqlashingiz yoki mutaxassis sifatida o'zingizni tavsiya tizimiga qo'shishingiz mumkin.</p>
+
         <form id="profileForm">
-          <label>Ism<input type="text" name="name" required /></label>
-          <label>Kompaniya yoki loyiha<input type="text" name="company" /></label>
+          <div class="row">
+            <label>Ism<input type="text" name="name" required /></label>
+            <label>Kompaniya yoki loyiha<input type="text" name="company" /></label>
+          </div>
           <label>Qisqa bio<textarea name="bio" placeholder="O'zingiz haqingizda qisqacha..."></textarea></label>
+          <div class="row">
+            <label>Joylashuv nomi<input type="text" name="locationLabel" placeholder="Masalan: Chilonzor, Toshkent" /></label>
+            <label>Hisob roli
+              <select name="asProvider" id="asProvider">
+                <option value="false">Oddiy foydalanuvchi</option>
+                <option value="true">Mutaxassis / xizmatchi</option>
+              </select>
+            </label>
+          </div>
+          <div class="actions">
+            <button class="button secondary" id="captureLocationBtn" type="button">Joylashuvni olish</button>
+            <a class="button secondary" id="recommendationLink" href="/recommendations.html">Tavsiya sahifasiga o'tish</a>
+          </div>
+          <div class="helper" id="locationInfo">Joylashuv hali saqlanmagan.</div>
+          <input type="hidden" name="latitude" />
+          <input type="hidden" name="longitude" />
+          <input type="hidden" name="geoConsent" value="false" />
+
+          <div id="providerFields" style="display:none;gap:14px;">
+            <div class="row">
+              <label>
+                Yo'nalish
+                <select name="providerType" id="providerType"></select>
+              </label>
+              <label>Xizmatlar<input type="text" name="providerServices" placeholder="Masalan: konsultatsiya, hujjat tahlili" /></label>
+            </div>
+            <label>Mutaxassis intro<textarea name="providerIntro" placeholder="Tajribangiz, yo'nalishingiz va qanday yordam berishingiz haqida yozing"></textarea></label>
+            <div class="row">
+              <label>License / sertifikat<input type="text" name="providerLicense" placeholder="Masalan: Advokatlik litsenziyasi..." /></label>
+              <label>Konsultatsiya narxi<input type="text" name="consultationFee" placeholder="Masalan: 150 000 so'm / 30 min" /></label>
+            </div>
+            <div class="row">
+              <label>
+                Tavsiyalarda ko'rinsin
+                <select name="availableForRecommendations">
+                  <option value="true">Ha</option>
+                  <option value="false">Yo'q</option>
+                </select>
+              </label>
+              <label>
+                Video-call ochiq
+                <select name="videoEnabled">
+                  <option value="false">Yo'q</option>
+                  <option value="true">Ha</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
           <button type="submit">Saqlash</button>
         </form>
         <p id="message"></p>
       </article>
     </section>
 
-    <section style="padding: 0 0 42px;">
-      <div style="display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:18px;">
-        <div><h2 style="font-size:clamp(1.8rem,3vw,2.6rem);">Oxirgi faoliyat</h2></div>
-        <p style="margin:0;color:var(--muted);">So'nggi sessiyalar shu yerda ko'rinadi.</p>
-      </div>
-      <div class="conversation-grid" id="conversationGrid"></div>
+    <section class="activity-grid">
+      <article class="card">
+        <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:14px;">AI faoliyat</h2>
+        <div id="conversationGrid"></div>
+      </article>
+      <article class="card">
+        <h2 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-bottom:14px;">Service tavsiya threadlari</h2>
+        <div id="serviceGrid"></div>
+      </article>
     </section>
   </main>
 
   <script>
     const adminLink = document.getElementById("adminLink");
     const messageEl = document.getElementById("message");
+    const providerFieldsEl = document.getElementById("providerFields");
+    const asProviderEl = document.getElementById("asProvider");
+    const providerTypeEl = document.getElementById("providerType");
+    const locationInfoEl = document.getElementById("locationInfo");
     let currentUser = null;
+
+    function fillProviderTypes(providerTypes) {
+      providerTypeEl.innerHTML = `<option value="">Tanlang</option>${providerTypes.map((item) => `<option value="${item.id}">${item.name}</option>`).join("")}`;
+    }
+
+    function syncProviderUi() {
+      providerFieldsEl.style.display = asProviderEl.value === "true" ? "grid" : "none";
+    }
 
     async function loadProfile() {
       const authRes = await fetch("/api/auth/me");
@@ -120,47 +196,113 @@
       currentUser = auth.user;
       if (auth.user.role === "admin") adminLink.style.display = "inline-flex";
 
-      const response = await fetch("/api/profile");
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Profil yuklanmadi.");
+      const [profileRes, typeRes] = await Promise.all([
+        fetch("/api/profile"),
+        fetch("/api/provider-types")
+      ]);
+      const data = await profileRes.json();
+      const typeData = await typeRes.json();
+      if (!profileRes.ok) throw new Error(data.error || "Profil yuklanmadi.");
 
+      fillProviderTypes(typeData.providerTypes || []);
       document.getElementById("welcome").textContent = `${data.user.name} profili`;
       document.querySelector('input[name="name"]').value = data.user.name || "";
       document.querySelector('input[name="company"]').value = data.user.company || "";
       document.querySelector('textarea[name="bio"]').value = data.user.bio || "";
+      document.querySelector('input[name="locationLabel"]').value = data.user.locationLabel || "";
+      document.querySelector('input[name="latitude"]').value = data.user.latitude ?? "";
+      document.querySelector('input[name="longitude"]').value = data.user.longitude ?? "";
+      document.querySelector('input[name="geoConsent"]').value = data.user.geoConsent ? "true" : "false";
+      asProviderEl.value = data.user.role === "provider" ? "true" : "false";
+      providerTypeEl.value = data.user.providerType || "";
+      document.querySelector('input[name="providerServices"]').value = data.user.providerServices || "";
+      document.querySelector('textarea[name="providerIntro"]').value = data.user.providerIntro || "";
+      document.querySelector('input[name="providerLicense"]').value = data.user.providerLicense || "";
+      document.querySelector('input[name="consultationFee"]').value = data.user.consultationFee || "";
+      document.querySelector('select[name="availableForRecommendations"]').value = String(data.user.availableForRecommendations !== false);
+      document.querySelector('select[name="videoEnabled"]').value = String(Boolean(data.user.videoEnabled));
+      syncProviderUi();
+
       document.getElementById("conversationCount").textContent = data.stats.conversationCount || 0;
       document.getElementById("messageCount").textContent = data.stats.messageCount || 0;
-      document.getElementById("flaggedCount").textContent = data.stats.flaggedConversationCount || 0;
+      document.getElementById("serviceCount").textContent = (data.recentProviderThreads || []).length;
+      document.getElementById("roleLabel").textContent = data.user.role === "provider" ? "provider" : data.user.role;
+      locationInfoEl.textContent = data.user.latitude && data.user.longitude
+        ? `Joylashuv saqlandi: ${data.user.locationLabel || `${Number(data.user.latitude).toFixed(4)}, ${Number(data.user.longitude).toFixed(4)}`}`
+        : "Joylashuv hali saqlanmagan.";
 
-      const grid = document.getElementById("conversationGrid");
-      if (!data.recentConversations.length) {
-        grid.innerHTML = '<article class="conversation"><h3>Hali faoliyat yo\'q</h3><p>Dashboard orqali birinchi AIni tanlab suhbatni boshlang.</p></article>';
-      } else {
-        const routeMap = {
-          "agro-ai": "/agroai.html",
-          "doctor-ai": "/doctorai.html",
-          "lawyer-ai": "/lawyerai.html",
-          "private-ai": "/privateai.html"
-        };
-        grid.innerHTML = data.recentConversations.map((conversation) => `
-          <article class="conversation">
-            <div class="meta">
-              <span>${conversation.assistantName}</span>
-              <span>${new Date(conversation.updatedAt).toLocaleString()}</span>
-            </div>
-            <h3>${conversation.title}</h3>
-            <p>${conversation.lastMessagePreview || "Suhbat tayyor."}</p>
-            <a class="button secondary" href="${routeMap[conversation.assistantId]}?conversationId=${conversation.id}">Davom ettirish</a>
-          </article>
-        `).join("");
-      }
+      const routeMap = {
+        "agro-ai": "/agroai.html",
+        "doctor-ai": "/doctorai.html",
+        "lawyer-ai": "/lawyerai.html",
+        "private-ai": "/privateai.html"
+      };
+
+      document.getElementById("conversationGrid").innerHTML = !data.recentConversations.length
+        ? `<p class="helper">Hali AI faoliyat yo'q.</p>`
+        : data.recentConversations.map((conversation) => `
+            <article class="card" style="padding:18px;margin-bottom:12px;">
+              <div class="helper">${conversation.assistantName} | ${new Date(conversation.updatedAt).toLocaleString()}</div>
+              <h3 style="margin:6px 0 8px;">${conversation.title}</h3>
+              <p>${conversation.lastMessagePreview || "Suhbat tayyor."}</p>
+              <a class="button secondary" href="${routeMap[conversation.assistantId]}?conversationId=${conversation.id}">Davom ettirish</a>
+            </article>
+          `).join("");
+
+      document.getElementById("serviceGrid").innerHTML = !(data.recentProviderThreads || []).length
+        ? `<p class="helper">Hali provider thread yo'q. Tavsiya sahifasida yaqin mutaxassis bilan bog'lanishingiz mumkin.</p>`
+        : data.recentProviderThreads.map((thread) => `
+            <article class="card" style="padding:18px;margin-bottom:12px;">
+              <div class="helper">${thread.providerTypeLabel} | ${new Date(thread.updatedAt).toLocaleString()}</div>
+              <h3 style="margin:6px 0 8px;">${thread.title}</h3>
+              <p>${thread.lastMessagePreview || "Service thread tayyor."}</p>
+              <a class="button secondary" href="/recommendations.html?threadId=${thread.id}">Ochish</a>
+            </article>
+          `).join("");
     }
+
+    asProviderEl.addEventListener("change", syncProviderUi);
+
+    document.getElementById("captureLocationBtn").addEventListener("click", async () => {
+      if (!navigator.geolocation) {
+        messageEl.textContent = "Brauzer geolokatsiyani qo'llamaydi.";
+        messageEl.className = "error";
+        return;
+      }
+
+      messageEl.textContent = "Joylashuv olinmoqda...";
+      messageEl.className = "";
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          document.querySelector('input[name="latitude"]').value = latitude;
+          document.querySelector('input[name="longitude"]').value = longitude;
+          document.querySelector('input[name="geoConsent"]').value = "true";
+          if (!document.querySelector('input[name="locationLabel"]').value.trim()) {
+            document.querySelector('input[name="locationLabel"]').value = `Lat ${latitude.toFixed(4)}, Lng ${longitude.toFixed(4)}`;
+          }
+          locationInfoEl.textContent = `Joylashuv olindi: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+          messageEl.textContent = "Joylashuv formaga joylandi. Endi Saqlash ni bosing.";
+          messageEl.className = "success";
+        },
+        (error) => {
+          messageEl.textContent = error.message || "Joylashuvni olishda xato.";
+          messageEl.className = "error";
+        },
+        { enableHighAccuracy: true, timeout: 15000 }
+      );
+    });
 
     document.getElementById("profileForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       messageEl.textContent = "Saqlanmoqda...";
       messageEl.className = "";
       const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+      payload.asProvider = payload.asProvider === "true";
+      payload.availableForRecommendations = payload.availableForRecommendations === "true";
+      payload.videoEnabled = payload.videoEnabled === "true";
+      payload.geoConsent = payload.geoConsent === "true";
+
       try {
         const response = await fetch("/api/profile", {
           method: "PATCH",

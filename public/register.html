@@ -74,7 +74,7 @@
     .muted { color: var(--muted); }
     form { display: grid; gap: 14px; margin-top: 22px; }
     label { display: grid; gap: 8px; font-weight: 700; }
-    input, textarea {
+    input, textarea, select {
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 15px 16px;
@@ -82,7 +82,7 @@
       background: rgba(255,255,255,.88);
       outline: none;
     }
-    input:focus, textarea:focus {
+    input:focus, textarea:focus, select:focus {
       border-color: #2d8a80;
       box-shadow: 0 0 0 4px rgba(45,138,128,.12);
     }
@@ -141,6 +141,29 @@
           <input type="text" name="name" placeholder="Ismingiz" required />
         </label>
         <label>
+          Hisob turi
+          <select name="accountType" id="accountType">
+            <option value="user">Oddiy foydalanuvchi</option>
+            <option value="provider">Mutaxassis / xizmatchi</option>
+          </select>
+        </label>
+        <div id="providerFields" style="display:none;gap:14px;">
+          <label>
+            Mutaxassis yo'nalishi
+            <select name="providerType" id="providerType">
+              <option value="">Tanlang</option>
+              <option value="doctor">Shifokor</option>
+              <option value="lawyer">Advokat</option>
+              <option value="agro">Agro mutaxassisi</option>
+              <option value="private">Private consultant</option>
+            </select>
+          </label>
+          <label>
+            Xizmatlar
+            <input type="text" name="providerServices" placeholder="Masalan: offline konsultatsiya, hujjat tahlili..." />
+          </label>
+        </div>
+        <label>
           Email
           <input type="email" name="email" placeholder="you@example.com" required />
         </label>
@@ -172,10 +195,20 @@
 
   <script>
     const message = document.getElementById("message");
+    const accountTypeEl = document.getElementById("accountType");
+    const providerFieldsEl = document.getElementById("providerFields");
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => { if (data.user) location.href = "/dashboard.html"; })
       .catch(() => {});
+
+    function syncAccountTypeUi() {
+      const isProvider = accountTypeEl.value === "provider";
+      providerFieldsEl.style.display = isProvider ? "grid" : "none";
+    }
+
+    accountTypeEl.addEventListener("change", syncAccountTypeUi);
+    syncAccountTypeUi();
 
     document.getElementById("registerForm").addEventListener("submit", async (event) => {
       event.preventDefault();

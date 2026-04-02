@@ -115,6 +115,7 @@
       <a class="brand" href="/"><span class="brand-mark">AS</span><span>Ai's Shelf</span></a>
       <div class="nav-actions">
         <a class="button secondary" href="/profile.html">Profil</a>
+        <a class="button secondary" href="/recommendations.html">Tavsiyalar</a>
         <a class="button secondary" id="adminLink" href="/admin.html" style="display:none;">Admin</a>
         <button class="button primary" id="logoutBtn">Chiqish</button>
       </div>
@@ -136,9 +137,10 @@
       <aside class="panel hero-side">
         <span class="pill">Quick actions</span>
         <h2 style="font-size:clamp(2rem,4vw,3rem);">Bugun qaysi AI bilan ishlaysiz?</h2>
-        <p>Mutaxassisga to'g'ridan-to'g'ri kiring yoki oxirgi suhbatlar ichidan davom eting. Nozik mavzularda AI sizni kerakli yo'nalishga o'tkazadi.</p>
+        <p>Mutaxassisga to'g'ridan-to'g'ri kiring, oxirgi suhbatni davom ettiring yoki yaqin atrofdagi real xizmat ko'rsatuvchilarni tavsiya sahifasidan toping.</p>
         <a class="button secondary" href="/doctorai.html">Doctor AI</a>
         <a class="button secondary" href="/lawyerai.html">Lawyer AI</a>
+        <a class="button secondary" id="serviceHubLink" href="/recommendations.html">Mutaxassislar sahifasi</a>
       </aside>
     </section>
 
@@ -173,6 +175,7 @@
     const engineState = document.getElementById("engineState");
     const mediaState = document.getElementById("mediaState");
     const storageState = document.getElementById("storageState");
+    const serviceHubLink = document.getElementById("serviceHubLink");
 
     const assistantRoute = {
       "agro-ai": "/agroai.html",
@@ -190,6 +193,9 @@
       }
       userName.textContent = auth.user.name;
       if (auth.user.role === "admin") adminLink.style.display = "inline-flex";
+      if (auth.user.role === "provider") {
+        serviceHubLink.textContent = "Mijoz so'rovlari";
+      }
       return auth.user;
     }
 
@@ -224,6 +230,7 @@
             <p>${assistant.intro}</p>
             <footer>
               <a class="button primary" href="${assistant.page}">Chatni ochish</a>
+              <a class="button secondary" href="/recommendations.html?type=${assistant.id.replace('-ai','')}">Mutaxassis tavsiya</a>
             </footer>
           </article>
         `;

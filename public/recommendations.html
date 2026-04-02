@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tavsiyalar | Ai's Shelf</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #102033;
+      --muted: #607187;
+      --line: rgba(16,32,51,.08);
+      --card: rgba(255,255,255,.86);
+      --shadow: 0 26px 60px rgba(16,32,51,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Manrope", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(45,138,128,.16), transparent 20%),
+        radial-gradient(circle at top right, rgba(217,184,255,.16), transparent 18%),
+        linear-gradient(180deg, #f6f2ea 0%, #f8fbff 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1320px, calc(100vw - 24px)); margin: 0 auto; }
+    .topbar { position: sticky; top: 0; z-index: 15; background: rgba(246,242,234,.84); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(16,32,51,.06); }
+    .nav { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:16px 0; }
+    .brand { display:flex; align-items:center; gap:14px; font-weight:800; }
+    .mark { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:linear-gradient(135deg,#102033,#24585b); color:#fff; font-family:"Space Grotesk",sans-serif; }
+    .button, button { border:0; border-radius:999px; padding:12px 16px; font:inherit; font-weight:800; cursor:pointer; }
+    .button.primary, button.primary { background:linear-gradient(135deg,#102033,#24585b); color:#fff; }
+    .button.secondary, button.secondary { background:rgba(255,255,255,.82); border:1px solid var(--line); color:var(--ink); }
+    h1,h2,h3 { font-family:"Space Grotesk",sans-serif; letter-spacing:-.04em; margin:0; }
+    .hero, .layout, .provider-grid, .thread-list, .message-list, .video-grid { display:grid; gap:18px; }
+    .hero { grid-template-columns: 1.08fr .92fr; padding: 28px 0; }
+    .panel, .provider-card, .thread-card, .message, .video-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+    }
+    .hero-card, .detail-card, .sidebar-card, .video-card { padding: 24px; }
+    .hero-card p, .detail-card p, .provider-card p, .thread-card p, .video-card p { color: var(--muted); line-height: 1.75; }
+    .pill { display:inline-flex; width:fit-content; padding:8px 12px; border-radius:999px; font-size:12px; font-weight:800; background: rgba(16,32,51,.06); }
+    .stats { display:grid; gap:14px; grid-template-columns: repeat(3, minmax(0,1fr)); margin-top: 18px; }
+    .stat { padding:18px; border-radius:22px; background: rgba(16,32,51,.05); }
+    .stat strong { display:block; font-size: 22px; margin-bottom: 8px; }
+    .layout { grid-template-columns: 380px 1fr; align-items:start; padding-bottom: 36px; }
+    .sidebar-card { display:grid; gap:16px; }
+    .filter-row { display:grid; gap:12px; }
+    input, select, textarea {
+      width: 100%;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px 16px;
+      font: inherit;
+      background: rgba(255,255,255,.88);
+      outline: none;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color:#2d8a80; box-shadow:0 0 0 4px rgba(45,138,128,.12); }
+    .provider-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .provider-card, .thread-card { padding: 20px; }
+    .thread-list { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .helper, .meta { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .meta { display:flex; gap:10px; flex-wrap:wrap; }
+    .detail-card { display:grid; gap:16px; }
+    .message-list { max-height: 460px; overflow:auto; padding-right: 6px; }
+    .message { padding: 16px 18px; }
+    .message.user { background: rgba(45,138,128,.1); }
+    .message.provider { background: rgba(255,210,125,.14); }
+    .composer { display:grid; gap:12px; }
+    .composer-row { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+    .video-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    video { width: 100%; min-height: 220px; border-radius: 22px; background: #0f1d2c; object-fit: cover; }
+    .hidden { display:none !important; }
+    .empty { padding: 20px; border-radius: 22px; border: 1px dashed rgba(16,32,51,.16); background: rgba(255,255,255,.54); color: var(--muted); }
+    .success { color: #166d57; }
+    .error { color: #b44332; }
+    @media (max-width: 1040px) {
+      .hero, .layout { grid-template-columns: 1fr; }
+      .provider-grid, .thread-list, .video-grid, .stats { grid-template-columns: 1fr; }
+      .nav { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="shell nav">
+      <a class="brand" href="/dashboard.html"><span class="mark">AS</span><span>Ai's Shelf</span></a>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a class="button secondary" href="/dashboard.html">Dashboard</a>
+        <a class="button secondary" href="/profile.html">Profil</a>
+        <button class="button primary" id="logoutBtn">Chiqish</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="shell">
+    <section class="hero">
+      <article class="panel hero-card">
+        <span class="pill" id="modePill">Tavsiya sahifasi</span>
+        <h1 style="font-size:clamp(2.3rem,4vw,4rem);margin-top:14px;">Yaqin mutaxassislar va alohida service chat.</h1>
+        <p id="heroText">Profilingizdagi joylashuv asosida yaqin providerlar topiladi. Ularni tanlab alohida chat ochishingiz va video-call orqali bog'lanishingiz mumkin.</p>
+        <div class="stats">
+          <div class="stat"><small>Joylashuv</small><strong id="locationStat">Noma'lum</strong><span class="helper">Profil yoki shu sahifadan saqlanadi</span></div>
+          <div class="stat"><small>Providerlar</small><strong id="providerCount">0</strong><span class="helper">Filtr bo'yicha topilganlar</span></div>
+          <div class="stat"><small>Video-call</small><strong id="videoStat">Tayyor emas</strong><span class="helper">ExpressTURN ICE config bilan</span></div>
+        </div>
+      </article>
+      <article class="panel hero-card">
+        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">Tez boshqaruv</h2>
+        <div class="filter-row">
+          <label>Yo'nalish<select id="providerTypeFilter"></select></label>
+          <label>Radius<select id="radiusFilter"><option value="25">25 km</option><option value="50" selected>50 km</option><option value="100">100 km</option><option value="200">200 km</option></select></label>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="button secondary" id="captureLocationBtn" type="button">Joylashuvni olish</button>
+            <button class="button primary" id="reloadProvidersBtn" type="button">Providerlarni yangilash</button>
+            <button class="button secondary" id="sharePageBtn" type="button">Sahifani tavsiya qilish</button>
+          </div>
+          <div id="statusText" class="helper">Sahifa tayyor.</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="layout">
+      <aside class="sidebar-card panel">
+        <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);">Faol threadlar</h2>
+        <div id="threadList" class="thread-list"></div>
+      </aside>
+
+      <div style="display:grid;gap:18px;">
+        <article class="detail-card panel" id="discoveryPanel">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:end;flex-wrap:wrap;">
+            <div>
+              <span class="pill">Nearby providers</span>
+              <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);margin-top:10px;">Mutaxassis tavsiyalari</h2>
+            </div>
+            <div class="helper">So'rov yuborilgach, provider profiliga tushadi va alohida chat ochiladi.</div>
+          </div>
+          <div class="provider-grid" id="providerGrid"></div>
+        </article>
+
+        <article class="detail-card panel" id="threadDetail">
+          <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">Thread detail</h2>
+          <div class="empty">Chap tomondan mavjud threadni tanlang yoki yuqoridan providerga so'rov yuboring.</div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      user: null,
+      profile: null,
+      providerTypes: [],
+      providers: [],
+      threads: [],
+      selectedThreadId: new URLSearchParams(location.search).get("threadId") || "",
+      selectedType: new URLSearchParams(location.search).get("type") || "doctor",
+      videoConfig: { ready: false, iceServers: [] },
+      signalCursor: 0,
+      threadRefreshTimer: null,
+      signalTimer: null,
+      peerConnection: null,
+      localStream: null,
+      remoteStream: null,
+    };
+
+    const providerTypeFilter = document.getElementById("providerTypeFilter");
+    const providerGrid = document.getElementById("providerGrid");
+    const threadList = document.getElementById("threadList");
+    const threadDetail = document.getElementById("threadDetail");
+    const statusText = document.getElementById("statusText");
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    async function ensureAuth() {
+      const authRes = await fetch("/api/auth/me");
+      const auth = await authRes.json();
+      if (!auth.user) {
+        location.href = `/login.html?next=${encodeURIComponent("/recommendations.html" + location.search)}`;
+        throw new Error("Unauthenticated");
+      }
+      state.user = auth.user;
+    }
+
+    function setStatus(text, tone = "") {
+      statusText.textContent = text;
+      statusText.className = tone ? tone : "helper";
+    }
+
+    function fillProviderTypes(providerTypes) {
+      providerTypeFilter.innerHTML = providerTypes.map((item) => `
+        <option value="${item.id}">${item.name}</option>
+      `).join("");
+      if (providerTypes.some((item) => item.id === state.selectedType)) {
+        providerTypeFilter.value = state.selectedType;
+      }
+    }
+
+    function updateHero(profile, config) {
+      const locationReady = Number.isFinite(profile.user.latitude) && Number.isFinite(profile.user.longitude);
+      document.getElementById("locationStat").textContent = locationReady
+        ? (profile.user.locationLabel || `${Number(profile.user.latitude).toFixed(3)}, ${Number(profile.user.longitude).toFixed(3)}`)
+        : "Joylashuv kerak";
+      document.getElementById("videoStat").textContent = config.videoReady ? "Tayyor" : "Sozlash kerak";
+
+      if (state.user.role === "provider") {
+        document.getElementById("modePill").textContent = "Provider inbox";
+        document.getElementById("heroText").textContent = "Bu sahifa sizga kelgan tavsiya so'rovlarini, provider chatlarni va masofaviy video-call aloqalarini boshqarish uchun ishlaydi.";
+        document.getElementById("discoveryPanel").classList.add("hidden");
+      }
+    }
+
+    async function loadBootstrap() {
+      await ensureAuth();
+      const [configRes, profileRes, videoRes] = await Promise.all([
+        fetch("/api/config"),
+        fetch("/api/profile"),
+        fetch("/api/video-config"),
+      ]);
+      const config = await configRes.json();
+      const profile = await profileRes.json();
+      const videoConfig = await videoRes.json();
+      state.profile = profile;
+      state.providerTypes = config.providerTypes || [];
+      state.videoConfig = videoConfig;
+      fillProviderTypes(state.providerTypes);
+      updateHero(profile, config);
+    }
+
+    async function saveCurrentLocation(latitude, longitude) {
+      const user = state.profile.user;
+      const payload = {
+        name: user.name,
+        company: user.company || "",
+        bio: user.bio || "",
+        locationLabel: user.locationLabel || `Lat ${latitude.toFixed(4)}, Lng ${longitude.toFixed(4)}`,
+        latitude,
+        longitude,
+        geoConsent: true,
+        asProvider: user.role === "provider",
+        providerType: user.providerType || "",
+        providerServices: user.providerServices || "",
+        providerIntro: user.providerIntro || "",
+        providerLicense: user.providerLicense || "",
+        consultationFee: user.consultationFee || "",
+        availableForRecommendations: user.availableForRecommendations !== false,
+        videoEnabled: Boolean(user.videoEnabled),
+      };
+
+      const response = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Joylashuv saqlanmadi.");
+      state.profile.user = data.user;
+    }
+
+    async function requestBrowserLocation() {
+      if (!navigator.geolocation) {
+        throw new Error("Brauzer geolokatsiyani qo'llamaydi.");
+      }
+
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => resolve(position.coords),
+          (error) => reject(error),
+          { enableHighAccuracy: true, timeout: 15000 }
+        );
+      });
+    }
+
+    async function loadProviders() {
+      if (state.user.role === "provider") {
+        document.getElementById("providerCount").textContent = "0";
+        return;
+      }
+
+      const params = new URLSearchParams({
+        type: providerTypeFilter.value,
+        radiusKm: document.getElementById("radiusFilter").value,
+      });
+      const response = await fetch(`/api/providers?${params.toString()}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Providerlar yuklanmadi.");
+
+      state.providers = data.providers || [];
+      document.getElementById("providerCount").textContent = String(state.providers.length);
+      if (!state.providers.length) {
+        providerGrid.innerHTML = `<div class="empty">Mos provider topilmadi. Joylashuvni saqlang yoki filtrni kengaytiring.</div>`;
+        return;
+      }
+
+      providerGrid.innerHTML = state.providers.map((provider) => `
+        <article class="provider-card">
+          <div class="meta">
+            <span>${provider.providerTypeLabel}</span>
+            ${provider.distanceKm != null ? `<span>${provider.distanceKm} km</span>` : `<span>Masofa noma'lum</span>`}
+          </div>
+          <h3 style="margin:6px 0 8px;">${escapeHtml(provider.name)}</h3>
+          <p>${escapeHtml(provider.providerIntro || provider.bio || provider.providerServices || "Mutaxassis profili tayyor.")}</p>
+          <div class="helper">${escapeHtml(provider.locationLabel || provider.company || "Lokatsiya ko'rsatilmagan")}</div>
+          <div class="helper">${escapeHtml(provider.consultationFee || "Narx ko'rsatilmagan")}</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+            <button class="button primary" data-request-provider="${provider.id}">So'rov yuborish</button>
+          </div>
+        </article>
+      `).join("");
+
+      providerGrid.querySelectorAll("[data-request-provider]").forEach((button) => {
+        button.addEventListener("click", () => requestProvider(button.dataset.requestProvider));
+      });
+    }
+
+    async function loadThreads() {
+      const response = await fetch("/api/provider-threads");
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Threadlar yuklanmadi.");
+      state.threads = data.threads || [];
+
+      if (!state.threads.length) {
+        threadList.innerHTML = `<div class="empty">Hali service thread yo'q.</div>`;
+        if (!state.selectedThreadId) {
+          threadDetail.innerHTML = `<h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">Thread detail</h2><div class="empty">Chap tomondan mavjud threadni tanlang yoki yuqoridan providerga so'rov yuboring.</div>`;
+        }
+        return;
+      }
+
+      if (!state.selectedThreadId) {
+        state.selectedThreadId = state.threads[0].id;
+      }
+
+      threadList.innerHTML = state.threads.map((thread) => {
+        const counterpart = state.user.role === "provider" ? (thread.requester?.name || "Client") : (thread.provider?.name || thread.providerTypeLabel);
+        return `
+          <article class="thread-card" data-thread-id="${thread.id}" style="${thread.id === state.selectedThreadId ? 'outline:2px solid rgba(45,138,128,.26);' : ''}">
+            <div class="meta">
+              <span>${escapeHtml(thread.providerTypeLabel)}</span>
+              <span>${new Date(thread.updatedAt).toLocaleString()}</span>
+            </div>
+            <h3 style="margin:6px 0 8px;">${escapeHtml(counterpart)}</h3>
+            <p>${escapeHtml(thread.lastMessagePreview || "Service thread tayyor.")}</p>
+          </article>
+        `;
+      }).join("");
+
+      threadList.querySelectorAll("[data-thread-id]").forEach((item) => {
+        item.addEventListener("click", () => {
+          state.selectedThreadId = item.dataset.threadId;
+          history.replaceState({}, "", `/recommendations.html?threadId=${state.selectedThreadId}&type=${providerTypeFilter.value}`);
+          loadSelectedThread().catch((error) => setStatus(error.message, "error"));
+          loadThreads().catch(() => {});
+        });
+      });
+    }
+
+    async function loadSelectedThread() {
+      if (!state.selectedThreadId) return;
+      const response = await fetch(`/api/provider-thread?id=${encodeURIComponent(state.selectedThreadId)}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Thread detail yuklanmadi.");
+
+      const thread = data.thread;
+      const counterpart = state.user.role === "provider" ? thread.requester : thread.provider;
+      state.signalCursor = Math.max(0, ...(thread.callSignals || []).map((item) => item.ts || 0));
+
+      threadDetail.innerHTML = `
+        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);">${escapeHtml(counterpart?.name || thread.title)}</h2>
+        <div class="meta">
+          <span>${escapeHtml(thread.providerTypeLabel || thread.providerType || "")}</span>
+          <span>${escapeHtml(counterpart?.locationLabel || counterpart?.company || "Lokatsiya noma'lum")}</span>
+          <span>${escapeHtml(counterpart?.consultationFee || "")}</span>
+        </div>
+        <p>${escapeHtml(counterpart?.providerIntro || counterpart?.bio || "Alohida service chat tayyor.")}</p>
+        <div class="message-list" id="messageList">
+          ${(thread.messages || []).map((message) => `
+            <article class="message ${message.senderRole}">
+              <div class="meta">
+                <span>${message.senderRole === "provider" ? "Provider" : "Mijoz"}</span>
+                <span>${new Date(message.createdAt).toLocaleString()}</span>
+              </div>
+              <div>${escapeHtml(message.text || "").replaceAll("\n", "<br />")}</div>
+            </article>
+          `).join("")}
+        </div>
+        <div class="composer">
+          <textarea id="threadMessageInput" placeholder="Provider bilan yozishma..."></textarea>
+          <div class="composer-row">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="button secondary" id="startCallBtn" type="button">Video call boshlash</button>
+              <button class="button secondary" id="endCallBtn" type="button">Callni tugatish</button>
+            </div>
+            <button class="button primary" id="sendThreadMessageBtn" type="button">Xabar yuborish</button>
+          </div>
+        </div>
+        <div class="video-grid">
+          <article class="video-card">
+            <h3 style="margin-bottom:12px;">Local video</h3>
+            <video id="localVideo" playsinline autoplay muted></video>
+          </article>
+          <article class="video-card">
+            <h3 style="margin-bottom:12px;">Remote video</h3>
+            <video id="remoteVideo" playsinline autoplay></video>
+          </article>
+        </div>
+        <div id="callStatus" class="helper">${state.videoConfig.ready ? "Video-call tayyor." : "ExpressTURN sozlanmagani uchun video-call o'chirilgan."}</div>
+      `;
+
+      document.getElementById("sendThreadMessageBtn").addEventListener("click", sendThreadMessage);
+      document.getElementById("startCallBtn").addEventListener("click", startCall);
+      document.getElementById("endCallBtn").addEventListener("click", () => endCall(true));
+
+      startThreadPolling();
+    }
+
+    async function requestProvider(providerId) {
+      try {
+        setStatus("Providerga so'rov yuborilmoqda...");
+        const response = await fetch("/api/provider-threads/request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            providerId,
+            sourceAssistantId: `${providerTypeFilter.value}-ai`,
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "So'rov yuborilmadi.");
+        state.selectedThreadId = data.threadId;
+        await loadThreads();
+        await loadSelectedThread();
+        setStatus("Providerga so'rov yuborildi.", "success");
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    function currentShareUrl() {
+      const params = new URLSearchParams();
+      if (providerTypeFilter.value) params.set("type", providerTypeFilter.value);
+      if (state.selectedThreadId) params.set("threadId", state.selectedThreadId);
+      const suffix = params.toString();
+      return `${location.origin}/recommendations.html${suffix ? `?${suffix}` : ""}`;
+    }
+
+    async function sharePage() {
+      const url = currentShareUrl();
+      const title = state.user?.role === "provider"
+        ? "Ai's Shelf provider sahifasi"
+        : "Ai's Shelf tavsiya sahifasi";
+      const text = state.user?.role === "provider"
+        ? "Ai's Shelf ichida provider chat va video-call sahifasi."
+        : "Ai's Shelf ichida yaqin mutaxassislarni topish va ular bilan bog'lanish sahifasi.";
+
+      if (navigator.share) {
+        await navigator.share({ title, text, url });
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        setStatus("Sahifa havolasi nusxalandi.", "success");
+        return;
+      }
+
+      setStatus(url, "helper");
+    }
+
+    async function sendThreadMessage() {
+      const input = document.getElementById("threadMessageInput");
+      const message = input.value.trim();
+      if (!message || !state.selectedThreadId) return;
+
+      try {
+        const response = await fetch("/api/provider-thread/message", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ threadId: state.selectedThreadId, message }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Xabar yuborilmadi.");
+        input.value = "";
+        await loadThreads();
+        await loadSelectedThread();
+        setStatus("Xabar yuborildi.", "success");
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    async function sendSignal(type, payload) {
+      await fetch("/api/provider-call/signal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          threadId: state.selectedThreadId,
+          type,
+          payload,
+        }),
+      });
+    }
+
+    async function ensureLocalStream() {
+      if (state.localStream) return state.localStream;
+      state.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const localVideo = document.getElementById("localVideo");
+      if (localVideo) localVideo.srcObject = state.localStream;
+      return state.localStream;
+    }
+
+    function closePeerOnly() {
+      if (state.peerConnection) {
+        state.peerConnection.onicecandidate = null;
+        state.peerConnection.ontrack = null;
+        state.peerConnection.close();
+        state.peerConnection = null;
+      }
+      if (state.remoteStream) {
+        state.remoteStream.getTracks().forEach((track) => track.stop());
+        state.remoteStream = null;
+      }
+      const remoteVideo = document.getElementById("remoteVideo");
+      if (remoteVideo) remoteVideo.srcObject = null;
+    }
+
+    async function ensurePeerConnection() {
+      if (state.peerConnection) return state.peerConnection;
+      const peerConnection = new RTCPeerConnection({
+        iceServers: state.videoConfig.iceServers || [],
+      });
+      const localStream = await ensureLocalStream();
+      localStream.getTracks().forEach((track) => peerConnection.addTrack(track, localStream));
+
+      state.remoteStream = new MediaStream();
+      const remoteVideo = document.getElementById("remoteVideo");
+      if (remoteVideo) remoteVideo.srcObject = state.remoteStream;
+
+      peerConnection.ontrack = (event) => {
+        event.streams[0].getTracks().forEach((track) => state.remoteStream.addTrack(track));
+      };
+
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          sendSignal("ice-candidate", event.candidate.toJSON()).catch(() => {});
+        }
+      };
+
+      peerConnection.onconnectionstatechange = () => {
+        const el = document.getElementById("callStatus");
+        if (el) el.textContent = `Call holati: ${peerConnection.connectionState}`;
+      };
+
+      state.peerConnection = peerConnection;
+      return peerConnection;
+    }
+
+    async function processSignal(signal) {
+      const pc = await ensurePeerConnection();
+      if (signal.type === "offer") {
+        await pc.setRemoteDescription(new RTCSessionDescription(signal.payload));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        await sendSignal("answer", pc.localDescription);
+      } else if (signal.type === "answer") {
+        await pc.setRemoteDescription(new RTCSessionDescription(signal.payload));
+      } else if (signal.type === "ice-candidate" && signal.payload) {
+        await pc.addIceCandidate(new RTCIceCandidate(signal.payload));
+      } else if (signal.type === "hangup") {
+        endCall(false);
+      }
+    }
+
+    async function pollSignals() {
+      if (!state.selectedThreadId) return;
+      const response = await fetch(`/api/provider-call/signals?threadId=${encodeURIComponent(state.selectedThreadId)}&since=${state.signalCursor}`);
+      const data = await response.json();
+      if (!response.ok) return;
+      for (const signal of data.signals || []) {
+        state.signalCursor = Math.max(state.signalCursor, signal.ts || 0);
+        await processSignal(signal);
+      }
+    }
+
+    async function startCall() {
+      if (!state.videoConfig.ready) {
+        setStatus("ExpressTURN sozlanmagan.", "error");
+        return;
+      }
+      try {
+        const pc = await ensurePeerConnection();
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        await sendSignal("offer", pc.localDescription);
+        setStatus("Video call taklifi yuborildi.", "success");
+      } catch (error) {
+        setStatus(error.message, "error");
+      }
+    }
+
+    function stopLocalStream() {
+      if (state.localStream) {
+        state.localStream.getTracks().forEach((track) => track.stop());
+        state.localStream = null;
+      }
+      const localVideo = document.getElementById("localVideo");
+      if (localVideo) localVideo.srcObject = null;
+    }
+
+    async function endCall(sendHangup) {
+      if (sendHangup && state.selectedThreadId) {
+        await sendSignal("hangup", { endedAt: new Date().toISOString() }).catch(() => {});
+      }
+      closePeerOnly();
+      stopLocalStream();
+      const el = document.getElementById("callStatus");
+      if (el) el.textContent = "Call yopildi.";
+    }
+
+    function startThreadPolling() {
+      clearInterval(state.threadRefreshTimer);
+      clearInterval(state.signalTimer);
+
+      state.threadRefreshTimer = setInterval(() => {
+        if (state.selectedThreadId) {
+          loadSelectedThread().catch(() => {});
+          loadThreads().catch(() => {});
+        }
+      }, 5000);
+
+      state.signalTimer = setInterval(() => {
+        if (state.selectedThreadId) {
+          pollSignals().catch(() => {});
+        }
+      }, 1500);
+    }
+
+    providerTypeFilter.addEventListener("change", () => {
+      state.selectedType = providerTypeFilter.value;
+      history.replaceState({}, "", `/recommendations.html?type=${state.selectedType}`);
+      loadProviders().catch((error) => setStatus(error.message, "error"));
+    });
+
+    document.getElementById("reloadProvidersBtn").addEventListener("click", () => {
+      Promise.all([loadProviders(), loadThreads()]).catch((error) => setStatus(error.message, "error"));
+    });
+
+    document.getElementById("captureLocationBtn").addEventListener("click", async () => {
+      try {
+        setStatus("Joylashuv olinmoqda...");
+        const coords = await requestBrowserLocation();
+        await saveCurrentLocation(coords.latitude, coords.longitude);
+        document.getElementById("locationStat").textContent = `${coords.latitude.toFixed(3)}, ${coords.longitude.toFixed(3)}`;
+        await loadProviders();
+        setStatus("Joylashuv saqlandi va providerlar yangilandi.", "success");
+      } catch (error) {
+        setStatus(error.message || "Joylashuv olinmadi.", "error");
+      }
+    });
+
+    document.getElementById("sharePageBtn").addEventListener("click", () => {
+      sharePage().catch((error) => setStatus(error.message, "error"));
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      clearInterval(state.threadRefreshTimer);
+      clearInterval(state.signalTimer);
+      await fetch("/api/auth/logout", { method: "POST" });
+      location.href = "/";
+    });
+
+    window.addEventListener("beforeunload", () => {
+      clearInterval(state.threadRefreshTimer);
+      clearInterval(state.signalTimer);
+      closePeerOnly();
+      stopLocalStream();
+    });
+
+    Promise.resolve()
+      .then(loadBootstrap)
+      .then(async () => {
+        providerTypeFilter.value = state.selectedType;
+        await Promise.all([loadProviders(), loadThreads()]);
+        if (state.selectedThreadId) {
+          await loadSelectedThread();
+        }
+      })
+      .catch((error) => setStatus(error.message, "error"));
+  </script>
+</body>
+</html>
