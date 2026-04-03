@@ -17,9 +17,7 @@ const MAX_BODY_BYTES = 12 * 1024 * 1024;
 
 const APP_STATE = {
   storageMode: hasRealEnv(process.env.MONGODB_URI) ? "mongodb-uri" : "memory",
-  hallaymReady: Boolean(
-    hasRealEnv(process.env.HALLAYM_API_KEY) || hasRealEnv(process.env.GROQ_API_KEY)
-  ),
+  hallaymReady: Boolean(getHallaymKey()),
   cloudinaryReady: Boolean(
     hasRealEnv(process.env.CLOUDINARY_CLOUD_NAME) &&
       ((hasRealEnv(process.env.CLOUDINARY_API_KEY) &&
@@ -453,7 +451,9 @@ bootstrap()
       console.log(`[Ai's Shelf] Storage: ${APP_STATE.storageMode}`);
       console.log(
         `[Ai's Shelf] HALLAYM AI: ${
-          APP_STATE.hallaymReady ? "ready" : "missing HALLAYM_API_KEY or GROQ_API_KEY"
+          APP_STATE.hallaymReady
+            ? "configured"
+            : "missing HALLAYM_API_KEY or GROQ_API_KEY"
         }`
       );
       console.log(
@@ -1686,7 +1686,11 @@ async function generateHallaymReply({
     return createLocalFallbackReply({ assistant, user, imageUrl });
   }
 
-  const hallaymKey = process.env.HALLAYM_API_KEY || process.env.GROQ_API_KEY;
+  const hallaymKey = getHallaymKey();
+  if (!hallaymKey) {
+    APP_STATE.hallaymReady = false;
+    return createLocalFallbackReply({ assistant, user, imageUrl });
+  }
 
   const recentMessages = conversation.messages.slice(-10);
   const hasVisionInput = recentMessages.some((item) => item.imageUrl) || Boolean(imageUrl);
@@ -1742,10 +1746,36 @@ async function generateHallaymReply({
     body: JSON.stringify(payload),
   });
 
-  const data = await response.json();
+  let data = null;
+  try {
+    data = await response.json();
+  } catch (error) {
+    data = null;
+  }
   if (!response.ok) {
     const detail =
       data?.error?.message || data?.message || "HALLAYM AI javob bera olmadi.";
+    const normalizedDetail = String(detail || "").toLowerCase();
+    const isAuthError =
+      response.status === 401 ||
+      response.status === 403 ||
+      normalizedDetail.includes("invalid api key") ||
+      normalizedDetail.includes("invalid_api_key") ||
+      normalizedDetail.includes("incorrect api key");
+
+    if (isAuthError) {
+      APP_STATE.hallaymReady = false;
+      console.warn(
+        "[Ai's Shelf] HALLAYM AI kaliti noto'g'ri, demo rejimga o'tildi:",
+        detail
+      );
+      return createLocalFallbackReply({
+        assistant,
+        user,
+        imageUrl,
+        authFailed: true,
+      });
+    }
     throw new Error(detail);
   }
 
@@ -1756,9 +1786,12 @@ async function generateHallaymReply({
   );
 }
 
-function createLocalFallbackReply({ assistant, user, imageUrl }) {
+function createLocalFallbackReply({ assistant, user, imageUrl, authFailed = false }) {
   const imageLine = imageUrl
     ? "Rasm qabul qilindi, ammo vizual tahlil uchun Cloud AI kaliti ham kerak bo'ladi. "
+    : "";
+  const modeLine = authFailed
+    ? "Serverdagi AI kaliti yaroqsiz bo'lgani uchun vaqtincha demo rejim yoqildi. "
     : "";
 
   const hints = {
@@ -1772,7 +1805,7 @@ function createLocalFallbackReply({ assistant, user, imageUrl }) {
       "Maqsad, muddat va asosiy cheklovlarni yozsangiz aniqroq strategiya tuzish mumkin.",
   };
 
-  return `${imageLine}${assistant.name} hozir demo rejimida ishlayapti. To'liq AI javobi uchun serverga \`HALLAYM_API_KEY\` (yoki \`GROQ_API_KEY\`) ulang. ${
+  return `${imageLine}${modeLine}${assistant.name} hozir demo rejimida ishlayapti. To'liq AI javobi uchun serverga \`HALLAYM_API_KEY\` (yoki \`GROQ_API_KEY\`) ulang. ${
     user.name ? `${user.name}, ` : ""
   }${hints[assistant.id] || ""}`.trim();
 }
@@ -2466,6 +2499,21 @@ function extractDbNameFromMongoUri(uri) {
 function hasRealEnv(value) {
   const normalized = String(value || "").trim();
   return Boolean(normalized) && !normalized.startsWith("PASTE_");
+}
+
+function normalizeSecret(value) {
+  const normalized = String(value || "").trim().replace(/^['"]+|['"]+$/g, "");
+  if (!normalized) return "";
+  return normalized.replace(/^Bearer\s+/i, "").trim();
+}
+
+function getHallaymKey() {
+  const candidates = [process.env.HALLAYM_API_KEY, process.env.GROQ_API_KEY];
+  for (const candidate of candidates) {
+    const normalized = normalizeSecret(candidate);
+    if (hasRealEnv(normalized)) return normalized;
+  }
+  return "";
 }
 
 function sanitizeText(value, maxLength = 160) {
