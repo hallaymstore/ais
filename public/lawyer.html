@@ -8,23 +8,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#fff8ee; --surface:rgba(255,255,255,.88); --surface-2:rgba(16,32,51,.05); --line:rgba(16,32,51,.08); --ink:#102033; --muted:#5f7288; --accent:#2a8a7d; --accent-2:#102033; --assistant:#ffd27d; --shadow:0 28px 70px rgba(16,32,51,.12); }
-    :root[data-theme="night"] { --bg:#09111d; --surface:rgba(12,19,32,.88); --surface-2:rgba(255,255,255,.06); --line:rgba(255,255,255,.08); --ink:#eef6ff; --muted:#93a6bd; --accent:#62dfc6; --accent-2:#dffdf6; --assistant:#ffd27d; --shadow:0 28px 80px rgba(0,0,0,.45); }
+    :root { --bg:#fff8ee; --surface:rgba(255,255,255,.9); --surface-2:rgba(16,32,51,.05); --line:rgba(16,32,51,.08); --ink:#102033; --muted:#5f7288; --accent:#2a8a7d; --accent-2:#102033; --assistant:#ffd27d; --shadow:0 24px 60px rgba(16,32,51,.12); }
+    :root[data-theme="night"] { --bg:#09111d; --surface:rgba(12,19,32,.9); --surface-2:rgba(255,255,255,.06); --line:rgba(255,255,255,.08); --ink:#eef6ff; --muted:#93a6bd; --accent:#62dfc6; --accent-2:#dffdf6; --assistant:#ffd27d; --shadow:0 24px 70px rgba(0,0,0,.45); }
     *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:radial-gradient(circle at top left,color-mix(in srgb,var(--assistant) 24%,transparent),transparent 20%),linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 92%,white 8%) 100%)}
-    a{color:inherit;text-decoration:none} button,input,select{font:inherit}.shell{width:min(1320px,calc(100vw - 28px));margin:0 auto}
-    .topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)} .nav{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0}.brand{display:flex;gap:14px;align-items:center;font-weight:800}.brand-mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent));box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
-    .panel,.stat,.card,.aside-card{border:1px solid var(--line);border-radius:30px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)} h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
-    .hero{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;padding:28px 0 20px}.hero-main{padding:28px;color:#eef7ff;background:linear-gradient(135deg,var(--accent-2) 0%,#174555 54%,var(--accent) 100%)} .hero-main p{color:rgba(238,247,255,.82);line-height:1.75}
-    .hero-side,.panel,.aside-card,.card,.stat{padding:22px}.hero-side p,.helper,.meta,.card p{color:var(--muted);line-height:1.72}
-    .pill,.chip,.badge{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}.pill{padding:9px 14px;font-size:13px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16)} .hero-side .pill,.panel .pill,.aside-card .pill{background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
-    .hero-actions,.stats,.filters,.grid,.card-actions,.meta,.chips{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.button,button{border:0;border-radius:999px;padding:13px 18px;cursor:pointer;font-weight:800}.button.primary,button.primary{color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent));box-shadow:0 16px 34px rgba(16,32,51,.22)} .button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line)}
-    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}.stat strong{display:block;font-size:22px;margin-top:8px}
-    .layout{display:grid;grid-template-columns:280px 1fr 320px;gap:18px;padding-bottom:32px;align-items:start}.filters{display:grid;gap:14px}.field{display:grid;gap:8px;font-weight:700}
-    input,select{width:100%;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 92%,transparent);color:var(--ink);padding:14px 15px;outline:none}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}.card{display:grid;gap:14px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.head{display:flex;gap:14px;align-items:center}
-    .avatar{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,var(--accent-2),var(--accent))}.chip{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .badge{padding:8px 12px;font-size:13px;background:color-mix(in srgb,var(--assistant) 18%,transparent);color:var(--ink)}
-    .empty{padding:24px;border-radius:24px;border:1px dashed var(--line);background:color-mix(in srgb,var(--surface) 72%,transparent);color:var(--muted);line-height:1.75}.success{color:#176853}.error{color:#b34a3b}
-    @media (max-width:1120px){.hero,.layout{grid-template-columns:1fr}.grid,.stats{grid-template-columns:1fr 1fr}} @media (max-width:720px){.grid,.stats{grid-template-columns:1fr}}
+    a{color:inherit;text-decoration:none} button,input,select{font:inherit}.shell{width:min(1280px,calc(100vw - 28px));margin:0 auto}
+    .topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)} .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}.brand{display:flex;align-items:center;gap:14px;font-weight:800}.brand-mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent));box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
+    .panel,.card{border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)} h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
+    .hero{padding:24px;margin:24px 0 18px;display:grid;gap:18px}.hero-top,.hero-actions,.stats,.filters,.card-actions,.chips{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.pill,.chip,.badge{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}.pill{padding:8px 12px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .chip{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .badge{padding:8px 12px;font-size:13px;background:color-mix(in srgb,var(--assistant) 18%,transparent)}
+    .hero p,.helper{color:var(--muted);line-height:1.7;margin:0}.button,button{border:0;border-radius:999px;padding:12px 16px;cursor:pointer;font-weight:800}.button.primary,button.primary{color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent))}.button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line)}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.stat{padding:16px;border-radius:22px;background:var(--surface-2);border:1px solid var(--line)} .stat strong{display:block;font-size:20px;margin-top:8px}
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:18px;padding-bottom:32px;align-items:start}.sidebar,.results{display:grid;gap:16px}.panel{padding:20px}.field{display:grid;gap:8px;font-weight:700}
+    input,select{width:100%;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 94%,transparent);color:var(--ink);padding:14px 15px;outline:none}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{padding:18px;display:grid;gap:14px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.head{display:flex;gap:14px;align-items:center}.avatar{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,var(--accent-2),var(--accent))}
+    .card p{margin:0;color:var(--muted);line-height:1.7}.empty{padding:24px;border-radius:24px;border:1px dashed var(--line);background:color-mix(in srgb,var(--surface) 72%,transparent);color:var(--muted)} .success{color:#176853}.error{color:#b34a3b}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.grid,.stats{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -34,51 +31,40 @@
     </div>
   </div>
   <main class="shell">
-    <section class="hero">
-      <article class="panel hero-main">
-        <span class="pill">Lawyer directory</span>
-        <h1 style="font-size:clamp(2.6rem,5vw,4.7rem);margin-top:14px;">Yaqin advokatlarni tanlang.</h1>
-        <p>Huquqiy maslahat, shartnoma, jarima yoki sud masalalari uchun ro‘yxatdan o‘tgan mutaxassislar bir xil katalog uslubida ko‘rsatiladi. Profilni ko‘rib, yozishma ochishingiz mumkin.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="/lawyerai.html">Lawyer AI ochish</a>
-          <button class="button secondary" id="captureLocationBtn" type="button">Joylashuvni olish</button>
-          <a class="button secondary" href="/search.html?type=lawyer">Keng qidiruv</a>
-        </div>
-        <div class="stats">
-          <div class="stat"><small>Natija</small><strong id="resultStat">0</strong></div>
-          <div class="stat"><small>Lokatsiya</small><strong id="locationStat">Noma'lum</strong></div>
-          <div class="stat"><small>Video</small><strong id="videoStat">Off</strong></div>
-        </div>
-      </article>
-      <aside class="aside-card hero-side">
-        <span class="pill">Legal lane</span>
-        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);margin-top:10px;">Huquqiy katalog</h2>
-        <p>Advokat va huquqiy konsultantlar shu umumiy premium layoutda chiqadi. Theme, menu va actionlar boshqa sahifalar bilan bir xil qoladi.</p>
-        <div class="helper" id="statusText">Katalog tayyor.</div>
-      </aside>
+    <section class="panel hero">
+      <div class="hero-top">
+        <span class="pill">Advokatlar</span>
+        <strong id="statusText" class="helper">Tayyor</strong>
+      </div>
+      <div>
+        <h1 style="font-size:clamp(2rem,4vw,3.3rem);">Huquqiy mutaxassislar</h1>
+        <p>Filterlang, yaqin profilni tanlang va yozishma oching.</p>
+      </div>
+      <div class="hero-actions">
+        <a class="button primary" href="/lawyerai.html">Lawyer AI</a>
+        <button class="button secondary" id="captureLocationBtn" type="button">Joylashuv</button>
+        <a class="button secondary" href="/chat.html">Chatlar</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><small>Natija</small><strong id="resultStat">0</strong></div>
+        <div class="stat"><small>Lokatsiya</small><strong id="locationStat">Noma'lum</strong></div>
+        <div class="stat"><small>Video</small><strong id="videoStat">Off</strong></div>
+      </div>
     </section>
     <section class="layout">
-      <aside class="panel">
-        <span class="pill">Filter</span>
-        <div class="filters" style="margin-top:14px;">
-          <label class="field">Qidiruv<input id="queryInput" type="text" placeholder="Advokat, xizmat yoki ofis..." /></label>
-          <label class="field">Radius<select id="radiusFilter"><option value="25">25 km</option><option value="50">50 km</option><option value="100" selected>100 km</option><option value="200">200 km</option></select></label>
-          <div class="card-actions">
+      <aside class="sidebar">
+        <div class="panel">
+          <div class="filters">
+            <label class="field">Qidiruv<input id="queryInput" type="text" placeholder="Ism yoki xizmat..." /></label>
+            <label class="field">Radius<select id="radiusFilter"><option value="25">25 km</option><option value="50">50 km</option><option value="100" selected>100 km</option><option value="200">200 km</option></select></label>
             <button class="button primary" id="reloadBtn" type="button">Yangilash</button>
-            <a class="button secondary" href="/recommendations.html?type=lawyer">Vitrina</a>
           </div>
         </div>
       </aside>
-      <div>
+      <div class="results">
         <div class="grid" id="resultGrid"></div>
-        <div class="empty" id="emptyState" style="display:none;">Hozircha mos advokat topilmadi.</div>
+        <div class="empty" id="emptyState" style="display:none;">Mos advokat topilmadi.</div>
       </div>
-      <aside class="aside-card">
-        <span class="pill">Use case</span>
-        <h3 style="margin-top:12px;font-size:1.5rem;">Qisqa oqim</h3>
-        <p>Riskni tushuntirish, shartnoma ko‘rish yoki huquqiy maslahat uchun provider tanlaysiz, so‘rov yuborasiz va service chat orqali bog‘lanasiz.</p>
-        <div class="chips"><span class="chip">Contract</span><span class="chip">Consultation</span><span class="chip">Video</span></div>
-      </aside>
     </section>
   </main>
   <script>
@@ -89,15 +75,15 @@
     const initials=(value)=>String(value||"AS").split(/\s+/).filter(Boolean).slice(0,2).map((item)=>item[0]).join("").toUpperCase();
     const setStatus=(text,tone="helper")=>{ statusText.textContent=text; statusText.className=tone; };
     async function ensureAuth(){ const res=await fetch("/api/auth/me"); const data=await res.json(); if(!data.user){ location.href=`/login.html?next=${encodeURIComponent(location.pathname)}`; throw new Error("Unauthenticated"); } state.user=data.user; }
-    async function loadBootstrap(){ await ensureAuth(); const [configRes, profileRes]=await Promise.all([fetch("/api/config"), fetch("/api/profile")]); state.config=await configRes.json(); state.profile=await profileRes.json(); const user=state.profile.user||{}; document.getElementById("locationStat").textContent = Number.isFinite(user.latitude) && Number.isFinite(user.longitude) ? (user.locationLabel || `${Number(user.latitude).toFixed(2)}, ${Number(user.longitude).toFixed(2)}`) : "Joy kerak"; document.getElementById("videoStat").textContent = state.config.videoReady ? "On" : "Off"; }
+    async function loadBootstrap(){ await ensureAuth(); const [configRes, profileRes]=await Promise.all([fetch("/api/config"), fetch("/api/profile")]); state.config=await configRes.json(); state.profile=await profileRes.json(); const user=state.profile.user||{}; document.getElementById("locationStat").textContent=Number.isFinite(user.latitude)&&Number.isFinite(user.longitude)?(user.locationLabel||`${Number(user.latitude).toFixed(2)}, ${Number(user.longitude).toFixed(2)}`):"Joy kerak"; document.getElementById("videoStat").textContent=state.config.videoReady?"On":"Off"; }
     async function loadProviders(){ const radiusKm=document.getElementById("radiusFilter").value; const response=await fetch(`/api/providers?type=${encodeURIComponent(DIRECTORY.type)}&radiusKm=${encodeURIComponent(radiusKm)}`); const data=await response.json(); if(!response.ok) throw new Error(data.error || "Providerlar yuklanmadi."); state.providers=data.providers||[]; renderProviders(); }
     function filteredProviders(){ const q=state.query.trim().toLowerCase(); return state.providers.filter((provider)=>!q || [provider.name, provider.providerServices, provider.providerIntro, provider.locationLabel, provider.company].join(" ").toLowerCase().includes(q)); }
-    function renderProviders(){ const items=filteredProviders(); document.getElementById("resultStat").textContent=String(items.length); emptyState.style.display=items.length?"none":"block"; resultGrid.innerHTML=items.map((provider)=>`<article class="card"><div class="top"><div class="head"><div class="avatar">${escapeHtml(initials(provider.name))}</div><div><div class="chip">${escapeHtml(provider.providerTypeLabel || "Advokat")}</div><h3 style="margin-top:10px;font-size:1.3rem;">${escapeHtml(provider.name)}</h3></div></div><div class="badge">${escapeHtml(provider.consultationFee || "Narx so'rovda")}</div></div><p>${escapeHtml(provider.providerIntro || provider.bio || provider.providerServices || "Profil tavsifi yo'q.")}</p><div class="chips"><span class="chip">${provider.distanceKm != null ? `${provider.distanceKm} km` : "Masofa noma'lum"}</span><span class="chip">${escapeHtml(provider.locationLabel || provider.company || "Lokatsiya yo'q")}</span><span class="chip">${provider.videoEnabled ? "Video bor" : "Faqat chat"}</span></div><div class="card-actions"><button class="button primary" data-request="${provider.id}" type="button">So'rov yuborish</button><a class="button secondary" href="/chat.html">Chat hub</a></div></article>`).join(""); resultGrid.querySelectorAll("[data-request]").forEach((button)=>button.addEventListener("click",()=>requestProvider(button.dataset.request))); }
-    async function requestProvider(providerId){ try { setStatus("Providerga so'rov yuborilmoqda..."); const response=await fetch("/api/provider-threads/request",{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ providerId, sourceAssistantId:DIRECTORY.sourceAssistantId }) }); const data=await response.json(); if(!response.ok) throw new Error(data.error || "So'rov yuborilmadi."); location.href=`/chat.html?threadId=${encodeURIComponent(data.threadId)}`; } catch (error) { setStatus(error.message,"error"); } }
+    function renderProviders(){ const items=filteredProviders(); document.getElementById("resultStat").textContent=String(items.length); emptyState.style.display=items.length?"none":"block"; resultGrid.innerHTML=items.map((provider)=>`<article class="card"><div class="top"><div class="head"><div class="avatar">${escapeHtml(initials(provider.name))}</div><div><div class="chip">${escapeHtml(provider.providerTypeLabel || "Advokat")}</div><h3 style="margin-top:8px;font-size:1.2rem;">${escapeHtml(provider.name)}</h3></div></div><div class="badge">${escapeHtml(provider.consultationFee || "Narx so'rovda")}</div></div><p>${escapeHtml(provider.providerIntro || provider.bio || provider.providerServices || "Tavsif yo'q.")}</p><div class="chips"><span class="chip">${provider.distanceKm != null ? `${provider.distanceKm} km` : "Masofa noma'lum"}</span><span class="chip">${provider.videoEnabled ? "Video" : "Chat"}</span></div><div class="card-actions"><button class="button primary" data-request="${provider.id}" type="button">So'rov</button><a class="button secondary" href="/chat.html">Chat</a></div></article>`).join(""); resultGrid.querySelectorAll("[data-request]").forEach((button)=>button.addEventListener("click",()=>requestProvider(button.dataset.request))); }
+    async function requestProvider(providerId){ try { setStatus("So'rov yuborilmoqda..."); const response=await fetch("/api/provider-threads/request",{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ providerId, sourceAssistantId:DIRECTORY.sourceAssistantId }) }); const data=await response.json(); if(!response.ok) throw new Error(data.error || "So'rov yuborilmadi."); location.href=`/chat.html?threadId=${encodeURIComponent(data.threadId)}`; } catch (error) { setStatus(error.message,"error"); } }
     async function saveLocation(latitude, longitude){ const user=state.profile.user||{}; const payload={ name:user.name, company:user.company||"", bio:user.bio||"", locationLabel:user.locationLabel || `Lat ${latitude.toFixed(4)}, Lng ${longitude.toFixed(4)}`, latitude, longitude, geoConsent:true, asProvider:user.role==="provider", providerType:user.providerType||"", providerServices:user.providerServices||"", providerIntro:user.providerIntro||"", providerLicense:user.providerLicense||"", consultationFee:user.consultationFee||"", availableForRecommendations:user.availableForRecommendations !== false, videoEnabled:Boolean(user.videoEnabled) }; const response=await fetch("/api/profile",{ method:"PATCH", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(payload) }); const data=await response.json(); if(!response.ok) throw new Error(data.error || "Joylashuv saqlanmadi."); state.profile.user=data.user; document.getElementById("locationStat").textContent=data.user.locationLabel || `${latitude.toFixed(2)}, ${longitude.toFixed(2)}`; }
     async function requestBrowserLocation(){ if(!navigator.geolocation) throw new Error("Brauzer geolokatsiyani qo'llamaydi."); return new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition((position)=>resolve(position.coords),(error)=>reject(error),{ enableHighAccuracy:true, timeout:15000 })); }
     document.getElementById("queryInput").addEventListener("input",(event)=>{ state.query=event.currentTarget.value; renderProviders(); });
-    document.getElementById("reloadBtn").addEventListener("click",()=>loadProviders().then(()=>setStatus("Ro'yxat yangilandi.","success")).catch((error)=>setStatus(error.message,"error")));
+    document.getElementById("reloadBtn").addEventListener("click",()=>loadProviders().then(()=>setStatus("Yangilandi.","success")).catch((error)=>setStatus(error.message,"error")));
     document.getElementById("captureLocationBtn").addEventListener("click",async()=>{ try { setStatus("Joylashuv olinmoqda..."); const coords=await requestBrowserLocation(); await saveLocation(coords.latitude, coords.longitude); await loadProviders(); setStatus("Joylashuv yangilandi.","success"); } catch (error) { setStatus(error.message || "Joylashuv olinmadi.","error"); } });
     Promise.resolve().then(loadBootstrap).then(loadProviders).catch((error)=>{ if(error.message!=="Unauthenticated") setStatus(error.message,"error"); });
   </script>

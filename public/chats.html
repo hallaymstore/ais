@@ -3,89 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Threadlar | Ai's Shelf</title>
+  <title>Chatlar | Ai's Shelf</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#f7f2ea; --surface:rgba(255,255,255,.84); --surface-2:rgba(16,32,51,.05); --line:rgba(16,32,51,.08); --ink:#102033; --muted:#5f7288; --accent:#2a8a7d; --gold:#c88639; --danger:#b34a3b; --success:#176853; --shadow:0 28px 70px rgba(16,32,51,.12); }
-    :root[data-theme="night"] { --bg:#09111d; --surface:rgba(12,19,32,.84); --surface-2:rgba(255,255,255,.06); --line:rgba(255,255,255,.08); --ink:#eef6ff; --muted:#93a6bd; --accent:#62dfc6; --gold:#efb86b; --danger:#ff8c79; --success:#7ce7bc; --shadow:0 28px 80px rgba(0,0,0,.45); }
-    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:
-      radial-gradient(circle at top left, rgba(42,138,125,.16), transparent 22%),
-      radial-gradient(circle at top right, rgba(200,134,57,.14), transparent 18%),
-      linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 90%,white 10%) 100%)}
-    a{color:inherit;text-decoration:none} button,input,select{font:inherit}
-    .shell{width:min(1280px,calc(100vw - 28px));margin:0 auto}.topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
-    .nav,.nav-links,.nav-actions,.hero-actions,.filters,.grid,.meta,.card-actions,.stats{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.nav{justify-content:space-between;padding:14px 0}
-    .brand{display:flex;gap:14px;align-items:center;font-weight:800}.mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#102033,#2a8a7d);box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
-    .nav-links a{color:var(--muted);font-weight:700}.button,button{border:0;border-radius:999px;padding:13px 18px;cursor:pointer;font-weight:800}
-    .button.primary,button.primary{color:#fff;background:linear-gradient(135deg,#102033,#2a8a7d);box-shadow:0 16px 34px rgba(16,32,51,.22)}
-    .button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 86%,transparent);border:1px solid var(--line)}
-    h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
-    .hero{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;padding:28px 0 22px}
-    .hero-main,.hero-side,.panel,.card,.stat{border:1px solid var(--line);border-radius:30px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)}
-    .hero-main{padding:28px;color:#eef7ff;background:linear-gradient(135deg,#102033 0%,#174555 50%,#2a8a7d 100%)} .hero-main p{color:rgba(238,247,255,.82);line-height:1.75}
-    .hero-side,.panel,.card,.stat{padding:22px}.hero-side p,.card p,.helper,.meta{color:var(--muted);line-height:1.72}
-    .pill,.status{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}
-    .pill{padding:9px 14px;font-size:13px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
-    .hero-side .pill,.panel .pill{background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
-    .stats{margin-top:20px}.stat{flex:1 1 180px}.stat strong{display:block;font-size:22px;margin-top:8px}
-    .layout{display:grid;grid-template-columns:280px 1fr;gap:18px;padding-bottom:32px;align-items:start}.filters{display:grid;gap:14px}
-    input,select{width:100%;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 92%,transparent);color:var(--ink);padding:14px 15px;outline:none}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}.card{display:grid;gap:14px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
-    .status{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .status.requested{background:color-mix(in srgb,var(--gold) 16%,transparent);color:color-mix(in srgb,var(--gold) 76%,var(--ink))} .status.active{background:color-mix(in srgb,var(--accent) 16%,transparent);color:color-mix(in srgb,var(--accent) 76%,var(--ink))} .status.closed{background:color-mix(in srgb,var(--danger) 16%,transparent);color:color-mix(in srgb,var(--danger) 80%,var(--ink))}
-    .empty{padding:24px;border-radius:24px;border:1px dashed var(--line);background:color-mix(in srgb,var(--surface) 72%,transparent);color:var(--muted);line-height:1.75}
-    .success{color:var(--success)} .error{color:var(--danger)}
-    @media (max-width:1080px){.hero,.layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
-    @media (max-width:720px){.nav{flex-direction:column;align-items:flex-start}}
+    :root{--bg:#f7f2ea;--surface:rgba(255,255,255,.9);--surface-2:rgba(16,32,51,.05);--line:rgba(16,32,51,.08);--ink:#102033;--muted:#5f7288;--accent:#2a8a7d;--accent-2:#102033;--gold:#c88639;--danger:#b34a3b;--shadow:0 24px 60px rgba(16,32,51,.12)}
+    :root[data-theme="night"]{--bg:#09111d;--surface:rgba(12,19,32,.9);--surface-2:rgba(255,255,255,.06);--line:rgba(255,255,255,.08);--ink:#eef6ff;--muted:#93a6bd;--accent:#62dfc6;--accent-2:#dffdf6;--gold:#efb86b;--danger:#ff8c79;--shadow:0 24px 70px rgba(0,0,0,.45)}
+    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:radial-gradient(circle at top left,color-mix(in srgb,var(--accent) 16%,transparent),transparent 22%),linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 92%,white 8%) 100%)}
+    a{color:inherit;text-decoration:none} button,input,select{font:inherit}.shell{width:min(1280px,calc(100vw - 28px));margin:0 auto}
+    .topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)} .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}.brand{display:flex;align-items:center;gap:14px;font-weight:800}.brand-mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent));box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
+    .panel,.card{border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)} h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
+    .page{display:grid;gap:18px;padding:24px 0 32px}.page-head{padding:22px;display:grid;gap:18px}.head-row,.head-actions,.stats,.filters,.card-actions,.meta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .head-row{justify-content:space-between;align-items:flex-start}.page-head p,.helper,.card p{margin:0;color:var(--muted);line-height:1.65}.pill,.status{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}.pill{padding:8px 12px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .status{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .status.requested{background:color-mix(in srgb,var(--gold) 16%,transparent);color:color-mix(in srgb,var(--gold) 76%,var(--ink))} .status.active{background:color-mix(in srgb,var(--accent) 16%,transparent);color:color-mix(in srgb,var(--accent) 76%,var(--ink))} .status.closed{background:color-mix(in srgb,var(--danger) 16%,transparent);color:color-mix(in srgb,var(--danger) 82%,var(--ink))}
+    .button,button{border:0;border-radius:999px;padding:12px 16px;cursor:pointer;font-weight:800}.button.primary,button.primary{color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent))}.button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line)}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.stat{padding:16px;border-radius:22px;background:var(--surface-2);border:1px solid var(--line)} .stat strong{display:block;font-size:20px;margin-top:8px}
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:start}.panel{padding:18px}
+    input,select{width:100%;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 94%,transparent);color:var(--ink);padding:14px 15px;outline:none}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{padding:18px;display:grid;gap:14px}
+    .empty{padding:22px;border-radius:24px;border:1px dashed var(--line);background:color-mix(in srgb,var(--surface) 72%,transparent);color:var(--muted)} .success{color:#176853}.error{color:#b34a3b}
+    @media (max-width:1080px){.layout{grid-template-columns:1fr}.grid,.stats{grid-template-columns:1fr 1fr}}
+    @media (max-width:720px){.head-row{flex-direction:column}.grid,.stats{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <div class="topbar">
     <div class="shell nav">
-      <a class="brand" href="/recommendations.html"><span class="mark">AS</span><span data-site-brand-name>Ai's Shelf</span></a>
-      <div class="nav-links">
-        <a href="/recommendations.html">Marketplace</a>
-        <a href="/search.html">Qidiruv</a>
-        <a href="/chats.html">Buyurtmalar</a>
-      </div>
-      <div class="nav-actions">
-        <button class="button secondary" id="themeToggle" type="button">Tun mavzu</button>
-        <a class="button secondary" href="/profile.html">Profil</a>
-        <button class="button primary" id="logoutBtn" type="button">Chiqish</button>
-      </div>
+      <a class="brand" href="/"><span class="brand-mark"></span><span data-site-brand-name>Ai's Shelf</span></a>
     </div>
   </div>
-
-  <main class="shell">
-    <section class="hero">
-      <article class="hero-main">
-        <span class="pill" id="heroPill">Service inbox</span>
-        <h1 style="font-size:clamp(2.6rem,5vw,4.5rem);margin-top:14px;">Barcha threadlar bir joyda.</h1>
-        <p id="heroText">Bu sahifa service yozishmalari uchun marketplace inbox vazifasini bajaradi. Buyer va provider ikkisi uchun ham kirish nuqtasi shu yer.</p>
-        <div class="stats">
-          <div class="stat"><small>Jami</small><strong id="totalStat">0</strong></div>
-          <div class="stat"><small>Requested</small><strong id="requestedStat">0</strong></div>
-          <div class="stat"><small>Active</small><strong id="activeStat">0</strong></div>
+  <main class="shell page">
+    <section class="panel page-head">
+      <div class="head-row">
+        <div>
+          <span class="pill">Chatlar</span>
+          <h1 style="margin-top:10px;font-size:clamp(2rem,4vw,3rem);">Service threadlar</h1>
+          <p id="statusText">Tayyor.</p>
         </div>
-      </article>
-      <article class="hero-side">
-        <span class="pill">Quick links</span>
-        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);margin-top:10px;">Inbox boshqaruvi</h2>
-        <p>Search sahifasidan yangi provider toping yoki shu yerdan mavjud threadni ochib davom ettiring.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="/search.html">Yangi qidiruv</a>
-          <a class="button secondary" href="/recommendations.html">Marketplace</a>
+        <div class="head-actions">
+          <a class="button secondary" href="/search.html">Qidiruv</a>
+          <a class="button secondary" href="/recommendations.html">Xizmatlar</a>
         </div>
-        <div class="helper" id="statusText">Threadlar tayyor.</div>
-      </article>
+      </div>
+      <div class="stats">
+        <div class="stat"><small>Jami</small><strong id="totalStat">0</strong></div>
+        <div class="stat"><small>Requested</small><strong id="requestedStat">0</strong></div>
+        <div class="stat"><small>Active</small><strong id="activeStat">0</strong></div>
+      </div>
     </section>
 
     <section class="layout">
       <aside class="panel">
-        <span class="pill">Filter</span>
-        <div class="filters" style="margin-top:14px;">
-          <input id="queryInput" type="text" placeholder="Ism, preview yoki yo'nalish..." />
+        <div class="filters">
+          <input id="queryInput" type="text" placeholder="Ism yoki preview..." />
           <select id="statusFilter"><option value="all">Barcha status</option><option value="requested">Requested</option><option value="active">Active</option><option value="closed">Closed</option></select>
           <select id="typeFilter"></select>
           <button class="button primary" id="reloadBtn" type="button">Yangilash</button>
@@ -100,22 +70,18 @@
   </main>
 
   <script>
-    const THEME_KEY = "aishelf-theme";
     const state = { user:null, config:null, threads:[], query:"", status:"all", type:"all" };
-    const themeToggle = document.getElementById("themeToggle");
     const threadGrid = document.getElementById("threadGrid");
     const emptyState = document.getElementById("emptyState");
     const statusText = document.getElementById("statusText");
 
     function escapeHtml(value){return String(value||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
-    function getTheme(){const saved=localStorage.getItem(THEME_KEY); if(saved==="day"||saved==="night") return saved; return matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day"}
-    function applyTheme(theme){document.documentElement.dataset.theme=theme; localStorage.setItem(THEME_KEY,theme); themeToggle.textContent=theme==="night"?"Kunduz mavzu":"Tun mavzu"}
-    function setStatus(text,tone=""){statusText.textContent=text; statusText.className=tone||"helper"}
+    function setStatus(text,tone=""){statusText.textContent=text; statusText.className=tone||""}
 
     async function ensureAuth(){
       const response = await fetch("/api/auth/me");
       const data = await response.json();
-      if(!data.user){location.href="/login.html?next=/chats.html"; throw new Error("Unauthenticated")}
+      if(!data.user){ location.href="/login.html?next=/chats.html"; throw new Error("Unauthenticated"); }
       state.user = data.user;
     }
 
@@ -124,10 +90,6 @@
       const configRes = await fetch("/api/config");
       state.config = await configRes.json();
       document.getElementById("typeFilter").innerHTML = `<option value="all">Barcha yo'nalish</option>${(state.config.providerTypes||[]).map((item)=>`<option value="${item.id}">${item.name}</option>`).join("")}`;
-      if(state.user.role === "provider"){
-        document.getElementById("heroPill").textContent = "Provider inbox";
-        document.getElementById("heroText").textContent = "Provider sifatida bu yerga kelgan requestlar va faol yozishmalaringiz ko'rinadi.";
-      }
     }
 
     async function loadThreads(){
@@ -164,14 +126,14 @@
         const counterpart = state.user.role === "provider" ? (thread.requester?.name || "Mijoz") : (thread.provider?.name || thread.providerTypeLabel || "Provider");
         return `
           <article class="card">
-            <div class="top">
+            <div class="head-row">
               <div>
                 <div class="status ${escapeHtml(thread.status || "requested")}">${escapeHtml(thread.status || "requested")}</div>
-                <h3 style="margin-top:10px;font-size:1.3rem;">${escapeHtml(counterpart)}</h3>
+                <h3 style="margin-top:8px;font-size:1.2rem;">${escapeHtml(counterpart)}</h3>
               </div>
               <div class="status">${escapeHtml(thread.providerTypeLabel || "Service")}</div>
             </div>
-            <p>${escapeHtml(thread.lastMessagePreview || "Service thread tayyor.")}</p>
+            <p>${escapeHtml(thread.lastMessagePreview || "Yozishma tayyor.")}</p>
             <div class="meta">
               <span>${new Date(thread.updatedAt).toLocaleString()}</span>
               <span>${thread.messageCount || 0} xabar</span>
@@ -185,15 +147,12 @@
       }).join("");
     }
 
-    document.getElementById("queryInput").addEventListener("input",(event)=>{ state.query=event.currentTarget.value; renderThreads(); });
-    document.getElementById("statusFilter").addEventListener("change",(event)=>{ state.status=event.currentTarget.value; renderThreads(); });
-    document.getElementById("typeFilter").addEventListener("change",(event)=>{ state.type=event.currentTarget.value; renderThreads(); });
-    document.getElementById("reloadBtn").addEventListener("click",()=>{ loadThreads().then(()=>setStatus("Threadlar yangilandi.","success")).catch((error)=>setStatus(error.message,"error")); });
-    document.getElementById("logoutBtn").addEventListener("click", async ()=>{ await fetch("/api/auth/logout",{ method:"POST" }); location.href="/"; });
-    themeToggle.addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="night" ? "day" : "night"));
+    document.getElementById("queryInput").addEventListener("input",(event)=>{ state.query = event.currentTarget.value; renderThreads(); });
+    document.getElementById("statusFilter").addEventListener("change",(event)=>{ state.status = event.currentTarget.value; renderThreads(); });
+    document.getElementById("typeFilter").addEventListener("change",(event)=>{ state.type = event.currentTarget.value; renderThreads(); });
+    document.getElementById("reloadBtn").addEventListener("click",()=>loadThreads().then(()=>setStatus("Yangilandi.","success")).catch((error)=>setStatus(error.message,"error")));
 
-    applyTheme(getTheme());
-    Promise.resolve().then(loadBootstrap).then(loadThreads).catch((error)=>{ if(error.message!=="Unauthenticated") setStatus(error.message,"error") });
+    Promise.resolve().then(loadBootstrap).then(loadThreads).catch((error)=>{ if(error.message!=="Unauthenticated") setStatus(error.message,"error"); });
   </script>
 </body>
 </html>

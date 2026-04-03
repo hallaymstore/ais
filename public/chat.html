@@ -8,39 +8,34 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#f7f2ea; --surface:rgba(255,255,255,.88); --surface-2:rgba(16,32,51,.05); --line:rgba(16,32,51,.08); --ink:#102033; --muted:#5f7288; --brand-primary:#2a8a7d; --brand-secondary:#102033; --assistant-accent:#c88639; --shadow:0 28px 70px rgba(16,32,51,.12); }
-    :root[data-theme="night"] { --bg:#09111d; --surface:rgba(12,19,32,.88); --surface-2:rgba(255,255,255,.06); --line:rgba(255,255,255,.08); --ink:#eef6ff; --muted:#93a6bd; --brand-primary:#62dfc6; --brand-secondary:#dffdf6; --assistant-accent:#efb86b; --shadow:0 28px 80px rgba(0,0,0,.45); }
-    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:radial-gradient(circle at top left, color-mix(in srgb,var(--brand-primary) 20%,transparent), transparent 20%),radial-gradient(circle at top right, color-mix(in srgb,var(--assistant-accent) 16%,transparent), transparent 18%),linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 92%,white 8%) 100%)}
-    a{color:inherit;text-decoration:none} button,textarea{font:inherit}.shell{width:min(1480px,calc(100vw - 24px));margin:0 auto}.topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
-    .nav,.nav-actions,.sidebar-head,.chat-head,.chat-tools,.composer-actions,.meta,.profile-list,.video-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.nav{justify-content:space-between;padding:14px 0}.brand{display:flex;gap:14px;align-items:center;font-weight:800}.brand-mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--brand-secondary),var(--brand-primary));box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
-    .button,button{border:0;border-radius:999px;padding:12px 16px;cursor:pointer;font-weight:800}.button.primary,button.primary{color:#fff;background:linear-gradient(135deg,var(--brand-secondary),var(--brand-primary));box-shadow:0 16px 34px rgba(16,32,51,.22)} .button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line)}
-    h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}.layout{display:grid;grid-template-columns:300px 1fr 320px;gap:16px;padding:18px 0 24px;min-height:calc(100vh - 84px)}
-    .panel,.chat-shell,.message,.video-card{border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)} .panel,.video-card{padding:18px}.sidebar,.rail{display:grid;gap:16px;align-content:start}
-    .pill,.chip,.status{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}.pill{padding:8px 12px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .chip{padding:8px 12px;font-size:13px;background:color-mix(in srgb,var(--assistant-accent) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--assistant-accent) 40%,var(--line));color:var(--ink)} .status{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
-    .status.requested{background:color-mix(in srgb,var(--assistant-accent) 16%,transparent)} .status.active{background:color-mix(in srgb,var(--brand-primary) 16%,transparent)} .status.closed{background:color-mix(in srgb,#b34a3b 16%,transparent)}
-    .sidebar-head{justify-content:space-between}.thread-list{display:grid;gap:10px;margin-top:12px}.thread-item{padding:14px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line);cursor:pointer}.thread-item.active{outline:2px solid color-mix(in srgb,var(--assistant-accent) 42%,transparent)} .thread-item strong{display:block;margin-bottom:6px}
-    .thread-item small,.helper,.meta,.profile-list{color:var(--muted);line-height:1.6}
-    .chat-shell{display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}.chat-head{justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,color-mix(in srgb,var(--assistant-accent) 16%,var(--surface)),color-mix(in srgb,var(--surface) 92%,transparent))}
+    :root{--bg:#f7f2ea;--surface:rgba(255,255,255,.9);--surface-2:rgba(16,32,51,.05);--line:rgba(16,32,51,.08);--ink:#102033;--muted:#5f7288;--brand-primary:#2a8a7d;--brand-secondary:#102033;--assistant-accent:#c88639;--shadow:0 24px 60px rgba(16,32,51,.12)}
+    :root[data-theme="night"]{--bg:#09111d;--surface:rgba(12,19,32,.9);--surface-2:rgba(255,255,255,.06);--line:rgba(255,255,255,.08);--ink:#eef6ff;--muted:#93a6bd;--brand-primary:#62dfc6;--brand-secondary:#dffdf6;--assistant-accent:#efb86b;--shadow:0 24px 70px rgba(0,0,0,.45)}
+    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:radial-gradient(circle at top left,color-mix(in srgb,var(--brand-primary) 18%,transparent),transparent 20%),linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 92%,white 8%) 100%)}
+    a{color:inherit;text-decoration:none} button,textarea{font:inherit}.shell{width:min(1480px,calc(100vw - 24px));margin:0 auto}
+    .topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)} .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}.brand{display:flex;gap:14px;align-items:center;font-weight:800}.brand-mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--brand-secondary),var(--brand-primary));box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
+    .button,button{border:0;border-radius:999px;padding:12px 16px;cursor:pointer;font-weight:800}.button.primary,button.primary{color:#fff;background:linear-gradient(135deg,var(--brand-secondary),var(--brand-primary))}.button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line)}
+    .layout{display:grid;grid-template-columns:280px 1fr 300px;gap:16px;padding:18px 0 24px;min-height:calc(100vh - 84px)} h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
+    .panel,.chat-shell,.message,.video-card{border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)} .panel,.video-card{padding:18px}
+    .sidebar,.rail{display:grid;gap:16px;align-content:start}.sidebar-head,.chat-head,.chat-tools,.composer-actions,.meta,.video-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .pill,.status{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}.pill{padding:8px 12px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .status{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+    .thread-list{display:grid;gap:10px}.thread-item{padding:14px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line);cursor:pointer}.thread-item.active{outline:2px solid color-mix(in srgb,var(--assistant-accent) 42%,transparent)} .thread-item strong{display:block;margin-bottom:6px}
+    .thread-item small,.helper,.meta,.details{color:var(--muted);line-height:1.6}
+    .chat-shell{display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}.chat-head{justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,color-mix(in srgb,var(--assistant-accent) 14%,var(--surface)),color-mix(in srgb,var(--surface) 92%,transparent))}
     .assistant-profile{display:flex;gap:14px;align-items:center}.assistant-logo{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,var(--brand-secondary),color-mix(in srgb,var(--assistant-accent) 55%,var(--brand-primary) 45%))}
-    .chat-tools{justify-content:flex-end}.messages{display:grid;gap:12px;padding:20px;overflow:auto;background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 82%,transparent),color-mix(in srgb,var(--surface) 95%,transparent))}
-    .message{padding:14px 16px;max-width:min(74%,760px)} .message.self{margin-left:auto;background:color-mix(in srgb,var(--brand-primary) 16%,var(--surface))} .message.peer{margin-right:auto;background:color-mix(in srgb,var(--assistant-accent) 12%,var(--surface))}.message img{width:min(100%,320px);border-radius:16px;margin-top:10px}
+    .messages{display:grid;gap:12px;padding:20px;overflow:auto;background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 84%,transparent),color-mix(in srgb,var(--surface) 95%,transparent))}
+    .message{padding:14px 16px;max-width:min(74%,760px)} .message.self{margin-left:auto;background:color-mix(in srgb,var(--brand-primary) 16%,var(--surface))} .message.peer{margin-right:auto;background:color-mix(in srgb,var(--assistant-accent) 10%,var(--surface))} .message img{width:min(100%,320px);border-radius:16px;margin-top:10px}
     .composer{padding:16px;border-top:1px solid var(--line);display:grid;gap:12px;background:color-mix(in srgb,var(--surface) 92%,transparent)} textarea{width:100%;min-height:110px;resize:vertical;border-radius:22px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 94%,transparent);color:var(--ink);padding:16px;outline:none}
-    .composer-actions{justify-content:space-between}.preview{display:none;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--surface-2);border:1px dashed var(--line)} .preview img{width:76px;height:76px;object-fit:cover;border-radius:16px}
-    .card-copy{display:grid;gap:12px}.profile-list{display:grid;gap:8px}.video-frame{border-radius:22px;overflow:hidden;border:1px solid var(--line);background:#09111d}.video-frame video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#09111d}
-    .empty{padding:24px;border-radius:22px;border:1px dashed var(--line);background:var(--surface-2);color:var(--muted)} .success{color:#176853}.error{color:#b34a3b}
+    .preview{display:none;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--surface-2);border:1px dashed var(--line)} .preview img{width:76px;height:76px;object-fit:cover;border-radius:16px}
+    .video-frame{border-radius:22px;overflow:hidden;border:1px solid var(--line);background:#09111d}.video-frame video{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#09111d}
+    .empty{padding:22px;border-radius:22px;border:1px dashed var(--line);background:var(--surface-2);color:var(--muted)} .success{color:#176853}.error{color:#b34a3b}
     @media (max-width:1240px){.layout{grid-template-columns:280px 1fr}.rail{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media (max-width:980px){.layout{grid-template-columns:1fr}.rail{grid-template-columns:1fr}.message{max-width:100%}.nav{flex-direction:column;align-items:flex-start}}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}.rail{grid-template-columns:1fr}.message{max-width:100%}}
   </style>
 </head>
 <body data-assistant-id="service-chat">
   <div class="topbar">
     <div class="shell nav">
-      <a class="brand" href="/recommendations.html"><span class="brand-mark"></span><span data-site-brand-name>Ai's Shelf</span></a>
-      <div class="nav-actions">
-        <button class="button secondary" id="themeToggle" type="button">Tun mavzu</button>
-        <a class="button secondary" href="/chats.html">Threadlar</a>
-        <button class="button primary" id="logoutBtn" type="button">Chiqish</button>
-      </div>
+      <a class="brand" href="/"><span class="brand-mark"></span><span data-site-brand-name>Ai's Shelf</span></a>
     </div>
   </div>
   <main class="shell layout">
@@ -48,15 +43,13 @@
       <article class="panel">
         <div class="sidebar-head">
           <div>
-            <span class="pill">Service inbox</span>
-            <h2 style="margin-top:10px;font-size:1.8rem;">Threadlar</h2>
+            <span class="pill">Threadlar</span>
+            <h2 style="margin-top:10px;font-size:1.5rem;">Service inbox</h2>
           </div>
           <a class="button secondary" href="/search.html">Qidiruv</a>
         </div>
-        <p class="helper" style="margin:12px 0 0;">Chap tomonda threadlar, markazda yozishma, o'ngda video va counterpart ma'lumoti. Admin logotip va faviconni global boshqaradi.</p>
       </article>
       <article class="panel">
-        <h3 style="font-size:1.2rem;">Faol yozishmalar</h3>
         <div class="thread-list" id="threadList"></div>
       </article>
     </aside>
@@ -67,30 +60,30 @@
           <div class="assistant-logo" data-assistant-logo>SV</div>
           <div>
             <div class="pill"><span data-assistant-name>Service chat</span></div>
-            <h1 id="chatTitle" style="margin-top:8px;font-size:clamp(1.5rem,3vw,2.3rem);">Service chat</h1>
-            <div class="helper" id="chatSubtitle">Thread tanlang, yozishma shu yerda ochiladi.</div>
+            <h1 id="chatTitle" style="margin-top:8px;font-size:clamp(1.5rem,3vw,2.2rem);">Service chat</h1>
+            <div class="helper" id="chatSubtitle">Thread tanlang.</div>
           </div>
         </div>
         <div class="chat-tools">
           <span class="status" id="threadStatus">idle</span>
           <button class="button secondary" id="shareBtn" type="button">Ulashish</button>
-          <button class="button secondary" id="startCallBtn" type="button">Video call</button>
-          <button class="button secondary" id="endCallBtn" type="button">Tugatish</button>
+          <button class="button secondary" id="startCallBtn" type="button">Video</button>
+          <button class="button secondary" id="endCallBtn" type="button">Yopish</button>
         </div>
       </header>
-      <div class="messages" id="messages"><div class="empty" data-chat-empty>Service chat tayyor. Thread tanlang yoki search sahifasidan yangisini boshlang.</div></div>
+      <div class="messages" id="messages"><div class="empty" data-chat-empty>Thread tanlang yoki yangi yozishma boshlang.</div></div>
       <div class="composer">
         <div class="preview" id="previewBox">
           <img id="previewImage" alt="Tanlangan rasm" />
           <div>
             <strong id="previewName"></strong>
-            <div class="helper">Rasm keyingi xabar bilan birga yuboriladi.</div>
+            <div class="helper">Rasm xabar bilan yuboriladi.</div>
             <button class="button secondary" id="clearImageBtn" type="button">Olib tashlash</button>
           </div>
         </div>
         <textarea id="messageInput" placeholder="Xabaringizni yozing..."></textarea>
         <div class="composer-actions">
-          <div class="nav-actions">
+          <div class="chat-tools">
             <button class="button secondary" id="cameraBtn" type="button">Kamera</button>
             <button class="button secondary" id="uploadBtn" type="button">Media</button>
           </div>
@@ -103,30 +96,27 @@
     </section>
 
     <aside class="rail">
-      <article class="panel card-copy" id="counterpartCard">
-        <span class="pill">Counterpart</span>
-        <div class="empty">Thread tanlangach provider yoki mijoz ma'lumoti shu yerda ko'rinadi.</div>
+      <article class="panel" id="counterpartCard">
+        <span class="pill">Mutaxassis</span>
+        <div class="empty" style="margin-top:12px;">Thread tanlang.</div>
       </article>
-      <article class="video-card card-copy">
-        <span class="pill" id="siteVideoLabel">Video call</span>
-        <div class="helper" id="videoStatusText">Video holati tekshirilmoqda...</div>
-        <div class="video-actions">
+      <article class="video-card">
+        <span class="pill" id="siteVideoLabel">Video</span>
+        <div class="helper" id="videoStatusText" style="margin-top:12px;">Video holati tekshirilmoqda...</div>
+        <div class="video-actions" style="margin-top:12px;">
           <button class="button primary" id="startCallBtnSide" type="button">Boshlash</button>
           <button class="button secondary" id="endCallBtnSide" type="button">Yopish</button>
         </div>
-        <div class="video-frame"><video id="localVideo" playsinline autoplay muted></video></div>
-        <div class="video-frame"><video id="remoteVideo" playsinline autoplay></video></div>
+        <div class="video-frame" style="margin-top:12px;"><video id="localVideo" playsinline autoplay muted></video></div>
+        <div class="video-frame" style="margin-top:12px;"><video id="remoteVideo" playsinline autoplay></video></div>
       </article>
     </aside>
   </main>
   <script>
-    const THEME_KEY="aishelf-theme";
     const state={ user:null, threads:[], threadId:new URLSearchParams(location.search).get("threadId")||"", thread:null, draftMessage:"", selectedImage:null, videoConfig:{ ready:false, iceServers:[] }, signalCursor:0, refreshTimer:null, signalTimer:null, peerConnection:null, localStream:null, remoteStream:null };
-    const threadListEl=document.getElementById("threadList"), messagesEl=document.getElementById("messages"), counterpartCard=document.getElementById("counterpartCard"), statusText=document.getElementById("statusText"), videoStatusText=document.getElementById("videoStatusText"), chatTitle=document.getElementById("chatTitle"), chatSubtitle=document.getElementById("chatSubtitle"), threadStatus=document.getElementById("threadStatus"), messageInput=document.getElementById("messageInput"), previewBox=document.getElementById("previewBox"), previewImage=document.getElementById("previewImage"), previewName=document.getElementById("previewName"), themeToggle=document.getElementById("themeToggle");
+    const threadListEl=document.getElementById("threadList"), messagesEl=document.getElementById("messages"), counterpartCard=document.getElementById("counterpartCard"), statusText=document.getElementById("statusText"), videoStatusText=document.getElementById("videoStatusText"), chatTitle=document.getElementById("chatTitle"), chatSubtitle=document.getElementById("chatSubtitle"), threadStatus=document.getElementById("threadStatus"), messageInput=document.getElementById("messageInput"), previewBox=document.getElementById("previewBox"), previewImage=document.getElementById("previewImage"), previewName=document.getElementById("previewName");
 
     function escapeHtml(value){return String(value||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
-    function getTheme(){const saved=localStorage.getItem(THEME_KEY); if(saved==="day"||saved==="night") return saved; return matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day"}
-    function applyTheme(theme){document.documentElement.dataset.theme=theme; localStorage.setItem(THEME_KEY,theme); themeToggle.textContent=theme==="night"?"Kunduz mavzu":"Tun mavzu"}
     function setStatus(text,tone="helper"){statusText.textContent=text; statusText.className=tone}
     function getCounterpart(thread){ if(!thread||!state.user) return null; if(state.user.id===thread.providerId) return thread.requester||null; if(state.user.id===thread.userId) return thread.provider||null; return thread.provider||thread.requester||null; }
     function summaryCounterpart(thread){ if(!thread||!state.user) return null; if(state.user.role==="provider"||state.user.id===thread.providerId) return thread.requester||null; return thread.provider||null; }
@@ -143,7 +133,7 @@
       const response=await fetch("/api/video-config");
       const data=await response.json();
       state.videoConfig=data;
-      videoStatusText.textContent=data.ready?"Video call tayyor. Tugma orqali bog'lanishingiz mumkin.":"TURN yoki video sozlanmagan.";
+      videoStatusText.textContent=data.ready?"Video tayyor.":"TURN yoki video sozlanmagan.";
     }
 
     async function loadThreads(){
@@ -152,7 +142,7 @@
       if(!response.ok) throw new Error(data.error || "Threadlar yuklanmadi.");
       state.threads=data.threads||[];
       if(!state.threads.length){
-        threadListEl.innerHTML='<div class="empty">Hali service thread yo\'q. <a href="/search.html">Search sahifasidan</a> yangi yozishma boshlang.</div>';
+        threadListEl.innerHTML='<div class="empty">Hali service thread yo\'q. <a href="/search.html">Qidiruv</a> orqali boshlang.</div>';
         state.thread=null;
         updateThreadId("");
         renderThread();
@@ -190,20 +180,20 @@
     function renderThread(){
       if(!state.thread){
         chatTitle.textContent="Service chat";
-        chatSubtitle.textContent="Thread tanlang, yozishma shu yerda ochiladi.";
+        chatSubtitle.textContent="Thread tanlang.";
         threadStatus.textContent="idle";
         threadStatus.className="status";
-        messagesEl.innerHTML='<div class="empty" data-chat-empty>Service chat tayyor. Thread tanlang yoki search sahifasidan yangisini boshlang.</div>';
+        messagesEl.innerHTML='<div class="empty" data-chat-empty>Thread tanlang yoki yangi yozishma boshlang.</div>';
         return;
       }
       const counterpart=getCounterpart(state.thread);
       chatTitle.textContent=counterpart?.name || state.thread.title || "Service chat";
-      chatSubtitle.textContent=`${state.thread.providerTypeLabel || "Service"} bo'yicha yozishma markazi`;
+      chatSubtitle.textContent=state.thread.providerTypeLabel || "Service";
       threadStatus.textContent=state.thread.status || "active";
       threadStatus.className=`status ${state.thread.status || "active"}`;
       const messages=state.thread.messages||[];
       if(!messages.length){
-        messagesEl.innerHTML='<div class="empty" data-chat-empty>Yozishma tayyor. Xabar yozing yoki rasm yuboring.</div>';
+        messagesEl.innerHTML='<div class="empty" data-chat-empty>Xabar yozing yoki rasm yuboring.</div>';
         return;
       }
       messagesEl.innerHTML=messages.map((message)=>{
@@ -216,13 +206,11 @@
 
     function renderCounterpart(){
       if(!state.thread){
-        counterpartCard.innerHTML='<span class="pill">Counterpart</span><div class="empty">Thread tanlangach provider yoki mijoz ma\'lumoti shu yerda ko\'rinadi.</div>';
+        counterpartCard.innerHTML='<span class="pill">Mutaxassis</span><div class="empty" style="margin-top:12px;">Thread tanlang.</div>';
         return;
       }
       const counterpart=getCounterpart(state.thread);
-      const location=counterpart?.locationLabel || counterpart?.company || "Lokatsiya kiritilmagan";
-      const fee=counterpart?.consultationFee || counterpart?.providerServices || "Narx va xizmatlar profilda";
-      counterpartCard.innerHTML=`<span class="pill">Counterpart</span><h2 style="font-size:1.5rem;">${escapeHtml(counterpart?.name || "Service contact")}</h2><div class="profile-list"><div><strong>Status:</strong> ${escapeHtml(state.thread.status || "active")}</div><div><strong>Yo'nalish:</strong> ${escapeHtml(state.thread.providerTypeLabel || state.thread.providerType || "Service")}</div><div><strong>Lokatsiya:</strong> ${escapeHtml(location)}</div><div><strong>Xizmat:</strong> ${escapeHtml(fee)}</div></div><div class="helper">${escapeHtml(counterpart?.providerIntro || counterpart?.bio || "Counterpart haqida qisqa ma'lumot yo'q.")}</div>`;
+      counterpartCard.innerHTML=`<span class="pill">Mutaxassis</span><h2 style="margin-top:12px;font-size:1.4rem;">${escapeHtml(counterpart?.name || "Service contact")}</h2><div class="details" style="margin-top:12px;"><div><strong>Status:</strong> ${escapeHtml(state.thread.status || "active")}</div><div><strong>Yo'nalish:</strong> ${escapeHtml(state.thread.providerTypeLabel || state.thread.providerType || "Service")}</div><div><strong>Lokatsiya:</strong> ${escapeHtml(counterpart?.locationLabel || counterpart?.company || "Kiritilmagan")}</div><div><strong>Xizmat:</strong> ${escapeHtml(counterpart?.consultationFee || counterpart?.providerServices || "Kiritilmagan")}</div></div>`;
     }
 
     async function sendMessage(){
@@ -289,7 +277,7 @@
     function stopCallLocally(){
       closePeerOnly();
       stopLocalStream();
-      videoStatusText.textContent=state.videoConfig.ready?"Video call tayyor. Tugma orqali bog'lanishingiz mumkin.":"TURN yoki video sozlanmagan.";
+      videoStatusText.textContent=state.videoConfig.ready?"Video tayyor.":"TURN yoki video sozlanmagan.";
     }
 
     async function ensurePeerConnection(){
@@ -299,7 +287,7 @@
       localStream.getTracks().forEach((track)=>pc.addTrack(track,localStream));
       pc.ontrack=(event)=>{ const stream=event.streams?.[0]; if(stream){ state.remoteStream=stream; document.getElementById("remoteVideo").srcObject=stream; } };
       pc.onicecandidate=(event)=>{ if(event.candidate) sendSignal("ice-candidate",event.candidate.toJSON()).catch(()=>{}); };
-      pc.onconnectionstatechange=()=>{ videoStatusText.textContent=`Call holati: ${pc.connectionState}`; };
+      pc.onconnectionstatechange=()=>{ videoStatusText.textContent=`Call: ${pc.connectionState}`; };
       state.peerConnection=pc;
       return pc;
     }
@@ -333,7 +321,7 @@
 
     async function startCall(){
       if(!state.threadId){ setStatus("Avval thread tanlang.","error"); return; }
-      if(!state.videoConfig.ready){ setStatus("Video call hozir tayyor emas.","error"); return; }
+      if(!state.videoConfig.ready){ setStatus("Video tayyor emas.","error"); return; }
       try{
         const pc=await ensurePeerConnection();
         const offer=await pc.createOffer();
@@ -359,16 +347,14 @@
     document.getElementById("uploadBtn").addEventListener("click",()=>document.getElementById("fileInput").click());
     document.getElementById("clearImageBtn").addEventListener("click",clearSelectedImage);
     document.getElementById("sendBtn").addEventListener("click",sendMessage);
-    document.getElementById("logoutBtn").addEventListener("click",async()=>{ await fetch("/api/auth/logout",{ method:"POST" }); location.href="/"; });
-    document.getElementById("shareBtn").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(location.href); setStatus("Thread havolasi nusxalandi.","success"); }catch(_){ setStatus("Havolani nusxalab bo'lmadi.","error"); } });
+    document.getElementById("shareBtn").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(location.href); setStatus("Havola nusxalandi.","success"); }catch(_){ setStatus("Nusxalab bo'lmadi.","error"); } });
     document.getElementById("startCallBtn").addEventListener("click",startCall);
     document.getElementById("endCallBtn").addEventListener("click",()=>endCall(true));
     document.getElementById("startCallBtnSide").addEventListener("click",startCall);
     document.getElementById("endCallBtnSide").addEventListener("click",()=>endCall(true));
-    themeToggle.addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="night"?"day":"night"));
     messageInput.addEventListener("input",(event)=>{ state.draftMessage=event.currentTarget.value; });
-    bindFileInput(document.getElementById("cameraInput")); bindFileInput(document.getElementById("fileInput"));
-    applyTheme(getTheme());
+    bindFileInput(document.getElementById("cameraInput"));
+    bindFileInput(document.getElementById("fileInput"));
 
     Promise.resolve()
       .then(ensureAuth)

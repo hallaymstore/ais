@@ -8,147 +8,83 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg:#f7f2ea; --surface:rgba(255,255,255,.84); --surface-2:rgba(16,32,51,.05); --line:rgba(16,32,51,.08);
-      --ink:#102033; --muted:#5f7288; --accent:#2a8a7d; --gold:#c88639; --success:#176853; --danger:#b34a3b; --shadow:0 28px 70px rgba(16,32,51,.12);
-    }
-    :root[data-theme="night"] {
-      --bg:#09111d; --surface:rgba(12,19,32,.84); --surface-2:rgba(255,255,255,.06); --line:rgba(255,255,255,.08);
-      --ink:#eef6ff; --muted:#93a6bd; --accent:#62dfc6; --gold:#efb86b; --success:#7ce7bc; --danger:#ff8c79; --shadow:0 28px 80px rgba(0,0,0,.45);
-    }
-    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:
-      radial-gradient(circle at top left, rgba(42,138,125,.16), transparent 22%),
-      radial-gradient(circle at top right, rgba(200,134,57,.14), transparent 18%),
-      linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 90%,white 10%) 100%)}
-    a{color:inherit;text-decoration:none} button,input,select{font:inherit}
-    .shell{width:min(1280px,calc(100vw - 28px));margin:0 auto}
-    .topbar{position:sticky;top:0;z-index:20;backdrop-filter:blur(18px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
-    .nav,.nav-links,.nav-actions,.hero-actions,.filters,.grid,.meta,.chips,.card-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-    .nav{justify-content:space-between;padding:14px 0}.brand{display:flex;gap:14px;align-items:center;font-weight:800}.mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#102033,#2a8a7d);box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
-    .nav-links a{color:var(--muted);font-weight:700}
-    .button,button{border:0;border-radius:999px;padding:13px 18px;cursor:pointer;font-weight:800}
-    .button.primary,button.primary{color:#fff;background:linear-gradient(135deg,#102033,#2a8a7d);box-shadow:0 16px 34px rgba(16,32,51,.22)}
-    .button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 86%,transparent);border:1px solid var(--line)}
-    h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
-    .hero{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;padding:28px 0 22px}
-    .hero-main,.hero-side,.panel,.card,.stat{border:1px solid var(--line);border-radius:30px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)}
-    .hero-main{padding:28px;color:#eef7ff;background:linear-gradient(135deg,#102033 0%,#174555 50%,#2a8a7d 100%)} .hero-main p{color:rgba(238,247,255,.82);line-height:1.75}
-    .hero-side,.panel,.card,.stat{padding:22px}.hero-side p,.card p,.helper,.meta{color:var(--muted);line-height:1.72}
-    .pill,.chip,.badge{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}
-    .pill{padding:9px 14px;font-size:13px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16)}
-    .hero-side .pill,.panel .pill{background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
-    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px}.stat strong{display:block;font-size:22px;margin-top:8px}
-    .layout{display:grid;grid-template-columns:280px 1fr;gap:18px;padding-bottom:32px;align-items:start}
-    .filters{display:grid;gap:14px}.field{display:grid;gap:8px;font-weight:700}
-    input,select{width:100%;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 92%,transparent);color:var(--ink);padding:14px 15px;outline:none}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
-    .card{display:grid;gap:14px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.head{display:flex;gap:14px;align-items:center}
-    .avatar{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,#102033,#2a8a7d)}
-    .chip{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
-    .badge{padding:8px 12px;font-size:13px;background:color-mix(in srgb,var(--gold) 16%,transparent);color:color-mix(in srgb,var(--gold) 76%,var(--ink))}
-    .empty{padding:24px;border-radius:24px;border:1px dashed var(--line);background:color-mix(in srgb,var(--surface) 72%,transparent);color:var(--muted);line-height:1.75}
-    .success{color:var(--success)} .error{color:var(--danger)}
-    @media (max-width:1080px){.hero,.layout{grid-template-columns:1fr}.stats,.grid{grid-template-columns:1fr 1fr}}
-    @media (max-width:720px){.nav{flex-direction:column;align-items:flex-start}.stats,.grid{grid-template-columns:1fr}}
+    :root{--bg:#f7f2ea;--surface:rgba(255,255,255,.9);--surface-2:rgba(16,32,51,.05);--line:rgba(16,32,51,.08);--ink:#102033;--muted:#5f7288;--accent:#2a8a7d;--accent-2:#102033;--gold:#c88639;--shadow:0 24px 60px rgba(16,32,51,.12)}
+    :root[data-theme="night"]{--bg:#09111d;--surface:rgba(12,19,32,.9);--surface-2:rgba(255,255,255,.06);--line:rgba(255,255,255,.08);--ink:#eef6ff;--muted:#93a6bd;--accent:#62dfc6;--accent-2:#dffdf6;--gold:#efb86b;--shadow:0 24px 70px rgba(0,0,0,.45)}
+    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:radial-gradient(circle at top left,color-mix(in srgb,var(--accent) 16%,transparent),transparent 22%),linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 92%,white 8%) 100%)}
+    a{color:inherit;text-decoration:none} button,input,select{font:inherit}.shell{width:min(1280px,calc(100vw - 28px));margin:0 auto}
+    .topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)} .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}.brand{display:flex;align-items:center;gap:14px;font-weight:800}.brand-mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent));box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
+    .panel,.card{border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)} h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
+    .page{display:grid;gap:18px;padding:24px 0 32px}.page-head{padding:22px;display:grid;gap:18px}.head-row,.head-actions,.stats,.filters,.card-actions,.chips{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .head-row{justify-content:space-between;align-items:flex-start}.page-head p,.helper,.card p{margin:0;color:var(--muted);line-height:1.65}.pill,.chip,.badge{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}.pill{padding:8px 12px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .chip{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .badge{padding:8px 12px;font-size:13px;background:color-mix(in srgb,var(--gold) 16%,transparent);color:color-mix(in srgb,var(--gold) 76%,var(--ink))}
+    .button,button{border:0;border-radius:999px;padding:12px 16px;cursor:pointer;font-weight:800}.button.primary,button.primary{color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent))}.button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line)}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.stat{padding:16px;border-radius:22px;background:var(--surface-2);border:1px solid var(--line)} .stat strong{display:block;font-size:20px;margin-top:8px}
+    .layout{display:grid;grid-template-columns:280px 1fr;gap:18px;align-items:start}.panel{padding:18px}.field{display:grid;gap:8px;font-weight:700}
+    input,select{width:100%;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 94%,transparent);color:var(--ink);padding:14px 15px;outline:none}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{padding:18px;display:grid;gap:14px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.head{display:flex;gap:14px;align-items:center}.avatar{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,var(--accent-2),var(--accent))}
+    .empty{padding:22px;border-radius:24px;border:1px dashed var(--line);background:color-mix(in srgb,var(--surface) 72%,transparent);color:var(--muted)} .success{color:#176853}.error{color:#b34a3b}
+    @media (max-width:1080px){.layout{grid-template-columns:1fr}.grid,.stats{grid-template-columns:1fr 1fr}}
+    @media (max-width:720px){.head-row{flex-direction:column}.grid,.stats{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <div class="topbar">
     <div class="shell nav">
-      <a class="brand" href="/recommendations.html"><span class="mark">AS</span><span data-site-brand-name>Ai's Shelf</span></a>
-      <div class="nav-links">
-        <a href="/recommendations.html">Marketplace</a>
-        <a href="/search.html">Qidiruv</a>
-        <a href="/chats.html">Buyurtmalar</a>
-      </div>
-      <div class="nav-actions">
-        <button class="button secondary" id="themeToggle" type="button">Tun mavzu</button>
-        <a class="button secondary" href="/profile.html">Profil</a>
-        <button class="button primary" id="logoutBtn" type="button">Chiqish</button>
-      </div>
+      <a class="brand" href="/"><span class="brand-mark"></span><span data-site-brand-name>Ai's Shelf</span></a>
     </div>
   </div>
-
-  <main class="shell">
-    <section class="hero">
-      <article class="hero-main">
-        <span class="pill">Catalog search</span>
-        <h1 style="font-size:clamp(2.6rem,5vw,4.5rem);margin-top:14px;">Provider katalogi.</h1>
-        <p>Katalog ichida ism, xizmat, lokatsiya va yo‘nalish bo‘yicha providerlarni toping. So‘rov yuborsangiz darhol alohida thread ochiladi.</p>
-        <div class="stats">
-          <div class="stat"><small>Natija</small><strong id="resultStat">0</strong></div>
-          <div class="stat"><small>Lokatsiya</small><strong id="locationStat">Noma'lum</strong></div>
-          <div class="stat"><small>Video</small><strong id="videoStat">Off</strong></div>
+  <main class="shell page">
+    <section class="panel page-head">
+      <div class="head-row">
+        <div>
+          <span class="pill">Qidiruv</span>
+          <h1 style="margin-top:10px;font-size:clamp(2rem,4vw,3rem);">Provider katalogi</h1>
+          <p id="statusText">Tayyor.</p>
         </div>
-      </article>
-      <article class="hero-side">
-        <span class="pill">Quick actions</span>
-        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);margin-top:10px;">Qidiruvni boshqaring</h2>
-        <p>Filterlarni o‘zgartiring, joylashuvni yangilang va kerakli providerga bir bosishda buyurtma yuboring.</p>
-        <div class="hero-actions">
-          <a class="button primary" href="/recommendations.html">Marketplace</a>
-          <a class="button secondary" href="/chats.html">Threadlar</a>
-          <button class="button secondary" id="captureLocationBtn" type="button">Joylashuvni olish</button>
+        <div class="head-actions">
+          <a class="button secondary" href="/recommendations.html">Xizmatlar</a>
+          <a class="button secondary" href="/chats.html">Chatlar</a>
+          <button class="button primary" id="captureLocationBtn" type="button">Joylashuv</button>
         </div>
-        <div class="helper" id="statusText">Katalog tayyor.</div>
-      </article>
+      </div>
+      <div class="stats">
+        <div class="stat"><small>Natija</small><strong id="resultStat">0</strong></div>
+        <div class="stat"><small>Lokatsiya</small><strong id="locationStat">Noma'lum</strong></div>
+        <div class="stat"><small>Video</small><strong id="videoStat">Off</strong></div>
+      </div>
     </section>
 
     <section class="layout">
       <aside class="panel">
-        <span class="pill">Filter</span>
-        <div class="filters" style="margin-top:14px;">
+        <div class="filters">
           <label class="field">Qidiruv<input id="queryInput" type="text" placeholder="Ism, xizmat yoki lokatsiya..." /></label>
           <label class="field">Yo'nalish<select id="typeFilter"></select></label>
           <label class="field">Radius<select id="radiusFilter"><option value="25">25 km</option><option value="50">50 km</option><option value="100" selected>100 km</option><option value="200">200 km</option></select></label>
-          <div class="filter-actions">
-            <button class="button primary" id="reloadBtn" type="button">Yangilash</button>
-            <a class="button secondary" id="shareLink" href="/search.html">Ulashish</a>
-          </div>
+          <button class="button primary" id="reloadBtn" type="button">Yangilash</button>
         </div>
       </aside>
 
       <div>
-        <div class="section-head" style="margin-bottom:16px;">
-          <div>
-            <span class="pill" style="background:var(--surface-2);border:1px solid var(--line);color:var(--muted)">Live results</span>
-            <h2 style="margin-top:12px;font-size:clamp(2rem,3vw,3rem);">Topilgan providerlar</h2>
-          </div>
-          <p class="helper" id="summaryText">Natijalar yuklanmoqda...</p>
-        </div>
         <div class="grid" id="resultGrid"></div>
-        <div class="empty" id="emptyState" style="display:none;">Hozircha bu filterga mos provider topilmadi.</div>
+        <div class="empty" id="emptyState" style="display:none;">Mos profil topilmadi.</div>
       </div>
     </section>
   </main>
 
   <script>
-    const THEME_KEY = "aishelf-theme";
     const params = new URLSearchParams(location.search);
-    const state = {
-      user: null,
-      profile: null,
-      config: null,
-      providers: [],
-      query: params.get("q") || "",
-      type: params.get("type") || "all",
-    };
-
-    const themeToggle = document.getElementById("themeToggle");
+    const state = { user:null, profile:null, config:null, providers:[], query:params.get("q")||"", type:params.get("type")||"all" };
     const resultGrid = document.getElementById("resultGrid");
     const emptyState = document.getElementById("emptyState");
     const statusText = document.getElementById("statusText");
 
     function escapeHtml(value){return String(value||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
     function initials(value){return String(value||"AS").split(/\s+/).filter(Boolean).slice(0,2).map((item)=>item[0]).join("").toUpperCase()}
-    function getTheme(){const saved=localStorage.getItem(THEME_KEY); if(saved==="day"||saved==="night") return saved; return matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day"}
-    function applyTheme(theme){document.documentElement.dataset.theme=theme; localStorage.setItem(THEME_KEY,theme); themeToggle.textContent=theme==="night"?"Kunduz mavzu":"Tun mavzu"}
-    function setStatus(text,tone=""){statusText.textContent=text; statusText.className=tone||"helper"}
+    function setStatus(text,tone=""){statusText.textContent=text; statusText.className=tone||""}
 
     async function ensureAuth(){
       const response = await fetch("/api/auth/me");
       const data = await response.json();
-      if(!data.user){location.href=`/login.html?next=${encodeURIComponent("/search.html"+location.search)}`; throw new Error("Unauthenticated")}
+      if(!data.user){ location.href=`/login.html?next=${encodeURIComponent("/search.html"+location.search)}`; throw new Error("Unauthenticated"); }
       state.user = data.user;
     }
 
@@ -158,16 +94,16 @@
       state.config = await configRes.json();
       state.profile = await profileRes.json();
       const user = state.profile.user || {};
-      document.getElementById("locationStat").textContent = Number.isFinite(user.latitude) && Number.isFinite(user.longitude)
-        ? (user.locationLabel || `${Number(user.latitude).toFixed(2)}, ${Number(user.longitude).toFixed(2)}`)
-        : "Joy kerak";
+      document.getElementById("locationStat").textContent =
+        Number.isFinite(user.latitude) && Number.isFinite(user.longitude)
+          ? (user.locationLabel || `${Number(user.latitude).toFixed(2)}, ${Number(user.longitude).toFixed(2)}`)
+          : "Joy kerak";
       document.getElementById("videoStat").textContent = state.config.videoReady ? "On" : "Off";
       document.getElementById("queryInput").value = state.query;
       const typeFilter = document.getElementById("typeFilter");
       typeFilter.innerHTML = `<option value="all">Barchasi</option>${(state.config.providerTypes||[]).map((item)=>`<option value="${item.id}">${item.name}</option>`).join("")}`;
       typeFilter.value = (state.config.providerTypes||[]).some((item)=>item.id===state.type) ? state.type : "all";
       document.getElementById("radiusFilter").value = params.get("radiusKm") || "100";
-      updateShareLink();
     }
 
     async function loadProviders(){
@@ -192,7 +128,6 @@
     function renderProviders(){
       const items = filteredProviders();
       document.getElementById("resultStat").textContent = String(items.length);
-      document.getElementById("summaryText").textContent = `${items.length} ta mos profil topildi.`;
       emptyState.style.display = items.length ? "none" : "block";
       resultGrid.innerHTML = items.map((provider)=>`
         <article class="card">
@@ -201,40 +136,38 @@
               <div class="avatar">${escapeHtml(initials(provider.name))}</div>
               <div>
                 <div class="chip">${escapeHtml(provider.providerTypeLabel || "Mutaxassis")}</div>
-                <h3 style="margin-top:10px;font-size:1.3rem;">${escapeHtml(provider.name)}</h3>
+                <h3 style="margin-top:8px;font-size:1.2rem;">${escapeHtml(provider.name)}</h3>
               </div>
             </div>
             <div class="badge">${escapeHtml(provider.consultationFee || "Narx so'rovda")}</div>
           </div>
-          <p>${escapeHtml(provider.providerIntro || provider.bio || provider.providerServices || "Profil tavsifi yo'q.")}</p>
+          <p>${escapeHtml(provider.providerIntro || provider.bio || provider.providerServices || "Tavsif yo'q.")}</p>
           <div class="chips">
             <span class="chip">${provider.distanceKm != null ? `${provider.distanceKm} km` : "Masofa noma'lum"}</span>
             <span class="chip">${escapeHtml(provider.locationLabel || provider.company || "Lokatsiya yo'q")}</span>
-            <span class="chip">${provider.videoEnabled ? "Video bor" : "Faqat chat"}</span>
+            <span class="chip">${provider.videoEnabled ? "Video" : "Chat"}</span>
           </div>
           <div class="card-actions">
-            <button class="button primary" data-request="${provider.id}" type="button">So'rov yuborish</button>
-            <a class="button secondary" href="/recommendations.html?type=${encodeURIComponent(provider.providerType || "")}">Vitrina</a>
+            <button class="button primary" data-request="${provider.id}" type="button">So'rov</button>
+            <a class="button secondary" href="/recommendations.html?type=${encodeURIComponent(provider.providerType || "")}">Bo'lim</a>
           </div>
         </article>
       `).join("");
-      resultGrid.querySelectorAll("[data-request]").forEach((button)=>{
-        button.addEventListener("click", ()=>requestProvider(button.dataset.request));
-      });
+      resultGrid.querySelectorAll("[data-request]").forEach((button)=>button.addEventListener("click",()=>requestProvider(button.dataset.request)));
     }
 
     async function requestProvider(providerId){
       try{
-        setStatus("Providerga so'rov yuborilmoqda...");
+        setStatus("So'rov yuborilmoqda...");
         const response = await fetch("/api/provider-threads/request", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ providerId, sourceAssistantId: state.type !== "all" ? `${state.type}-ai` : "" }),
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify({ providerId, sourceAssistantId: state.type !== "all" ? `${state.type}-ai` : "" }),
         });
         const data = await response.json();
         if(!response.ok) throw new Error(data.error || "So'rov yuborilmadi.");
         location.href = `/chat.html?threadId=${encodeURIComponent(data.threadId)}`;
-      }catch(error){ setStatus(error.message, "error") }
+      }catch(error){ setStatus(error.message,"error"); }
     }
 
     async function saveLocation(latitude, longitude){
@@ -247,7 +180,7 @@
         providerLicense:user.providerLicense||"", consultationFee:user.consultationFee||"",
         availableForRecommendations:user.availableForRecommendations !== false, videoEnabled:Boolean(user.videoEnabled),
       };
-      const response = await fetch("/api/profile", { method:"PATCH", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(payload) });
+      const response = await fetch("/api/profile",{ method:"PATCH", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(payload) });
       const data = await response.json();
       if(!response.ok) throw new Error(data.error || "Joylashuv saqlanmadi.");
       state.profile.user = data.user;
@@ -256,9 +189,7 @@
 
     async function requestBrowserLocation(){
       if(!navigator.geolocation) throw new Error("Brauzer geolokatsiyani qo'llamaydi.");
-      return new Promise((resolve,reject)=>{
-        navigator.geolocation.getCurrentPosition((position)=>resolve(position.coords),(error)=>reject(error),{ enableHighAccuracy:true, timeout:15000 });
-      });
+      return new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition((position)=>resolve(position.coords),(error)=>reject(error),{ enableHighAccuracy:true, timeout:15000 }));
     }
 
     function syncUrl(){
@@ -267,35 +198,23 @@
       if(state.query.trim()) next.set("q", state.query.trim());
       next.set("radiusKm", document.getElementById("radiusFilter").value);
       history.replaceState({}, "", `/search.html?${next.toString()}`);
-      updateShareLink();
     }
 
-    function updateShareLink(){
-      const next = new URLSearchParams();
-      if(state.type !== "all") next.set("type", state.type);
-      if(state.query.trim()) next.set("q", state.query.trim());
-      next.set("radiusKm", document.getElementById("radiusFilter").value);
-      document.getElementById("shareLink").href = `/search.html?${next.toString()}`;
-    }
-
-    document.getElementById("queryInput").addEventListener("input",(event)=>{ state.query=event.currentTarget.value; renderProviders(); syncUrl(); });
-    document.getElementById("typeFilter").addEventListener("change",(event)=>{ state.type=event.currentTarget.value; loadProviders().catch((error)=>setStatus(error.message,"error")); });
-    document.getElementById("radiusFilter").addEventListener("change",()=>{ loadProviders().catch((error)=>setStatus(error.message,"error")); });
-    document.getElementById("reloadBtn").addEventListener("click",()=>{ loadProviders().then(()=>setStatus("Katalog yangilandi.","success")).catch((error)=>setStatus(error.message,"error")); });
-    document.getElementById("captureLocationBtn").addEventListener("click", async ()=>{
+    document.getElementById("queryInput").addEventListener("input",(event)=>{ state.query = event.currentTarget.value; renderProviders(); syncUrl(); });
+    document.getElementById("typeFilter").addEventListener("change",(event)=>{ state.type = event.currentTarget.value; loadProviders().catch((error)=>setStatus(error.message,"error")); });
+    document.getElementById("radiusFilter").addEventListener("change",()=>loadProviders().catch((error)=>setStatus(error.message,"error")));
+    document.getElementById("reloadBtn").addEventListener("click",()=>loadProviders().then(()=>setStatus("Yangilandi.","success")).catch((error)=>setStatus(error.message,"error")));
+    document.getElementById("captureLocationBtn").addEventListener("click",async()=>{
       try{
         setStatus("Joylashuv olinmoqda...");
         const coords = await requestBrowserLocation();
         await saveLocation(coords.latitude, coords.longitude);
         await loadProviders();
-        setStatus("Joylashuv saqlandi va qidiruv yangilandi.","success");
-      }catch(error){ setStatus(error.message,"error") }
+        setStatus("Joylashuv yangilandi.","success");
+      }catch(error){ setStatus(error.message,"error"); }
     });
-    document.getElementById("logoutBtn").addEventListener("click", async ()=>{ await fetch("/api/auth/logout",{ method:"POST" }); location.href="/"; });
-    themeToggle.addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="night" ? "day" : "night"));
 
-    applyTheme(getTheme());
-    Promise.resolve().then(loadBootstrap).then(loadProviders).catch((error)=>{ if(error.message!=="Unauthenticated") setStatus(error.message,"error") });
+    Promise.resolve().then(loadBootstrap).then(loadProviders).catch((error)=>{ if(error.message!=="Unauthenticated") setStatus(error.message,"error"); });
   </script>
 </body>
 </html>

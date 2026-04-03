@@ -2656,26 +2656,43 @@ function renderSiteKitScript() {
     return current === target;
   };
 
+  const isActiveLink = (item) => {
+    if (isActivePath(item.href)) return true;
+    if (!Array.isArray(item.match)) return false;
+    return item.match.some((entry) => isActivePath(entry));
+  };
+
   const buildGlobalLinks = () => {
     const links = [
-      { href: "/", label: "Bosh sahifa", public: true },
-      { href: "/dashboard.html", label: "Dashboard", auth: true },
-      { href: "/recommendations.html", label: "Marketplace", auth: true },
+      { href: "/", label: "Bosh sahifa", public: true, guestOnly: true },
+      {
+        href: "/dashboard.html",
+        label: "AIlar",
+        auth: true,
+        match: ["/dashboard.html", "/agroai.html", "/doctorai.html", "/lawyerai.html", "/privateai.html"],
+      },
+      {
+        href: "/recommendations.html",
+        label: "Xizmatlar",
+        auth: true,
+        match: ["/recommendations.html", "/doctor.html", "/lawyer.html", "/veterinar.html"],
+      },
       { href: "/search.html", label: "Qidiruv", auth: true },
-      { href: "/chats.html", label: "Chatlar", auth: true },
-      { href: "/doctor.html", label: "Shifokorlar", auth: true },
-      { href: "/lawyer.html", label: "Advokatlar", auth: true },
-      { href: "/veterinar.html", label: "Veterinar", auth: true },
+      { href: "/chats.html", label: "Chatlar", auth: true, match: ["/chats.html", "/chat.html"] },
     ];
 
     return links
-      .filter((item) => item.public || (item.auth && state.user))
+      .filter((item) => {
+        if (item.guestOnly) return !state.user;
+        if (item.public) return true;
+        return item.auth && state.user;
+      })
       .map(
         (item) =>
           '<a href="' +
           item.href +
           '" data-active="' +
-          (isActivePath(item.href) ? "true" : "false") +
+          (isActiveLink(item) ? "true" : "false") +
           '">' +
           item.label +
           "</a>"
@@ -2735,6 +2752,30 @@ function renderSiteKitScript() {
 
     bindThemeButton(themeButton);
 
+    const existingAdmin = actionsWrap.querySelector('[data-ais-link="admin"], #adminLink, [href="/admin.html"]');
+    if (existingAdmin) {
+      existingAdmin.textContent = "Admin";
+      existingAdmin.dataset.aisLink = "admin";
+    }
+
+    const existingProfile = actionsWrap.querySelector('[data-ais-link="profile"], [href="/profile.html"]');
+    if (existingProfile) {
+      existingProfile.textContent = "Profil";
+      existingProfile.dataset.aisLink = "profile";
+    }
+
+    const existingLogin = actionsWrap.querySelector('[data-ais-link="login"], [href="/login.html"]');
+    if (existingLogin) {
+      existingLogin.textContent = "Kirish";
+      existingLogin.dataset.aisLink = "login";
+    }
+
+    const existingRegister = actionsWrap.querySelector('[data-ais-link="register"], [href="/register.html"]');
+    if (existingRegister) {
+      existingRegister.textContent = "Ro'yxatdan o'tish";
+      existingRegister.dataset.aisLink = "register";
+    }
+
     if (state.user) {
       if (
         state.user.role === "admin" &&
@@ -2753,7 +2794,7 @@ function renderSiteKitScript() {
         profileLink.href = "/profile.html";
         profileLink.className = "button secondary";
         profileLink.dataset.aisLink = "profile";
-        profileLink.textContent = state.user.name || "Profil";
+        profileLink.textContent = "Profil";
         actionsWrap.appendChild(profileLink);
       }
 
@@ -2908,8 +2949,8 @@ function renderSiteKitScript() {
       "body.ais-has-generated-topbar{padding-top:88px !important;}",
       ".topbar .nav,#aisGeneratedTopbar .nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 0;}",
       ".topbar .nav-links,#aisGeneratedTopbar .nav-links,.topbar .nav-actions,#aisGeneratedTopbar .nav-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}",
-      ".topbar .nav-links a,#aisGeneratedTopbar .nav-links a{padding:10px 14px;border-radius:999px;color:var(--muted);font-weight:700;background:color-mix(in srgb,var(--surface, rgba(255,255,255,.82)) 84%, transparent);border:1px solid var(--line);}",
-      ".topbar .nav-links a[data-active='true'],#aisGeneratedTopbar .nav-links a[data-active='true']{color:var(--ink);background:color-mix(in srgb," + base.primaryColor + " 18%, transparent);}",
+      ".topbar .nav-links a,#aisGeneratedTopbar .nav-links a{padding:8px 6px;border-radius:0;color:var(--muted);font-weight:700;background:transparent;border:0;border-bottom:2px solid transparent;}",
+      ".topbar .nav-links a[data-active='true'],#aisGeneratedTopbar .nav-links a[data-active='true']{color:var(--ink);border-bottom-color:" + base.primaryColor + ";}",
       ".topbar .brand,#aisGeneratedTopbar .brand{display:flex;gap:14px;align-items:center;font-weight:800;letter-spacing:-.03em;}",
       ".topbar .nav-actions .button.secondary,#aisGeneratedTopbar .nav-actions .button.secondary{background:color-mix(in srgb,var(--surface, rgba(255,255,255,.82)) 88%, transparent);border:1px solid var(--line);}",
       "@media (max-width:920px){.topbar .nav,#aisGeneratedTopbar .nav{align-items:flex-start;}}",

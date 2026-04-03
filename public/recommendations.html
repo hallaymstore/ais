@@ -3,384 +3,85 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Marketplace | Ai's Shelf</title>
+  <title>Xizmatlar | Ai's Shelf</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg: #f7f2ea;
-      --surface: rgba(255,255,255,.84);
-      --surface-2: rgba(16,32,51,.05);
-      --line: rgba(16,32,51,.08);
-      --ink: #102033;
-      --muted: #5f7288;
-      --accent: #2a8a7d;
-      --accent-deep: #102033;
-      --gold: #c88639;
-      --success: #176853;
-      --danger: #b34a3b;
-      --shadow: 0 28px 70px rgba(16,32,51,.12);
-    }
-
-    :root[data-theme="night"] {
-      --bg: #09111d;
-      --surface: rgba(12,19,32,.84);
-      --surface-2: rgba(255,255,255,.06);
-      --line: rgba(255,255,255,.08);
-      --ink: #eef6ff;
-      --muted: #93a6bd;
-      --accent: #62dfc6;
-      --accent-deep: #dffdf6;
-      --gold: #efb86b;
-      --success: #7ce7bc;
-      --danger: #ff8c79;
-      --shadow: 0 28px 80px rgba(0,0,0,.45);
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Manrope", sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(42,138,125,.16), transparent 22%),
-        radial-gradient(circle at top right, rgba(200,134,57,.14), transparent 18%),
-        linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 90%, white 10%) 100%);
-    }
-
-    a { color: inherit; text-decoration: none; }
-    button, input, select { font: inherit; }
-    .shell { width: min(1300px, calc(100vw - 28px)); margin: 0 auto; }
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(18px);
-      background: color-mix(in srgb, var(--bg) 82%, transparent);
-      border-bottom: 1px solid var(--line);
-    }
-    .nav, .nav-links, .nav-actions, .hero-actions, .card-actions, .filter-actions, .meta, .chips {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .nav {
-      justify-content: space-between;
-      padding: 14px 0;
-    }
-    .brand {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      font-weight: 800;
-      letter-spacing: -.03em;
-    }
-    .mark {
-      width: 44px;
-      height: 44px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
-      color: #fff;
-      background: linear-gradient(135deg, #102033, #2a8a7d);
-      box-shadow: var(--shadow);
-      font-family: "Space Grotesk", sans-serif;
-    }
-    .nav-links a { color: var(--muted); font-weight: 700; }
-    .button, button {
-      border: 0;
-      border-radius: 999px;
-      padding: 13px 18px;
-      cursor: pointer;
-      font-weight: 800;
-    }
-    .button.primary, button.primary {
-      color: #fff;
-      background: linear-gradient(135deg, #102033, #2a8a7d);
-      box-shadow: 0 16px 34px rgba(16,32,51,.22);
-    }
-    .button.secondary, button.secondary {
-      color: var(--ink);
-      background: color-mix(in srgb, var(--surface) 86%, transparent);
-      border: 1px solid var(--line);
-    }
-    h1, h2, h3 {
-      margin: 0;
-      font-family: "Space Grotesk", sans-serif;
-      letter-spacing: -.04em;
-    }
-    .hero {
-      display: grid;
-      grid-template-columns: 1.08fr .92fr;
-      gap: 18px;
-      padding: 28px 0 22px;
-    }
-    .hero-main, .hero-side, .panel, .category-card, .provider-card, .thread-card, .stat {
-      border: 1px solid var(--line);
-      border-radius: 30px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    .hero-main {
-      padding: 28px;
-      color: #eef7ff;
-      background: linear-gradient(135deg, #102033 0%, #174555 50%, #2a8a7d 100%);
-    }
-    .hero-main p { color: rgba(238,247,255,.82); line-height: 1.75; }
-    .hero-side, .panel, .category-card, .provider-card, .thread-card, .stat {
-      background: var(--surface);
-      backdrop-filter: blur(18px);
-    }
-    .hero-side, .panel { padding: 22px; }
-    .hero-side p, .provider-card p, .thread-card p, .helper, .meta { color: var(--muted); line-height: 1.72; }
-    .pill, .chip, .badge, .status {
-      display: inline-flex;
-      width: fit-content;
-      border-radius: 999px;
-      font-weight: 800;
-    }
-    .pill {
-      padding: 9px 14px;
-      font-size: 13px;
-      background: rgba(255,255,255,.1);
-      border: 1px solid rgba(255,255,255,.16);
-    }
-    .hero-side .pill, .panel .pill {
-      background: var(--surface-2);
-      border: 1px solid var(--line);
-      color: var(--muted);
-    }
-    .hero-stats, .categories, .market {
-      display: grid;
-      gap: 16px;
-    }
-    .hero-stats { grid-template-columns: repeat(4, minmax(0,1fr)); margin-top: 22px; }
-    .stat { padding: 18px; }
-    .stat strong {
-      display: block;
-      font-size: 22px;
-      margin-top: 8px;
-    }
-    section { padding: 16px 0 28px; }
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      align-items: end;
-      margin-bottom: 18px;
-    }
-    .section-head p {
-      margin: 8px 0 0;
-      max-width: 56ch;
-      color: var(--muted);
-      line-height: 1.75;
-    }
-    .categories { grid-template-columns: repeat(4, minmax(0,1fr)); }
-    .category-card {
-      padding: 20px;
-      cursor: pointer;
-      transition: transform .18s ease, border-color .18s ease;
-    }
-    .category-card.active {
-      transform: translateY(-2px);
-      border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
-    }
-    .category-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 14px;
-      color: #fff;
-      font-weight: 800;
-      background: linear-gradient(135deg, #102033, #2a8a7d);
-    }
-    .market { grid-template-columns: 280px 1fr 320px; align-items: start; }
-    .field { display: grid; gap: 8px; font-weight: 700; }
-    input, select {
-      width: 100%;
-      border-radius: 18px;
-      border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--surface) 92%, transparent);
-      color: var(--ink);
-      padding: 14px 15px;
-      outline: none;
-    }
-    .provider-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
-    .provider-card, .thread-card { padding: 20px; }
-    .provider-top, .thread-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
-    .provider-head { display: flex; gap: 14px; align-items: center; }
-    .avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      color: #fff;
-      font-weight: 800;
-      background: linear-gradient(135deg, #102033, #2a8a7d);
-    }
-    .chip {
-      padding: 7px 10px;
-      font-size: 12px;
-      background: var(--surface-2);
-      border: 1px solid var(--line);
-      color: var(--muted);
-    }
-    .badge {
-      padding: 8px 12px;
-      font-size: 13px;
-      background: color-mix(in srgb, var(--gold) 16%, transparent);
-      color: color-mix(in srgb, var(--gold) 76%, var(--ink));
-    }
-    .status {
-      padding: 7px 10px;
-      font-size: 12px;
-      background: var(--surface-2);
-      border: 1px solid var(--line);
-      color: var(--muted);
-    }
-    .status.requested {
-      background: color-mix(in srgb, var(--gold) 16%, transparent);
-      color: color-mix(in srgb, var(--gold) 76%, var(--ink));
-    }
-    .status.active {
-      background: color-mix(in srgb, var(--accent) 16%, transparent);
-      color: color-mix(in srgb, var(--accent) 76%, var(--ink));
-    }
-    .empty {
-      padding: 24px;
-      border-radius: 24px;
-      border: 1px dashed var(--line);
-      background: color-mix(in srgb, var(--surface) 72%, transparent);
-      color: var(--muted);
-      line-height: 1.75;
-    }
-    .success { color: var(--success); }
-    .error { color: var(--danger); }
-
-    @media (max-width: 1120px) {
-      .hero, .market { grid-template-columns: 1fr; }
-      .hero-stats, .categories, .provider-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-    }
-
-    @media (max-width: 720px) {
-      .nav { flex-direction: column; align-items: flex-start; }
-      .hero-stats, .categories, .provider-grid { grid-template-columns: 1fr; }
-    }
+    :root{--bg:#f7f2ea;--surface:rgba(255,255,255,.9);--surface-2:rgba(16,32,51,.05);--line:rgba(16,32,51,.08);--ink:#102033;--muted:#5f7288;--accent:#2a8a7d;--accent-2:#102033;--gold:#c88639;--shadow:0 24px 60px rgba(16,32,51,.12)}
+    :root[data-theme="night"]{--bg:#09111d;--surface:rgba(12,19,32,.9);--surface-2:rgba(255,255,255,.06);--line:rgba(255,255,255,.08);--ink:#eef6ff;--muted:#93a6bd;--accent:#62dfc6;--accent-2:#dffdf6;--gold:#efb86b;--shadow:0 24px 70px rgba(0,0,0,.45)}
+    *{box-sizing:border-box} body{margin:0;font-family:"Manrope",sans-serif;color:var(--ink);background:radial-gradient(circle at top left,color-mix(in srgb,var(--accent) 18%,transparent),transparent 22%),linear-gradient(180deg,var(--bg) 0%,color-mix(in srgb,var(--bg) 92%,white 8%) 100%)}
+    a{color:inherit;text-decoration:none} button,input,select{font:inherit}.shell{width:min(1280px,calc(100vw - 28px));margin:0 auto}
+    .topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)} .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}.brand{display:flex;align-items:center;gap:14px;font-weight:800}.brand-mark{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent));box-shadow:var(--shadow);font-family:"Space Grotesk",sans-serif}
+    .panel,.card,.category{border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);background:var(--surface);backdrop-filter:blur(18px)} h1,h2,h3{margin:0;font-family:"Space Grotesk",sans-serif;letter-spacing:-.04em}
+    .page{display:grid;gap:18px;padding:24px 0 32px}.page-head{padding:22px;display:grid;gap:18px}.head-row,.head-actions,.stats,.filters,.card-actions,.chips,.thread-list,.side-stack{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .head-row{justify-content:space-between;align-items:flex-start}.page-head p,.helper,.card p{margin:0;color:var(--muted);line-height:1.65}.pill,.chip,.badge{display:inline-flex;width:fit-content;border-radius:999px;font-weight:800}.pill{padding:8px 12px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .chip{padding:7px 10px;font-size:12px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)} .badge{padding:8px 12px;font-size:13px;background:color-mix(in srgb,var(--gold) 16%,transparent);color:color-mix(in srgb,var(--gold) 76%,var(--ink))}
+    .button,button{border:0;border-radius:999px;padding:12px 16px;cursor:pointer;font-weight:800}.button.primary,button.primary{color:#fff;background:linear-gradient(135deg,var(--accent-2),var(--accent))}.button.secondary,button.secondary{color:var(--ink);background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line)}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat{padding:16px;border-radius:22px;background:var(--surface-2);border:1px solid var(--line)} .stat strong{display:block;font-size:20px;margin-top:8px}
+    .category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.category{padding:18px;display:grid;gap:12px;cursor:pointer}.category.active{border-color:color-mix(in srgb,var(--accent) 52%,var(--line));transform:translateY(-1px)} .category small{color:var(--muted)}
+    .layout{display:grid;grid-template-columns:260px 1fr 300px;gap:18px;align-items:start}.panel{padding:18px}.field{display:grid;gap:8px;font-weight:700}
+    input,select{width:100%;border-radius:18px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 94%,transparent);color:var(--ink);padding:14px 15px;outline:none}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{padding:18px;display:grid;gap:14px}.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.head{display:flex;gap:14px;align-items:center}.avatar{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(135deg,var(--accent-2),var(--accent))}
+    .thread-list{display:grid;gap:12px}.thread{padding:14px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line)} .thread strong{display:block;margin-bottom:6px}
+    .empty{padding:22px;border-radius:24px;border:1px dashed var(--line);background:color-mix(in srgb,var(--surface) 72%,transparent);color:var(--muted)} .success{color:#176853}.error{color:#b34a3b}
+    @media (max-width:1120px){.layout{grid-template-columns:1fr}.category-grid,.grid,.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:720px){.head-row{flex-direction:column}.category-grid,.grid,.stats{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <div class="topbar">
     <div class="shell nav">
-      <a class="brand" href="/dashboard.html"><span class="mark">AS</span><span data-site-brand-name>Ai's Shelf</span></a>
-      <div class="nav-links">
-        <a href="/recommendations.html">Marketplace</a>
-        <a href="/search.html">Qidiruv</a>
-        <a href="/chats.html">Buyurtmalar</a>
-      </div>
-      <div class="nav-actions">
-        <button class="button secondary" id="themeToggle" type="button">Tun mavzu</button>
-        <a class="button secondary" href="/profile.html">Profil</a>
-        <button class="button primary" id="logoutBtn" type="button">Chiqish</button>
-      </div>
+      <a class="brand" href="/"><span class="brand-mark"></span><span data-site-brand-name>Ai's Shelf</span></a>
     </div>
   </div>
+  <main class="shell page">
+    <section class="panel page-head">
+      <div class="head-row">
+        <div>
+          <span class="pill">Xizmatlar</span>
+          <h1 style="margin-top:10px;font-size:clamp(2rem,4vw,3rem);">Mutaxassislar</h1>
+          <p id="statusText">Tayyor.</p>
+        </div>
+        <div class="head-actions">
+          <a class="button secondary" href="/search.html">Qidiruv</a>
+          <a class="button secondary" href="/chats.html">Chatlar</a>
+          <button class="button primary" id="captureLocationBtn" type="button">Joylashuv</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><small>Lokatsiya</small><strong id="locationStat">Noma'lum</strong></div>
+        <div class="stat"><small>Natija</small><strong id="providerStat">0</strong></div>
+        <div class="stat"><small>Chat</small><strong id="threadStat">0</strong></div>
+        <div class="stat"><small>Video</small><strong id="videoStat">Off</strong></div>
+      </div>
+    </section>
 
-  <main class="shell">
-    <section class="hero">
-      <article class="hero-main">
-        <span class="pill" id="heroPill">Marketplace home</span>
-        <h1 style="font-size:clamp(2.6rem,5vw,4.7rem);margin-top:14px;">Mutaxassislarni vitrinasidek tanlang.</h1>
-        <p id="heroText">Bu sahifa service marketplace bosh sahifasi. Yaqin providerlarni ko‘rasiz, filterlaysiz, so‘rov yuborasiz va alohida thread ochasiz.</p>
-        <div class="hero-actions">
-          <a class="button primary" id="primaryLink" href="/search.html">Katalogni ochish</a>
-          <a class="button secondary" href="/chats.html">Threadlarim</a>
-          <button class="button secondary" id="captureLocationBtn" type="button">Joylashuvni olish</button>
-        </div>
-        <div class="hero-stats">
-          <div class="stat"><small>Lokatsiya</small><strong id="locationStat">Noma'lum</strong></div>
-          <div class="stat"><small>Katalog</small><strong id="providerStat">0</strong></div>
-          <div class="stat"><small>Thread</small><strong id="threadStat">0</strong></div>
-          <div class="stat"><small>Video</small><strong id="videoStat">Off</strong></div>
-        </div>
-      </article>
+    <section class="category-grid" id="categoryGrid"></section>
 
-      <aside class="hero-side">
-        <span class="pill">Quick status</span>
-        <h2 style="font-size:clamp(1.8rem,3vw,2.8rem);margin-top:10px;">Marketplace boshqaruvi</h2>
-        <p>Bu yerda marketplace home, qidiruv, faol threadlar va sahifa ulashish oqimi birlashtirilgan. Kunduz/tun mavzu ham shu yerdan boshqariladi.</p>
-        <div class="card-actions">
-          <a class="button primary" href="/search.html">Qidiruv</a>
-          <a class="button secondary" href="/chat.html">Oxirgi chat</a>
-          <button class="button secondary" id="sharePageBtn" type="button">Sahifani ulashish</button>
+    <section class="layout">
+      <aside class="panel">
+        <div class="filters">
+          <label class="field">Qidiruv<input id="queryInput" type="text" placeholder="Ism yoki xizmat..." /></label>
+          <label class="field">Radius<select id="radiusFilter"><option value="25">25 km</option><option value="50" selected>50 km</option><option value="100">100 km</option><option value="200">200 km</option></select></label>
+          <button class="button primary" id="reloadBtn" type="button">Yangilash</button>
         </div>
-        <div class="helper" id="statusText">Marketplace tayyor.</div>
       </aside>
-    </section>
 
-    <section>
-      <div class="section-head">
-        <div>
-          <span class="pill">Categories</span>
-          <h2 style="margin-top:12px;font-size:clamp(2rem,3vw,3rem);">Kategoriyalar</h2>
-        </div>
-        <p>Bo‘limni tanlaganingizda katalog shu yo‘nalishga moslashadi va qidiruv sahifasiga ham shu filter bilan o‘tasiz.</p>
-      </div>
-      <div class="categories" id="categoryGrid"></div>
-    </section>
-
-    <section>
-      <div class="section-head">
-        <div>
-          <span class="pill">Featured providers</span>
-          <h2 style="margin-top:12px;font-size:clamp(2rem,3vw,3rem);">Sizga mos takliflar</h2>
-        </div>
-        <p>Ecommerce vitrinasiga o‘xshash ko‘rinishda providerlar, narx, masofa va video imkoniyati ko‘rsatiladi.</p>
+      <div>
+        <div class="grid" id="providerGrid"></div>
+        <div class="empty" id="providerEmpty" style="display:none;">Mos profil topilmadi.</div>
       </div>
 
-      <div class="market">
-        <aside class="panel">
-          <span class="pill">Filter</span>
-          <div class="field" style="margin-top:14px;">
-            Qidiruv
-            <input id="queryInput" type="text" placeholder="Ism, xizmat yoki lokatsiya..." />
-          </div>
-          <div class="field" style="margin-top:14px;">
-            Radius
-            <select id="radiusFilter">
-              <option value="25">25 km</option>
-              <option value="50" selected>50 km</option>
-              <option value="100">100 km</option>
-              <option value="200">200 km</option>
-            </select>
-          </div>
-          <div class="filter-actions" style="margin-top:16px;">
-            <button class="button primary" id="reloadBtn" type="button">Yangilash</button>
-            <a class="button secondary" id="openSearchLink" href="/search.html">To'liq qidiruv</a>
-          </div>
-        </aside>
-
-        <div>
-          <div class="provider-grid" id="providerGrid"></div>
-          <div class="empty" id="providerEmpty" style="display:none;">Mos provider topilmadi. Joylashuvni yangilang yoki filterlarni yengillashtiring.</div>
-        </div>
-
-        <aside class="panel">
-          <span class="pill">Service inbox</span>
-          <h3 style="margin:14px 0 14px;font-size:1.5rem;">Faol threadlar</h3>
-          <div id="threadGrid" style="display:grid;gap:14px;"></div>
-          <a class="button secondary" style="margin-top:14px;" href="/chats.html">Barchasini ko'rish</a>
-        </aside>
-      </div>
+      <aside class="side-stack">
+        <article class="panel" style="width:100%;">
+          <h3 style="font-size:1.2rem;">So'nggi chatlar</h3>
+          <div class="thread-list" id="threadGrid" style="margin-top:12px;"></div>
+        </article>
+      </aside>
     </section>
   </main>
 
   <script>
-    const THEME_KEY = "aishelf-theme";
     const state = {
       user: null,
       profile: null,
@@ -391,67 +92,35 @@
       query: "",
     };
 
-    const themeToggle = document.getElementById("themeToggle");
     const categoryGrid = document.getElementById("categoryGrid");
     const providerGrid = document.getElementById("providerGrid");
     const providerEmpty = document.getElementById("providerEmpty");
     const threadGrid = document.getElementById("threadGrid");
     const statusText = document.getElementById("statusText");
 
-    function escapeHtml(value) {
-      return String(value || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;");
-    }
+    function escapeHtml(value){return String(value||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
+    function initials(value){return String(value||"AS").split(/\s+/).filter(Boolean).slice(0,2).map((item)=>item[0]).join("").toUpperCase()}
+    function setStatus(text,tone=""){statusText.textContent=text; statusText.className=tone||""}
 
-    function initials(value) {
-      return String(value || "AS").split(/\s+/).filter(Boolean).slice(0, 2).map((item) => item[0]).join("").toUpperCase();
-    }
-
-    function getStoredTheme() {
-      const saved = localStorage.getItem(THEME_KEY);
-      if (saved === "day" || saved === "night") return saved;
-      return matchMedia("(prefers-color-scheme: dark)").matches ? "night" : "day";
-    }
-
-    function applyTheme(theme) {
-      document.documentElement.dataset.theme = theme;
-      localStorage.setItem(THEME_KEY, theme);
-      themeToggle.textContent = theme === "night" ? "Kunduz mavzu" : "Tun mavzu";
-    }
-
-    function setStatus(text, tone = "") {
-      statusText.textContent = text;
-      statusText.className = tone || "helper";
-    }
-
-    async function ensureAuth() {
+    async function ensureAuth(){
       const response = await fetch("/api/auth/me");
       const data = await response.json();
-      if (!data.user) {
-        location.href = `/login.html?next=${encodeURIComponent("/recommendations.html" + location.search)}`;
-        throw new Error("Unauthenticated");
-      }
+      if(!data.user){ location.href=`/login.html?next=${encodeURIComponent("/recommendations.html"+location.search)}`; throw new Error("Unauthenticated"); }
       state.user = data.user;
     }
 
-    async function loadBootstrap() {
+    async function loadBootstrap(){
       await ensureAuth();
-      const [configRes, profileRes, threadRes] = await Promise.all([
-        fetch("/api/config"),
-        fetch("/api/profile"),
-        fetch("/api/provider-threads"),
-      ]);
+      const [configRes, profileRes, threadRes] = await Promise.all([fetch("/api/config"), fetch("/api/profile"), fetch("/api/provider-threads")]);
+      const threadData = await threadRes.json();
       state.config = await configRes.json();
       state.profile = await profileRes.json();
-      state.threads = (await threadRes.json()).threads || [];
-      renderHero();
+      state.threads = threadData.threads || [];
+      renderHeader();
       renderThreads();
     }
 
-    function renderHero() {
+    function renderHeader(){
       const user = state.profile.user || {};
       document.getElementById("locationStat").textContent =
         Number.isFinite(user.latitude) && Number.isFinite(user.longitude)
@@ -459,142 +128,108 @@
           : "Joy kerak";
       document.getElementById("threadStat").textContent = String(state.threads.length);
       document.getElementById("videoStat").textContent = state.config.videoReady ? "On" : "Off";
-      if (state.user.role === "provider") {
-        document.getElementById("heroPill").textContent = "Provider inbox";
-        document.getElementById("heroText").textContent = "Provider rolida siz uchun bu sahifa requestlar va faol mijoz yozishmalari vitrinasiga aylanadi.";
-        document.getElementById("primaryLink").textContent = "Threadlar ro'yxati";
-        document.getElementById("primaryLink").href = "/chats.html";
-      }
     }
 
-    function categoryItems() {
-      const counts = { doctor: 0, lawyer: 0, agro: 0, private: 0 };
-      for (const provider of state.providers) {
-        if (counts[provider.providerType] !== undefined) counts[provider.providerType] += 1;
+    function getCategoryItems(){
+      const counts = {};
+      for(const provider of state.providers){
+        counts[provider.providerType] = (counts[provider.providerType] || 0) + 1;
       }
+      const pageMap = { doctor:"/doctor.html", lawyer:"/lawyer.html", agro:"/veterinar.html" };
       return [
-        { id: "all", name: "Barchasi", desc: "Barcha aktiv providerlar", count: state.providers.length, icon: "AS" },
-        ...(state.config.providerTypes || []).map((item) => ({
-          id: item.id,
-          name: item.name,
-          desc: `${item.name} bo'yicha mos mutaxassislar`,
-          count: counts[item.id] || 0,
-          icon: item.name.slice(0, 2).toUpperCase(),
-        })),
+        { id:"all", name:"Barchasi", count:state.providers.length, page:"/search.html" },
+        ...((state.config.providerTypes||[]).map((item)=>({
+          id:item.id,
+          name:item.name,
+          count:counts[item.id] || 0,
+          page:pageMap[item.id] || `/search.html?type=${encodeURIComponent(item.id)}`,
+        }))),
       ];
     }
 
-    function renderCategories() {
-      categoryGrid.innerHTML = categoryItems().map((item) => `
-        <article class="category-card ${item.id === state.selectedType ? "active" : ""}" data-type="${item.id}">
-          <div class="category-icon">${escapeHtml(item.icon)}</div>
-          <h3 style="font-size:1.3rem;">${escapeHtml(item.name)}</h3>
-          <p style="margin:10px 0 12px;color:var(--muted);line-height:1.72;">${escapeHtml(item.desc)}</p>
-          <div class="chip">${item.count} ta profil</div>
+    function renderCategories(){
+      categoryGrid.innerHTML = getCategoryItems().map((item)=>`
+        <article class="category ${item.id===state.selectedType?"active":""}" data-type="${item.id}">
+          <div class="head-row">
+            <strong>${escapeHtml(item.name)}</strong>
+            <span class="chip">${item.count}</span>
+          </div>
+          <small>Filter yoki sahifa ochish.</small>
+          <div class="card-actions">
+            <a class="button secondary" href="${item.page}">Ochish</a>
+          </div>
         </article>
       `).join("");
-
-      categoryGrid.querySelectorAll("[data-type]").forEach((card) => {
-        card.addEventListener("click", () => {
-          state.selectedType = card.dataset.type;
-          history.replaceState({}, "", `/recommendations.html?type=${encodeURIComponent(state.selectedType)}`);
-          renderCategories();
-          renderProviders();
-          syncSearchLink();
-        });
-      });
-    }
-
-    async function loadProviders() {
-      if (state.user.role === "provider") {
-        state.providers = [];
+      categoryGrid.querySelectorAll("[data-type]").forEach((card)=>card.addEventListener("click",(event)=>{
+        if(event.target.closest("a")) return;
+        state.selectedType = card.dataset.type;
+        history.replaceState({}, "", `/recommendations.html?type=${encodeURIComponent(state.selectedType)}`);
         renderCategories();
         renderProviders();
-        return;
-      }
-      const params = new URLSearchParams({
-        radiusKm: document.getElementById("radiusFilter").value,
-      });
+      }));
+    }
+
+    async function loadProviders(){
+      const params = new URLSearchParams({ radiusKm: document.getElementById("radiusFilter").value });
       const response = await fetch(`/api/providers?${params.toString()}`);
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Providerlar yuklanmadi.");
+      if(!response.ok) throw new Error(data.error || "Providerlar yuklanmadi.");
       state.providers = data.providers || [];
       renderCategories();
       renderProviders();
-      syncSearchLink();
     }
 
-    function filteredProviders() {
-      const query = state.query.trim().toLowerCase();
-      return state.providers.filter((provider) => {
+    function filteredProviders(){
+      const q = state.query.trim().toLowerCase();
+      return state.providers.filter((provider)=>{
         const matchesType = state.selectedType === "all" || provider.providerType === state.selectedType;
-        const haystack = [
-          provider.name,
-          provider.providerServices,
-          provider.providerIntro,
-          provider.locationLabel,
-          provider.company,
-        ].join(" ").toLowerCase();
-        return matchesType && (!query || haystack.includes(query));
+        const haystack = [provider.name, provider.providerServices, provider.providerIntro, provider.locationLabel, provider.company].join(" ").toLowerCase();
+        return matchesType && (!q || haystack.includes(q));
       });
     }
 
-    function renderProviders() {
-      const items = filteredProviders().slice(0, 6);
-      document.getElementById("providerStat").textContent = String(filteredProviders().length);
+    function renderProviders(){
+      const items = filteredProviders();
+      document.getElementById("providerStat").textContent = String(items.length);
       providerEmpty.style.display = items.length ? "none" : "block";
-      providerGrid.innerHTML = items.map((provider) => `
-        <article class="provider-card">
-          <div class="provider-top">
-            <div class="provider-head">
+      providerGrid.innerHTML = items.map((provider)=>`
+        <article class="card">
+          <div class="top">
+            <div class="head">
               <div class="avatar">${escapeHtml(initials(provider.name))}</div>
               <div>
                 <div class="chip">${escapeHtml(provider.providerTypeLabel || "Mutaxassis")}</div>
-                <h3 style="margin-top:10px;font-size:1.3rem;">${escapeHtml(provider.name)}</h3>
+                <h3 style="margin-top:8px;font-size:1.2rem;">${escapeHtml(provider.name)}</h3>
               </div>
             </div>
             <div class="badge">${escapeHtml(provider.consultationFee || "Narx so'rovda")}</div>
           </div>
-          <p style="margin:14px 0;">${escapeHtml(provider.providerIntro || provider.bio || provider.providerServices || "Profil tavsifi kiritilmagan.")}</p>
+          <p>${escapeHtml(provider.providerIntro || provider.bio || provider.providerServices || "Tavsif yo'q.")}</p>
           <div class="chips">
             <span class="chip">${provider.distanceKm != null ? `${provider.distanceKm} km` : "Masofa noma'lum"}</span>
-            <span class="chip">${escapeHtml(provider.locationLabel || provider.company || "Lokatsiya yo'q")}</span>
-            <span class="chip">${provider.videoEnabled ? "Video bor" : "Faqat chat"}</span>
+            <span class="chip">${provider.videoEnabled ? "Video" : "Chat"}</span>
           </div>
-          <div class="card-actions" style="margin-top:16px;">
-            <button class="button primary" data-request="${provider.id}" type="button">So'rov yuborish</button>
-            <a class="button secondary" href="/search.html?type=${encodeURIComponent(provider.providerType || "")}&q=${encodeURIComponent(provider.name || "")}">Ko'proq</a>
+          <div class="card-actions">
+            <button class="button primary" data-request="${provider.id}" type="button">So'rov</button>
+            <a class="button secondary" href="/chat.html">Chat</a>
           </div>
         </article>
       `).join("");
-
-      providerGrid.querySelectorAll("[data-request]").forEach((button) => {
-        button.addEventListener("click", () => requestProvider(button.dataset.request));
-      });
+      providerGrid.querySelectorAll("[data-request]").forEach((button)=>button.addEventListener("click",()=>requestProvider(button.dataset.request)));
     }
 
-    function renderThreads() {
-      if (!state.threads.length) {
-        threadGrid.innerHTML = `<div class="empty">Hali service thread yo'q. Avval provider tanlab request yuboring.</div>`;
+    function renderThreads(){
+      if(!state.threads.length){
+        threadGrid.innerHTML = '<div class="empty">Hali chat yo\'q.</div>';
         return;
       }
-
-      threadGrid.innerHTML = state.threads.slice(0, 5).map((thread) => {
-        const counterpart = state.user.role === "provider"
-          ? (thread.requester?.name || "Mijoz")
-          : (thread.provider?.name || thread.providerTypeLabel || "Provider");
+      threadGrid.innerHTML = state.threads.slice(0,4).map((thread)=>{
+        const counterpart = state.user.role === "provider" ? (thread.requester?.name || "Mijoz") : (thread.provider?.name || thread.providerTypeLabel || "Mutaxassis");
         return `
-          <article class="thread-card">
-            <div class="thread-top">
-              <div>
-                <div class="status ${escapeHtml(thread.status || "requested")}">${escapeHtml(thread.status || "requested")}</div>
-                <h3 style="margin-top:10px;font-size:1.2rem;">${escapeHtml(counterpart)}</h3>
-              </div>
-              <div class="chip">${escapeHtml(thread.providerTypeLabel || "Service")}</div>
-            </div>
-            <p style="margin:14px 0;">${escapeHtml(thread.lastMessagePreview || "Service thread tayyor.")}</p>
-            <div class="meta">
-              <span>${new Date(thread.updatedAt).toLocaleString()}</span>
+          <article class="thread">
+            <strong>${escapeHtml(counterpart)}</strong>
+            <div class="helper">${escapeHtml(thread.lastMessagePreview || "Yozishma tayyor.")}</div>
+            <div class="card-actions" style="margin-top:10px;">
               <a class="button secondary" href="/chat.html?threadId=${encodeURIComponent(thread.id)}">Ochish</a>
             </div>
           </article>
@@ -602,135 +237,56 @@
       }).join("");
     }
 
-    async function requestProvider(providerId) {
-      try {
-        setStatus("Providerga so'rov yuborilmoqda...");
+    async function requestProvider(providerId){
+      try{
+        setStatus("So'rov yuborilmoqda...");
         const response = await fetch("/api/provider-threads/request", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            providerId,
-            sourceAssistantId: state.selectedType !== "all" ? `${state.selectedType}-ai` : "",
-          }),
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify({ providerId, sourceAssistantId: state.selectedType !== "all" ? `${state.selectedType}-ai` : "" }),
         });
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "So'rov yuborilmadi.");
+        if(!response.ok) throw new Error(data.error || "So'rov yuborilmadi.");
         location.href = `/chat.html?threadId=${encodeURIComponent(data.threadId)}`;
-      } catch (error) {
-        setStatus(error.message, "error");
-      }
+      }catch(error){ setStatus(error.message,"error"); }
     }
 
-    async function saveCurrentLocation(latitude, longitude) {
-      const user = state.profile.user;
+    async function saveLocation(latitude, longitude){
+      const user = state.profile.user || {};
       const payload = {
-        name: user.name,
-        company: user.company || "",
-        bio: user.bio || "",
-        locationLabel: user.locationLabel || `Lat ${latitude.toFixed(4)}, Lng ${longitude.toFixed(4)}`,
-        latitude,
-        longitude,
-        geoConsent: true,
-        asProvider: user.role === "provider",
-        providerType: user.providerType || "",
-        providerServices: user.providerServices || "",
-        providerIntro: user.providerIntro || "",
-        providerLicense: user.providerLicense || "",
-        consultationFee: user.consultationFee || "",
-        availableForRecommendations: user.availableForRecommendations !== false,
-        videoEnabled: Boolean(user.videoEnabled),
+        name:user.name, company:user.company||"", bio:user.bio||"",
+        locationLabel:user.locationLabel || `Lat ${latitude.toFixed(4)}, Lng ${longitude.toFixed(4)}`,
+        latitude, longitude, geoConsent:true, asProvider:user.role==="provider",
+        providerType:user.providerType||"", providerServices:user.providerServices||"", providerIntro:user.providerIntro||"",
+        providerLicense:user.providerLicense||"", consultationFee:user.consultationFee||"",
+        availableForRecommendations:user.availableForRecommendations !== false, videoEnabled:Boolean(user.videoEnabled),
       };
-      const response = await fetch("/api/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch("/api/profile",{ method:"PATCH", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(payload) });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Joylashuv saqlanmadi.");
+      if(!response.ok) throw new Error(data.error || "Joylashuv saqlanmadi.");
       state.profile.user = data.user;
-      renderHero();
+      renderHeader();
     }
 
-    async function requestBrowserLocation() {
-      if (!navigator.geolocation) throw new Error("Brauzer geolokatsiyani qo'llamaydi.");
-      return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          (position) => resolve(position.coords),
-          (error) => reject(error),
-          { enableHighAccuracy: true, timeout: 15000 }
-        );
-      });
+    async function requestBrowserLocation(){
+      if(!navigator.geolocation) throw new Error("Brauzer geolokatsiyani qo'llamaydi.");
+      return new Promise((resolve,reject)=>navigator.geolocation.getCurrentPosition((position)=>resolve(position.coords),(error)=>reject(error),{ enableHighAccuracy:true, timeout:15000 }));
     }
 
-    function syncSearchLink() {
-      const params = new URLSearchParams();
-      if (state.selectedType !== "all") params.set("type", state.selectedType);
-      if (state.query.trim()) params.set("q", state.query.trim());
-      params.set("radiusKm", document.getElementById("radiusFilter").value);
-      document.getElementById("openSearchLink").href = `/search.html?${params.toString()}`;
-    }
-
-    async function sharePage() {
-      const url = `${location.origin}/recommendations.html${state.selectedType !== "all" ? `?type=${encodeURIComponent(state.selectedType)}` : ""}`;
-      if (navigator.share) {
-        await navigator.share({ title: "Ai's Shelf marketplace", text: "Ai's Shelf ichida provider marketplace sahifasi.", url });
-        return;
-      }
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(url);
-        setStatus("Sahifa havolasi nusxalandi.", "success");
-        return;
-      }
-      setStatus(url);
-    }
-
-    document.getElementById("queryInput").addEventListener("input", (event) => {
-      state.query = event.currentTarget.value;
-      renderProviders();
-      syncSearchLink();
-    });
-
-    document.getElementById("radiusFilter").addEventListener("change", () => {
-      loadProviders().catch((error) => setStatus(error.message, "error"));
-    });
-
-    document.getElementById("reloadBtn").addEventListener("click", () => {
-      loadProviders().then(() => setStatus("Marketplace yangilandi.", "success")).catch((error) => setStatus(error.message, "error"));
-    });
-
-    document.getElementById("captureLocationBtn").addEventListener("click", async () => {
-      try {
+    document.getElementById("queryInput").addEventListener("input",(event)=>{ state.query = event.currentTarget.value; renderProviders(); });
+    document.getElementById("radiusFilter").addEventListener("change",()=>loadProviders().catch((error)=>setStatus(error.message,"error")));
+    document.getElementById("reloadBtn").addEventListener("click",()=>loadProviders().then(()=>setStatus("Yangilandi.","success")).catch((error)=>setStatus(error.message,"error")));
+    document.getElementById("captureLocationBtn").addEventListener("click",async()=>{
+      try{
         setStatus("Joylashuv olinmoqda...");
         const coords = await requestBrowserLocation();
-        await saveCurrentLocation(coords.latitude, coords.longitude);
+        await saveLocation(coords.latitude, coords.longitude);
         await loadProviders();
-        setStatus("Joylashuv saqlandi va katalog yangilandi.", "success");
-      } catch (error) {
-        setStatus(error.message, "error");
-      }
+        setStatus("Joylashuv yangilandi.","success");
+      }catch(error){ setStatus(error.message,"error"); }
     });
 
-    document.getElementById("sharePageBtn").addEventListener("click", () => {
-      sharePage().catch((error) => setStatus(error.message, "error"));
-    });
-
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await fetch("/api/auth/logout", { method: "POST" });
-      location.href = "/";
-    });
-
-    themeToggle.addEventListener("click", () => {
-      applyTheme(document.documentElement.dataset.theme === "night" ? "day" : "night");
-    });
-
-    applyTheme(getStoredTheme());
-
-    Promise.resolve()
-      .then(loadBootstrap)
-      .then(loadProviders)
-      .catch((error) => {
-        if (error.message !== "Unauthenticated") setStatus(error.message, "error");
-      });
+    Promise.resolve().then(loadBootstrap).then(loadProviders).catch((error)=>{ if(error.message!=="Unauthenticated") setStatus(error.message,"error"); });
   </script>
 </body>
 </html>
